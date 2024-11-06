@@ -67,6 +67,7 @@ const Question = () => {
         .insert({
           content: question.trim(),
           user_id: user.id,
+          status: 'pending'
         });
 
       if (error) throw error;
@@ -174,7 +175,7 @@ const Question = () => {
                     Your interpretation is being prepared...
                   </p>
                 ) : (
-                  <p className="whitespace-pre-wrap">{selectedQuestion.content}</p>
+                  <p className="whitespace-pre-wrap">{selectedQuestion.status}</p>
                 )}
               </div>
             </div>
