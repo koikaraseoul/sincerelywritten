@@ -39,11 +39,13 @@ const Review = () => {
         const { data: sentences, error } = await supabase
           .from('sentences')
           .select('created_at')
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        setSentenceDates(sentences.map(s => format(new Date(s.created_at), 'yyyy-MM-dd')));
+        const dates = sentences.map(s => format(new Date(s.created_at), 'yyyy-MM-dd'));
+        setSentenceDates([...new Set(dates)]); // Remove duplicates
       } catch (error: any) {
         toast({
           variant: "destructive",
@@ -77,22 +79,23 @@ const Review = () => {
           .eq('user_id', user.id)
           .gte('created_at', startOfDay.toISOString())
           .lte('created_at', endOfDay.toISOString())
-          .single();
+          .order('created_at', { ascending: true });
 
-        if (error) {
-          if (error.code === 'PGRST116') {
-            setSelectedSentence("");
-            return;
-          }
-          throw error;
+        if (error) throw error;
+
+        if (sentences && sentences.length > 0) {
+          const formattedSentences = sentences.map((sentence, index) => 
+            `Entry ${index + 1}:\nDaily Sentence: ${sentence.daily_sentence}\nYour Response: ${sentence.content}`
+          ).join('\n\n');
+          setSelectedSentence(formattedSentences);
+        } else {
+          setSelectedSentence("");
         }
-
-        setSelectedSentence(`Daily Sentence: ${sentences.daily_sentence}\n\nYour Response: ${sentences.content}`);
       } catch (error: any) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to fetch sentence",
+          description: "Failed to fetch sentences",
         });
       }
     };
@@ -172,7 +175,7 @@ const Review = () => {
           </div>
         ) : date ? (
           <div className="text-center text-muted-foreground animate-fadeIn">
-            No sentence found for this date
+            No sentences found for this date
           </div>
         ) : null}
 
