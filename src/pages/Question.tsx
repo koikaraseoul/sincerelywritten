@@ -21,6 +21,7 @@ const Question = () => {
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Fetch questions for the current user
   const { data: questions } = useQuery({
     queryKey: ["questions"],
     queryFn: async () => {
@@ -38,6 +39,7 @@ const Question = () => {
     },
   });
 
+  // Get the selected question details
   const selectedQuestion = questions?.find(q => q.id === selectedQuestionId);
 
   const handleSubmit = async () => {
