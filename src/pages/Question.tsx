@@ -5,12 +5,40 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Shuffle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
 
 const Question = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: questions } = useQuery({
+    queryKey: ["questions"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("questions")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const selectedQuestion = questions?.find(q => q.id === selectedQuestionId);
 
   const handleSubmit = async () => {
     if (!question.trim()) return;
@@ -84,9 +112,47 @@ const Question = () => {
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="Type your question here..."
-          className="min-h-[200px] resize-none bg-background border-input"
+          className="min-h-[200px] resize-none bg-background border-input mb-8"
           disabled={isSubmitting}
         />
+
+        {/* Previous Questions Dropdown */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-serif">Previous Questions</h2>
+          <Select
+            value={selectedQuestionId}
+            onValueChange={setSelectedQuestionId}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a question" />
+            </SelectTrigger>
+            <SelectContent>
+              {questions?.map((q) => (
+                <SelectItem key={q.id} value={q.id}>
+                  {q.content.substring(0, 50)}...
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Interpretation Section */}
+          {selectedQuestion && (
+            <div className="mt-8 space-y-4">
+              <h2 className="text-xl font-serif">
+                Interpretation by the Love Journey Tarot Deck
+              </h2>
+              <div className="bg-card p-6 rounded-lg border">
+                {selectedQuestion.status === "pending" ? (
+                  <p className="text-muted-foreground italic">
+                    Your interpretation is being prepared...
+                  </p>
+                ) : (
+                  <p className="whitespace-pre-wrap">{selectedQuestion.content}</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
