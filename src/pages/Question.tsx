@@ -22,7 +22,7 @@ const Question = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch questions for the current user
-  const { data: questions } = useQuery({
+  const { data: questions, isLoading } = useQuery({
     queryKey: ["questions"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -124,14 +124,15 @@ const Question = () => {
           <Select
             value={selectedQuestionId}
             onValueChange={setSelectedQuestionId}
+            disabled={isLoading}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a question" />
             </SelectTrigger>
             <SelectContent>
               {questions?.map((q) => (
                 <SelectItem key={q.id} value={q.id}>
-                  {q.content.substring(0, 50)}...
+                  {q.content.substring(0, 50)}{q.content.length > 50 ? "..." : ""}
                 </SelectItem>
               ))}
             </SelectContent>
