@@ -1,18 +1,36 @@
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleGoogleLogin = () => {
-    // TODO: Implement Google Auth
-    toast({
-      title: "Coming Soon",
-      description: "Google authentication will be implemented in the next update.",
+  useEffect(() => {
+    // Check if user is already logged in
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate("/dashboard");
+      }
     });
+  }, [navigate]);
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Error logging in with Google:', error);
+    }
   };
 
   return (
