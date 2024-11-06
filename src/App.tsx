@@ -11,6 +11,7 @@ import Sentence from "./pages/Sentence";
 import Review from "./pages/Review";
 import Analyze from "./pages/Analyze";
 import Question from "./pages/Question";
+import Answer from "./pages/Answer";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -37,6 +38,7 @@ const App = () => {
             <Route path="/review" element={<Review />} />
             <Route path="/analyze" element={<Analyze />} />
             <Route path="/question" element={<Question />} />
+            <Route path="/answer" element={<Answer />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
