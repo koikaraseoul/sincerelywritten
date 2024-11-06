@@ -5,24 +5,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Shuffle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 
 const Question = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
-  const [selectedQuestionId, setSelectedQuestionId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // First, check if user is authenticated
-  const { data: session, isLoading: isSessionLoading } = useQuery({
+  // Check if user is authenticated
+  const { data: session } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
@@ -33,35 +25,6 @@ const Question = () => {
       return session;
     },
   });
-
-  // Then fetch questions only if user is authenticated
-  const { data: questions, isLoading: isQuestionsLoading } = useQuery({
-    queryKey: ["questions", session?.user.id],
-    queryFn: async () => {
-      if (!session?.user.id) return null;
-      
-      const { data, error } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load questions. Please try again.",
-        });
-        throw error;
-      }
-
-      return data;
-    },
-    enabled: !!session?.user.id, // Only run query if we have a user ID
-  });
-
-  // Get the selected question details
-  const selectedQuestion = questions?.find(q => q.id === selectedQuestionId);
 
   const handleSubmit = async () => {
     if (!question.trim()) return;
@@ -99,8 +62,6 @@ const Question = () => {
       setIsSubmitting(false);
     }
   };
-
-  const isLoading = isSessionLoading || isQuestionsLoading;
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -140,49 +101,6 @@ const Question = () => {
           className="min-h-[200px] resize-none bg-background border-input mb-8"
           disabled={isSubmitting}
         />
-
-        {/* Previous Questions Dropdown */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-serif">Previous Questions</h2>
-          <Select
-            value={selectedQuestionId}
-            onValueChange={setSelectedQuestionId}
-            disabled={isLoading}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={isLoading ? "Loading questions..." : "Select a question"} />
-            </SelectTrigger>
-            <SelectContent>
-              {questions && questions.length > 0 ? (
-                questions.map((q) => (
-                  <SelectItem key={q.id} value={q.id}>
-                    {q.content}
-                  </SelectItem>
-                ))
-              ) : (
-                <SelectItem value="no-questions" disabled>
-                  {isLoading ? "Loading..." : "No questions found"}
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-
-          {/* Interpretation Section */}
-          {selectedQuestion && (
-            <div className="mt-8 space-y-4">
-              <h2 className="text-xl font-serif">Interpretation</h2>
-              <div className="bg-card p-6 rounded-lg border">
-                {selectedQuestion.status === "pending" ? (
-                  <p className="text-muted-foreground italic">
-                    Your interpretation is being prepared...
-                  </p>
-                ) : (
-                  <p className="whitespace-pre-wrap">{selectedQuestion.status}</p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
