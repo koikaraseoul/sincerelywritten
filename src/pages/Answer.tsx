@@ -1,14 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useQuery } from "@tanstack/react-query";
 
 const Answer = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  const [selectedEntry, setSelectedEntry] = useState<string>("");
 
   useEffect(() => {
     // Check if user is logged in
@@ -21,6 +29,22 @@ const Answer = () => {
     });
   }, [navigate]);
 
+  // Fetch analyses for the current user
+  const { data: analyses } = useQuery({
+    queryKey: ['analyses', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('analyses')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
   return (
     <div className="min-h-screen bg-background p-8">
       {/* Back Button */}
@@ -32,6 +56,31 @@ const Answer = () => {
         <ArrowLeft className="h-6 w-6" />
       </Button>
 
+      {/* Dropdown Button */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="absolute top-8 right-8 hover:bg-secondary"
+          >
+            <ChevronDown className="h-6 w-6" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[300px]">
+          {analyses?.map((analysis) => (
+            <DropdownMenuItem
+              key={analysis.id}
+              onClick={() => setSelectedEntry(analysis.content)}
+            >
+              {new Date(analysis.created_at).toLocaleDateString()} - {analysis.content.substring(0, 30)}...
+            </DropdownMenuItem>
+          ))}
+          {(!analyses || analyses.length === 0) && (
+            <DropdownMenuItem disabled>No entries available</DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       {/* Main Content */}
       <div className="max-w-2xl mx-auto pt-16">
         <Card className="p-6">
@@ -42,6 +91,7 @@ const Answer = () => {
           <Textarea
             className="min-h-[200px] bg-secondary text-foreground resize-y"
             placeholder="Your interpretation will appear here..."
+            value={selectedEntry}
             readOnly
           />
         </Card>
