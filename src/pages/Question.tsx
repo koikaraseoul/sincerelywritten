@@ -10,20 +10,27 @@ const Question = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
+    if (!question.trim()) return;
+
+    setIsSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        navigate("/login");
+        return;
+      }
 
-      await supabase
+      const { error } = await supabase
         .from("questions")
-        .insert([
-          {
-            user_id: user.id,
-            content: question,
-          },
-        ]);
+        .insert({
+          content: question.trim(),
+          user_id: user.id,
+        });
+
+      if (error) throw error;
 
       toast({
         title: "Question submitted",
@@ -31,12 +38,14 @@ const Question = () => {
       });
 
       setQuestion("");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to submit question. Please try again.",
+        description: error.message || "Failed to submit question. Please try again.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -59,7 +68,7 @@ const Question = () => {
             size="icon"
             onClick={handleSubmit}
             className="hover:bg-secondary"
-            disabled={!question.trim()}
+            disabled={!question.trim() || isSubmitting}
           >
             <Shuffle className="h-6 w-6" />
           </Button>
@@ -76,6 +85,7 @@ const Question = () => {
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="Type your question here..."
           className="min-h-[200px] resize-none bg-background border-input"
+          disabled={isSubmitting}
         />
       </div>
     </div>
