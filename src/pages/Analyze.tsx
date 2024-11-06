@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ChevronDown, RefreshCcw } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
@@ -24,7 +24,7 @@ const Analyze = () => {
   const { toast } = useToast();
   const [selectedEntry, setSelectedEntry] = useState<Analysis | null>(null);
 
-  const { data: analyses, isLoading, refetch } = useQuery({
+  const { data: analyses, isLoading } = useQuery({
     queryKey: ["analyses"],
     queryFn: async () => {
       const { data: user } = await supabase.auth.getUser();
@@ -41,34 +41,6 @@ const Analyze = () => {
     },
   });
 
-  const generateAnalysis = useMutation({
-    mutationFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error("Not authenticated");
-
-      const { data, error } = await supabase.functions.invoke("analyze-texts", {
-        body: { user_id: user.user.id },
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      refetch();
-      toast({
-        title: "Analysis Generated",
-        description: "Your new love theme analysis is ready!",
-      });
-    },
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
-    },
-  });
-
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto">
@@ -82,45 +54,33 @@ const Analyze = () => {
             <ArrowLeft className="h-6 w-6" />
           </Button>
 
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={() => generateAnalysis.mutate()}
-              disabled={generateAnalysis.isPending}
-              className="flex items-center gap-2"
-            >
-              <RefreshCcw className="h-4 w-4" />
-              Generate New Analysis
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="hover:bg-secondary flex items-center gap-2"
-                >
-                  Select Analysis <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[240px]">
-                {isLoading ? (
-                  <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-                ) : analyses && analyses.length > 0 ? (
-                  analyses.map((analysis) => (
-                    <DropdownMenuItem
-                      key={analysis.id}
-                      onClick={() => setSelectedEntry(analysis)}
-                      className="cursor-pointer"
-                    >
-                      {format(new Date(analysis.created_at), "MMMM d, yyyy")}
-                    </DropdownMenuItem>
-                  ))
-                ) : (
-                  <DropdownMenuItem disabled>No analyses found</DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="hover:bg-secondary flex items-center gap-2"
+              >
+                Select Analysis <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[240px]">
+              {isLoading ? (
+                <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
+              ) : analyses && analyses.length > 0 ? (
+                analyses.map((analysis) => (
+                  <DropdownMenuItem
+                    key={analysis.id}
+                    onClick={() => setSelectedEntry(analysis)}
+                    className="cursor-pointer"
+                  >
+                    {format(new Date(analysis.created_at), "MMMM d, yyyy")}
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>No analyses found</DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="mt-8">
@@ -137,7 +97,7 @@ const Analyze = () => {
             <div className="text-center text-muted-foreground">
               {analyses && analyses.length > 0
                 ? "Select an analysis to view its content"
-                : "Generate your first analysis by clicking the button above"}
+                : "No analyses available"}
             </div>
           )}
         </div>
