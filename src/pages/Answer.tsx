@@ -13,10 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 
+interface Question {
+  id: string;
+  content: string;
+  status: string;
+  created_at: string;
+}
+
 const Answer = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [selectedEntry, setSelectedEntry] = useState<string>("");
+  const [selectedQuestion, setSelectedQuestion] = useState<string>("");
 
   useEffect(() => {
     // Check if user is logged in
@@ -29,18 +36,18 @@ const Answer = () => {
     });
   }, [navigate]);
 
-  // Fetch analyses for the current user
-  const { data: analyses } = useQuery({
-    queryKey: ['analyses', user?.id],
+  // Fetch questions for the current user
+  const { data: questions } = useQuery({
+    queryKey: ['questions', user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
-        .from('analyses')
+        .from('questions')
         .select('*')
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return data as Question[] || [];
     },
     enabled: !!user,
   });
@@ -67,16 +74,16 @@ const Answer = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[300px]">
-          {analyses?.map((analysis) => (
+          {questions?.map((question) => (
             <DropdownMenuItem
-              key={analysis.id}
-              onClick={() => setSelectedEntry(analysis.content)}
+              key={question.id}
+              onClick={() => setSelectedQuestion(question.content)}
             >
-              {new Date(analysis.created_at).toLocaleDateString()} - {analysis.content.substring(0, 30)}...
+              {new Date(question.created_at).toLocaleDateString()} - Status: {question.status}
             </DropdownMenuItem>
           ))}
-          {(!analyses || analyses.length === 0) && (
-            <DropdownMenuItem disabled>No entries available</DropdownMenuItem>
+          {(!questions || questions.length === 0) && (
+            <DropdownMenuItem disabled>No questions available</DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
@@ -91,7 +98,7 @@ const Answer = () => {
           <Textarea
             className="min-h-[200px] bg-secondary text-foreground resize-y"
             placeholder="Your interpretation will appear here..."
-            value={selectedEntry}
+            value={selectedQuestion}
             readOnly
           />
         </Card>
