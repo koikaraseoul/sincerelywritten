@@ -21,12 +21,16 @@ const Question = () => {
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch questions for the current user
-  const { data: questions, isLoading } = useQuery({
+  // Fetch questions for the current user with error handling
+  const { data: questions, isLoading, error } = useQuery({
     queryKey: ["questions"],
     queryFn: async () => {
+      console.log("Fetching questions...");
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        console.log("No user found");
+        throw new Error("Not authenticated");
+      }
 
       const { data, error } = await supabase
         .from("questions")
@@ -34,7 +38,12 @@ const Question = () => {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+      
+      console.log("Fetched questions:", data);
       return data;
     },
   });
@@ -78,6 +87,15 @@ const Question = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Show error toast if query fails
+  if (error) {
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description: "Failed to load questions. Please try again.",
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -127,14 +145,20 @@ const Question = () => {
             disabled={isLoading}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a question" />
+              <SelectValue placeholder={isLoading ? "Loading questions..." : "Select a question"} />
             </SelectTrigger>
             <SelectContent>
-              {questions?.map((q) => (
-                <SelectItem key={q.id} value={q.id}>
-                  {q.content.substring(0, 50)}{q.content.length > 50 ? "..." : ""}
+              {questions && questions.length > 0 ? (
+                questions.map((q) => (
+                  <SelectItem key={q.id} value={q.id}>
+                    {q.content.substring(0, 50)}{q.content.length > 50 ? "..." : ""}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="no-questions" disabled>
+                  {isLoading ? "Loading..." : "No questions found"}
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
 
