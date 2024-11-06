@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LetterText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,25 +10,47 @@ const Sentence = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [content, setContent] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const dailySentence = "Love is not about possession, it's about appreciation.";
 
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please login to access this page",
+        });
+        navigate("/login");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate, toast]);
+
   const handleSave = async () => {
+    if (!content.trim()) return;
+    
+    setIsLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
         toast({
           variant: "destructive",
-          title: "Error",
+          title: "Authentication Required",
           description: "Please login to save your response",
         });
+        navigate("/login");
         return;
       }
 
       const { error } = await supabase
         .from("sentences")
         .insert({
-          content,
+          content: content.trim(),
           user_id: user.id,
           daily_sentence: dailySentence,
         });
@@ -41,12 +63,15 @@ const Sentence = () => {
       });
 
       setContent("");
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Save error:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save your response",
+        description: error.message || "Failed to save your response",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,7 +92,7 @@ const Sentence = () => {
             size="icon"
             onClick={handleSave}
             className="absolute right-0"
-            disabled={!content.trim()}
+            disabled={!content.trim() || isLoading}
           >
             <LetterText className="h-6 w-6" />
           </Button>
@@ -86,6 +111,7 @@ const Sentence = () => {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your thoughts here..."
               className="min-h-[200px] resize-y"
+              disabled={isLoading}
             />
           </div>
         </div>
