@@ -21,16 +21,12 @@ const Question = () => {
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch questions for the current user with error handling
-  const { data: questions, isLoading, error } = useQuery({
+  // Fetch questions for the current user
+  const { data: questions, isLoading } = useQuery({
     queryKey: ["questions"],
     queryFn: async () => {
-      console.log("Fetching questions...");
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log("No user found");
-        throw new Error("Not authenticated");
-      }
+      if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
         .from("questions")
@@ -38,12 +34,7 @@ const Question = () => {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
-      
-      console.log("Fetched questions:", data);
+      if (error) throw error;
       return data;
     },
   });
@@ -88,15 +79,6 @@ const Question = () => {
       setIsSubmitting(false);
     }
   };
-
-  // Show error toast if query fails
-  if (error) {
-    toast({
-      variant: "destructive",
-      title: "Error",
-      description: "Failed to load questions. Please try again.",
-    });
-  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -152,7 +134,7 @@ const Question = () => {
               {questions && questions.length > 0 ? (
                 questions.map((q) => (
                   <SelectItem key={q.id} value={q.id}>
-                    {q.content.substring(0, 50)}{q.content.length > 50 ? "..." : ""}
+                    {q.content}
                   </SelectItem>
                 ))
               ) : (
@@ -166,9 +148,7 @@ const Question = () => {
           {/* Interpretation Section */}
           {selectedQuestion && (
             <div className="mt-8 space-y-4">
-              <h2 className="text-xl font-serif">
-                Interpretation by the Love Journey Tarot Deck
-              </h2>
+              <h2 className="text-xl font-serif">Interpretation</h2>
               <div className="bg-card p-6 rounded-lg border">
                 {selectedQuestion.status === "pending" ? (
                   <p className="text-muted-foreground italic">
