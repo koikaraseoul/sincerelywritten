@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Question {
   id: string;
@@ -24,33 +25,58 @@ const Answer = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [selectedQuestion, setSelectedQuestion] = useState<string>("");
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check if user is logged in
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
+    supabase.auth.getUser().then(({ data: { user }, error }) => {
+      if (error || !user) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to view questions",
+          variant: "destructive",
+        });
         navigate('/login');
       } else {
         setUser(user);
       }
     });
-  }, [navigate]);
+  }, [navigate, toast]);
 
   // Fetch questions for the current user
-  const { data: questions } = useQuery({
+  const { data: questions, isError } = useQuery({
     queryKey: ['questions', user?.id],
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
         .from('questions')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: "Error fetching questions",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
       return data as Question[] || [];
     },
     enabled: !!user,
   });
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background p-8 flex items-center justify-center">
+        <Card className="p-6">
+          <h1 className="text-2xl font-serif mb-4">Error loading questions</h1>
+          <Button onClick={() => navigate('/dashboard')}>Return to Dashboard</Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -74,15 +100,16 @@ const Answer = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[300px]">
-          {questions?.map((question) => (
-            <DropdownMenuItem
-              key={question.id}
-              onClick={() => setSelectedQuestion(question.content)}
-            >
-              {new Date(question.created_at).toLocaleDateString()} - Status: {question.status}
-            </DropdownMenuItem>
-          ))}
-          {(!questions || questions.length === 0) && (
+          {questions && questions.length > 0 ? (
+            questions.map((question) => (
+              <DropdownMenuItem
+                key={question.id}
+                onClick={() => setSelectedQuestion(question.content)}
+              >
+                {new Date(question.created_at).toLocaleDateString()} - Status: {question.status}
+              </DropdownMenuItem>
+            ))
+          ) : (
             <DropdownMenuItem disabled>No questions available</DropdownMenuItem>
           )}
         </DropdownMenuContent>
