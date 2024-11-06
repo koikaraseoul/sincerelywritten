@@ -21,22 +21,43 @@ const Question = () => {
   const [selectedQuestionId, setSelectedQuestionId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch questions for the current user
-  const { data: questions, isLoading } = useQuery({
-    queryKey: ["questions"],
+  // First, check if user is authenticated
+  const { data: session, isLoading: isSessionLoading } = useQuery({
+    queryKey: ["session"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        navigate("/login");
+        return null;
+      }
+      return session;
+    },
+  });
 
+  // Then fetch questions only if user is authenticated
+  const { data: questions, isLoading: isQuestionsLoading } = useQuery({
+    queryKey: ["questions", session?.user.id],
+    queryFn: async () => {
+      if (!session?.user.id) return null;
+      
       const { data, error } = await supabase
         .from("questions")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", session.user.id)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load questions. Please try again.",
+        });
+        throw error;
+      }
+
       return data;
     },
+    enabled: !!session?.user.id, // Only run query if we have a user ID
   });
 
   // Get the selected question details
@@ -47,8 +68,7 @@ const Question = () => {
 
     setIsSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      if (!session?.user.id) {
         navigate("/login");
         return;
       }
@@ -57,7 +77,7 @@ const Question = () => {
         .from("questions")
         .insert({
           content: question.trim(),
-          user_id: user.id,
+          user_id: session.user.id,
           status: 'pending'
         });
 
@@ -79,6 +99,8 @@ const Question = () => {
       setIsSubmitting(false);
     }
   };
+
+  const isLoading = isSessionLoading || isQuestionsLoading;
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
