@@ -1,91 +1,66 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Heart, PenLine, Calendar, Settings } from "lucide-react";
+import { Pen, Mail, Sun, Lamp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        navigate('/login');
+      } else {
+        setUser(user);
+      }
+    });
+  }, [navigate]);
+
+  const menuItems = [
+    { icon: Pen, label: "Write", route: "/sentence" },
+    { icon: Mail, label: "Review", route: "/review" },
+    { icon: Sun, label: "Analyze", route: "/analyze" },
+    { icon: Lamp, label: "Question", route: "/question" }
+  ];
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-border/50 p-4 space-y-4">
-        <div className="flex items-center gap-2 mb-8">
-          <Heart className="w-6 h-6 text-love-500" />
-          <span className="font-serif text-xl">Love Journey</span>
-        </div>
-
-        <nav className="space-y-2">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2"
-            onClick={() => navigate("/dashboard")}
-          >
-            <PenLine className="w-4 h-4" />
-            Journal
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2"
-            onClick={() => navigate("/calendar")}
-          >
-            <Calendar className="w-4 h-4" />
-            Calendar
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-2"
-            onClick={() => navigate("/settings")}
-          >
-            <Settings className="w-4 h-4" />
-            Settings
-          </Button>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <div className="flex justify-between items-center">
-            <h1 className="font-serif text-3xl font-bold">Your Journal</h1>
-            <Button className="love-gradient hover:opacity-90">New Entry</Button>
+    <div className="min-h-screen bg-background p-8">
+      {/* User Information */}
+      <Card className="mb-8 p-6">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-full bg-love-500 flex items-center justify-center">
+            <span className="text-xl text-white">
+              {user?.email?.[0].toUpperCase()}
+            </span>
           </div>
-
-          <div className="grid gap-4">
-            {entries.map((entry, index) => (
-              <Card key={index} className="p-6 hover:border-love-500/50 transition-colors cursor-pointer">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-serif text-xl font-semibold">{entry.title}</h3>
-                    <span className="text-sm text-muted-foreground">{entry.date}</span>
-                  </div>
-                  <p className="text-muted-foreground line-clamp-2">{entry.excerpt}</p>
-                </div>
-              </Card>
-            ))}
+          <div className="flex-1">
+            <h2 className="text-xl font-serif">{user?.email}</h2>
+            <p className="text-muted-foreground">Welcome back!</p>
           </div>
         </div>
-      </main>
+      </Card>
+
+      {/* Icon Grid */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {menuItems.map((item) => (
+          <Button
+            key={item.route}
+            variant="outline"
+            className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+            onClick={() => navigate(item.route)}
+          >
+            <item.icon className="h-8 w-8" />
+            <span>{item.label}</span>
+          </Button>
+        ))}
+      </div>
     </div>
   );
 };
-
-const entries = [
-  {
-    title: "First Steps into Self-Discovery",
-    date: "Today",
-    excerpt: "Today marks the beginning of my journey into understanding love and relationships better...",
-  },
-  {
-    title: "Reflecting on Growth",
-    date: "Yesterday",
-    excerpt: "Looking back at the past month, I've noticed significant changes in how I approach...",
-  },
-  {
-    title: "Learning to Love Myself",
-    date: "2 days ago",
-    excerpt: "Self-love has always been a challenging concept for me, but today I realized...",
-  },
-];
 
 export default Dashboard;
