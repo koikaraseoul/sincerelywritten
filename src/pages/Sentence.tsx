@@ -124,6 +124,10 @@ const Sentence = () => {
           </Button>
         </div>
 
+        <h1 className="text-3xl font-serif mb-8 text-center">
+          Today's Sentence ➔
+        </h1>
+
         <div className="mt-16 space-y-8">
           <DailySentenceDisplay dailySentence={dailySentence} />
 
