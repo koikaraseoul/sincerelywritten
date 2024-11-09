@@ -99,7 +99,7 @@ const Answer = () => {
         </div>
 
         <h1 className="text-3xl font-serif mb-8 text-center">
-          Interpretations for you
+          Answers for you
         </h1>
 
         <div className="mt-8">
@@ -115,8 +115,8 @@ const Answer = () => {
           ) : (
             <div className="text-center text-muted-foreground">
               {answers && answers.length > 0
-                ? "Select an interpretation to view its content"
-                : "No interpretations available"}
+                ? "Select an answer to view its content"
+                : "No answers available"}
             </div>
           )}
         </div>
