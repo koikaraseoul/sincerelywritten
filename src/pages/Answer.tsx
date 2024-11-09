@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
@@ -13,37 +12,47 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
-interface Analysis {
+interface Answer {
   id: string;
   content: string;
   created_at: string;
+  question_id: string;
 }
 
 const Answer = () => {
   const navigate = useNavigate();
-  const [selectedAnswer, setSelectedAnswer] = useState<Analysis | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<Answer | null>(null);
 
-  const { data: analyses, isLoading } = useQuery({
-    queryKey: ["analyses"],
+  const { data: answers, isLoading } = useQuery({
+    queryKey: ["answers"],
     queryFn: async () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error("Not authenticated");
 
+      // First get the user's questions
+      const { data: questions } = await supabase
+        .from("questions")
+        .select("id")
+        .eq("user_id", user.user.id);
+
+      if (!questions || questions.length === 0) return [];
+
+      // Then get all answers for those questions
       const { data, error } = await supabase
-        .from("analyses")
+        .from("answers")
         .select("*")
-        .eq("user_id", user.user.id)
+        .in("question_id", questions.map(q => q.id))
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return data as Analysis[];
+      return data as Answer[];
     },
   });
 
   const getOrdinalText = (index: number): string => {
     const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
     const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
-    return `The ${position} interpretation`;
+    return `The ${position} answer`;
   };
 
   return (
@@ -72,18 +81,18 @@ const Answer = () => {
             <DropdownMenuContent align="end" className="w-[240px]">
               {isLoading ? (
                 <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-              ) : analyses && analyses.length > 0 ? (
-                analyses.map((analysis, index) => (
+              ) : answers && answers.length > 0 ? (
+                answers.map((answer, index) => (
                   <DropdownMenuItem
-                    key={analysis.id}
-                    onClick={() => setSelectedAnswer(analysis)}
+                    key={answer.id}
+                    onClick={() => setSelectedAnswer(answer)}
                     className="cursor-pointer"
                   >
                     {getOrdinalText(index)}
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem disabled>No analyses found</DropdownMenuItem>
+                <DropdownMenuItem disabled>No answers found</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -105,7 +114,7 @@ const Answer = () => {
             </div>
           ) : (
             <div className="text-center text-muted-foreground">
-              {analyses && analyses.length > 0
+              {answers && answers.length > 0
                 ? "Select an interpretation to view its content"
                 : "No interpretations available"}
             </div>
