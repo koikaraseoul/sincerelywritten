@@ -86,17 +86,19 @@ const Question = () => {
           </Button>
         </div>
 
-        <h1 className="text-3xl font-serif mb-8 text-center">
-          Anything to ask on relationships
-        </h1>
+        <div className="mt-16 md:mt-20">
+          <h1 className="text-3xl font-serif mb-8 text-center">
+            Your Questions
+          </h1>
 
-        <Textarea
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Type your question here..."
-          className="min-h-[200px] resize-none bg-background border-input mb-8"
-          disabled={isSubmitting}
-        />
+          <Textarea
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="What do you wonder about your relationships?"
+            className="min-h-[200px] resize-none bg-background border-input mb-8"
+            disabled={isSubmitting}
+          />
+        </div>
       </div>
     </div>
   );
