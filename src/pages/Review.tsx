@@ -6,13 +6,14 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
+import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface Sentence {
+interface Entry {
   id: string;
   content: string;
   created_at: string;
@@ -24,7 +25,7 @@ const Review = () => {
   const { toast } = useToast();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [sentenceDates, setSentenceDates] = useState<string[]>([]);
-  const [selectedSentence, setSelectedSentence] = useState<string>("");
+  const [entries, setEntries] = useState<Entry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const Review = () => {
         if (error) throw error;
 
         const dates = sentences.map(s => format(new Date(s.created_at), 'yyyy-MM-dd'));
-        setSentenceDates([...new Set(dates)]); // Remove duplicates
+        setSentenceDates([...new Set(dates)]);
       } catch (error: any) {
         toast({
           variant: "destructive",
@@ -61,7 +62,7 @@ const Review = () => {
   }, [navigate, toast]);
 
   useEffect(() => {
-    const fetchSentence = async () => {
+    const fetchEntries = async () => {
       if (!date) return;
 
       try {
@@ -75,7 +76,7 @@ const Review = () => {
 
         const { data: sentences, error } = await supabase
           .from('sentences')
-          .select('content, daily_sentence')
+          .select('*')
           .eq('user_id', user.id)
           .gte('created_at', startOfDay.toISOString())
           .lte('created_at', endOfDay.toISOString())
@@ -83,24 +84,21 @@ const Review = () => {
 
         if (error) throw error;
 
-        if (sentences && sentences.length > 0) {
-          const formattedSentences = sentences.map((sentence, index) => 
-            `Entry ${index + 1}:\nDaily Sentence: ${sentence.daily_sentence}\nYour Response: ${sentence.content}`
-          ).join('\n\n');
-          setSelectedSentence(formattedSentences);
+        if (sentences) {
+          setEntries(sentences);
         } else {
-          setSelectedSentence("");
+          setEntries([]);
         }
       } catch (error: any) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: "Failed to fetch sentences",
+          description: "Failed to fetch entries",
         });
       }
     };
 
-    fetchSentence();
+    fetchEntries();
   }, [date, toast]);
 
   const modifiers = {
@@ -141,7 +139,7 @@ const Review = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-0"
+                className="absolute right-0 hover:bg-white hover:text-black transition-colors"
               >
                 <Hourglass className="h-6 w-6" />
               </Button>
@@ -180,15 +178,24 @@ const Review = () => {
           </div>
         )}
 
-        {selectedSentence ? (
-          <div className="bg-card p-6 rounded-lg border border-border animate-fadeIn">
-            <p className="text-card-foreground whitespace-pre-wrap">
-              {selectedSentence}
-            </p>
+        {entries.length > 0 ? (
+          <div className="space-y-8">
+            {entries.map((entry, index) => (
+              <div key={entry.id} className="space-y-8">
+                {index === 0 && (
+                  <DailySentenceDisplay dailySentence={entry.daily_sentence} />
+                )}
+                <div className="bg-card p-6 rounded-lg border border-border">
+                  <p className="text-card-foreground whitespace-pre-wrap">
+                    {entry.content}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         ) : date ? (
-          <div className="text-center text-muted-foreground animate-fadeIn">
-            No sentences found for this date
+          <div className="text-center text-muted-foreground">
+            No entries found for this date
           </div>
         ) : null}
 
