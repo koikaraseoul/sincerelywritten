@@ -15,7 +15,7 @@ interface ReviewEntriesProps {
 const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
   if (isLoading) {
     return (
-      <div className="text-center text-base sm:text-lg text-muted-foreground">
+      <div className="text-center text-muted-foreground">
         Loading...
       </div>
     );
@@ -23,21 +23,21 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
 
   if (entries.length === 0) {
     return (
-      <div className="text-center text-base sm:text-lg text-muted-foreground">
+      <div className="text-center text-muted-foreground">
         No entries found for this date
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="space-y-8">
       {entries.map((entry, index) => (
-        <div key={entry.id} className="space-y-6 sm:space-y-8">
+        <div key={entry.id} className="space-y-8">
           {index === 0 && (
             <DailySentenceDisplay dailySentence={entry.daily_sentence} />
           )}
-          <div className="bg-card p-4 sm:p-6 rounded-lg border border-border">
-            <p className="text-base sm:text-lg text-card-foreground whitespace-pre-wrap">
+          <div className="bg-card p-6 rounded-lg border border-border">
+            <p className="text-lg text-card-foreground whitespace-pre-wrap">
               {entry.content}
             </p>
           </div>
