@@ -117,6 +117,13 @@ const Review = () => {
     }
   };
 
+  const getDayStyle = (date: Date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return sentenceDates.includes(dateStr) 
+      ? "opacity-100 font-medium"
+      : "opacity-40";
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto">
@@ -150,6 +157,13 @@ const Review = () => {
                 className="rounded-md border"
                 disabled={{ after: new Date() }}
                 defaultMonth={date}
+                components={{
+                  DayContent: ({ date }) => (
+                    <div className={getDayStyle(date)}>
+                      {date.getDate()}
+                    </div>
+                  ),
+                }}
               />
             </PopoverContent>
           </Popover>
