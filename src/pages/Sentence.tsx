@@ -5,13 +5,40 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 
 const Sentence = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const dailySentence = "Love is not about possession, it's about appreciation.";
+  const [dailySentence, setDailySentence] = useState("");
+
+  useEffect(() => {
+    const fetchDailySentence = async () => {
+      const { data, error } = await supabase
+        .from('daily_sentences')
+        .select('content')
+        .eq('active_date', new Date().toISOString().split('T')[0])
+        .single();
+
+      if (error) {
+        console.error('Error fetching daily sentence:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to load today's sentence",
+        });
+        return;
+      }
+
+      if (data) {
+        setDailySentence(data.content);
+      }
+    };
+
+    fetchDailySentence();
+  }, [toast]);
 
   // Check authentication on component mount
   useEffect(() => {
@@ -99,10 +126,7 @@ const Sentence = () => {
         </div>
 
         <div className="mt-16 space-y-8">
-          <div className="text-center">
-            <h2 className="text-2xl font-serif mb-2">Today's Sentence</h2>
-            <p className="text-xl italic text-love-400">{dailySentence}</p>
-          </div>
+          <DailySentenceDisplay dailySentence={dailySentence} />
 
           <div className="space-y-4">
             <Textarea
