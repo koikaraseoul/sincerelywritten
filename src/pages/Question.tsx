@@ -86,7 +86,7 @@ const Question = () => {
           </Button>
         </div>
 
-        <div className="mt-16 md:mt-20">
+        <div className="mt-20">
           <h1 className="text-3xl font-serif mb-8 text-center">
             Your Questions
           </h1>
