@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
@@ -102,16 +102,16 @@ const Sentence = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-8">
+    <div className="min-h-screen bg-background text-foreground p-4 sm:p-8">
       <div className="max-w-2xl mx-auto relative">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-6 sm:mb-8">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/dashboard")}
             className="absolute left-0"
           >
-            <ArrowLeft className="h-6 w-6" />
+            <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
           </Button>
           <Button
             variant="ghost"
@@ -120,17 +120,17 @@ const Sentence = () => {
             className="absolute right-0"
             disabled={!content.trim() || isLoading}
           >
-            <Mail className="h-6 w-6" />
+            <Mail className="h-5 w-5 sm:h-6 sm:w-6" />
           </Button>
         </div>
 
-        <div className="mt-16 space-y-8">
+        <div className="mt-14 sm:mt-16 space-y-6 sm:space-y-8">
           <div className="space-y-4">
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="What personal experiences or emotions come to mind when you read this sentence, and why?"
-              className="min-h-[200px] resize-y text-lg"
+              className="min-h-[200px] resize-y text-base sm:text-lg"
               disabled={isLoading}
             />
           </div>
