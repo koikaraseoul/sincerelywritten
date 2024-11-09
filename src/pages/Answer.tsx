@@ -12,7 +12,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { useToast } from "@/components/ui/use-toast";
 
 interface Analysis {
   id: string;
@@ -22,7 +21,6 @@ interface Analysis {
 
 const Answer = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [selectedAnswer, setSelectedAnswer] = useState<Analysis | null>(null);
 
   const { data: analyses, isLoading } = useQuery({
@@ -92,7 +90,7 @@ const Answer = () => {
         </div>
 
         <h1 className="text-3xl font-serif mb-8 text-center">
-          Your Interpretation
+          Interpretations for you
         </h1>
 
         <div className="mt-8">
