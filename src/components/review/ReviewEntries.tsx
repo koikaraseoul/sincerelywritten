@@ -30,14 +30,14 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {entries.map((entry, index) => (
-        <div key={entry.id} className="space-y-8">
+        <div key={entry.id} className="space-y-6 sm:space-y-8">
           {index === 0 && (
             <DailySentenceDisplay dailySentence={entry.daily_sentence} />
           )}
-          <div className="bg-card p-6 rounded-lg border border-border">
-            <p className="text-card-foreground whitespace-pre-wrap">
+          <div className="bg-card p-4 sm:p-6 rounded-lg border border-border">
+            <p className="text-sm sm:text-base text-card-foreground whitespace-pre-wrap">
               {entry.content}
             </p>
           </div>

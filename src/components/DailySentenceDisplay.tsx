@@ -4,8 +4,8 @@ interface DailySentenceDisplayProps {
 
 const DailySentenceDisplay = ({ dailySentence }: DailySentenceDisplayProps) => {
   return (
-    <div className="text-center">
-      <p className="text-xl italic text-love-400">{dailySentence}</p>
+    <div className="text-center px-4">
+      <p className="text-lg sm:text-xl italic text-love-400">{dailySentence}</p>
     </div>
   );
 };
