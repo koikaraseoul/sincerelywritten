@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Grid2x2 } from "lucide-react";
+import { ArrowLeft, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -84,7 +84,7 @@ const Question = () => {
             className="hover:bg-secondary"
             disabled={!question.trim() || isSubmitting}
           >
-            <Grid2x2 className="h-6 w-6" />
+            <Wand2 className="h-6 w-6" />
           </Button>
         </div>
 
