@@ -41,7 +41,7 @@ const Sentence = () => {
         toast({
           variant: "destructive",
           title: "Authentication Required",
-          description: "Please login to save your response",
+          description: "Please login to save your reflection",
         });
         navigate("/login");
         return;
@@ -105,7 +105,7 @@ const Sentence = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-serif text-center">Your reflection</h3>
+            <h3 className="text-lg font-serif text-center">Your Reflection</h3>
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
