@@ -82,7 +82,7 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
 
       <div className="mt-20">
         <h1 className="text-3xl font-serif mb-8 text-center">
-          Your Reflections
+          Reviews for you
         </h1>
 
         {date && (
