@@ -124,13 +124,13 @@ const Sentence = () => {
           </Button>
         </div>
 
-        <div className="mt-24 space-y-8">
+        <div className="mt-16 space-y-8">
           <div className="space-y-4">
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="What personal experiences or emotions come to mind when you read this sentence, and why?"
-              className="min-h-[200px] resize-y text-lg mt-8"
+              className="min-h-[200px] resize-y text-lg"
               disabled={isLoading}
             />
           </div>
