@@ -24,16 +24,15 @@ interface Question {
 const Answer = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [selectedQuestion, setSelectedQuestion] = useState<string>("");
+  const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if user is logged in
     supabase.auth.getUser().then(({ data: { user }, error }) => {
       if (error || !user) {
         toast({
           title: "Authentication required",
-          description: "Please log in to view questions",
+          description: "Please log in to view answers",
           variant: "destructive",
         });
         navigate('/login');
@@ -44,7 +43,7 @@ const Answer = () => {
   }, [navigate, toast]);
 
   // Fetch questions for the current user
-  const { data: questions, isError } = useQuery({
+  const { data: questions } = useQuery({
     queryKey: ['questions', user?.id],
     queryFn: async () => {
       if (!user) return [];
@@ -52,11 +51,11 @@ const Answer = () => {
         .from('questions')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true });
       
       if (error) {
         toast({
-          title: "Error fetching questions",
+          title: "Error fetching answers",
           description: error.message,
           variant: "destructive",
         });
@@ -67,20 +66,16 @@ const Answer = () => {
     enabled: !!user,
   });
 
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-background p-8 flex items-center justify-center">
-        <Card className="p-6">
-          <h1 className="text-2xl font-serif mb-4">Error loading questions</h1>
-          <Button onClick={() => navigate('/dashboard')}>Return to Dashboard</Button>
-        </Card>
-      </div>
-    );
-  }
+  const getOrdinalNumber = (index: number) => {
+    const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
+    if (index < ordinals.length) {
+      return ordinals[index];
+    }
+    return `${index + 1}th`;
+  };
 
   return (
     <div className="min-h-screen bg-background p-8">
-      {/* Back Button */}
       <Button
         variant="ghost"
         className="absolute top-8 left-8 hover:bg-secondary"
@@ -89,7 +84,6 @@ const Answer = () => {
         <ArrowLeft className="h-6 w-6" />
       </Button>
 
-      {/* Dropdown Button */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -101,21 +95,20 @@ const Answer = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[300px]">
           {questions && questions.length > 0 ? (
-            questions.map((question) => (
+            questions.map((question, index) => (
               <DropdownMenuItem
                 key={question.id}
-                onClick={() => setSelectedQuestion(question.content)}
+                onClick={() => setSelectedAnswer(question.status)}
               >
-                {new Date(question.created_at).toLocaleDateString()} - Status: {question.status}
+                {`The ${getOrdinalNumber(index)} answer`}
               </DropdownMenuItem>
             ))
           ) : (
-            <DropdownMenuItem disabled>No questions available</DropdownMenuItem>
+            <DropdownMenuItem disabled>No answers available</DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Main Content */}
       <div className="max-w-2xl mx-auto pt-16">
         <Card className="p-6">
           <h1 className="text-2xl font-serif mb-8 text-center">
@@ -125,7 +118,7 @@ const Answer = () => {
           <Textarea
             className="min-h-[200px] bg-secondary text-foreground resize-y"
             placeholder="Your interpretation will appear here..."
-            value={selectedQuestion}
+            value={selectedAnswer}
             readOnly
           />
         </Card>
