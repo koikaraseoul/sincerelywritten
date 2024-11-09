@@ -38,6 +38,7 @@ const Answer = () => {
         navigate('/login');
       } else {
         setUser(user);
+        console.log("Current user:", user); // Log current user
       }
     });
   }, [navigate, toast]);
@@ -47,11 +48,14 @@ const Answer = () => {
     queryKey: ['questions', user?.id],
     queryFn: async () => {
       if (!user) return [];
+      console.log("Fetching questions for user:", user.id); // Log user ID
       const { data, error } = await supabase
         .from('questions')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: true });
+      
+      console.log("Supabase response - data:", data, "error:", error); // Log the response
       
       if (error) {
         toast({
@@ -65,6 +69,8 @@ const Answer = () => {
     },
     enabled: !!user,
   });
+
+  console.log("Questions from query:", questions); // Log the questions data
 
   const getOrdinalNumber = (index: number) => {
     const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
