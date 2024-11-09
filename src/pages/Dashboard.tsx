@@ -34,16 +34,16 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
         {/* User Information */}
-        <Card className="mb-6 md:mb-8 p-4 md:p-6">
+        <Card className="p-4 md:p-6">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-love-500 flex items-center justify-center">
               <span className="text-lg md:text-xl text-white">
                 {user?.email?.[0].toUpperCase()}
               </span>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h2 className="text-lg md:text-xl font-serif truncate">{user?.email}</h2>
               <p className="text-sm md:text-base text-muted-foreground">Welcome back!</p>
             </div>
@@ -51,7 +51,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Journaling Section */}
-        <div className="mb-6 md:mb-8">
+        <div>
           <h2 className="text-xl md:text-2xl font-serif mb-3 md:mb-4 text-gradient">Journaling</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
             {journalingItems.map((item) => (
