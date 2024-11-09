@@ -40,7 +40,6 @@ const Sentence = () => {
     fetchDailySentence();
   }, [toast]);
 
-  // Check authentication on component mount
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -132,7 +131,7 @@ const Sentence = () => {
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="How do you feel or think?"
+              placeholder="What personal experiences or emotions come to mind when you read this sentence, and why?"
               className="min-h-[200px] resize-y text-lg"
               disabled={isLoading}
             />
