@@ -21,10 +21,13 @@ const Dashboard = () => {
     });
   }, [navigate]);
 
-  const menuItems = [
+  const journalingItems = [
     { icon: Pen, label: "Write", route: "/sentence" },
     { icon: Mail, label: "Review", route: "/review" },
-    { icon: Sun, label: "Analyze", route: "/analyze" },
+    { icon: Sun, label: "Analyze", route: "/analyze" }
+  ];
+
+  const tarotItems = [
     { icon: Lamp, label: "Question", route: "/question" },
     { icon: Wand, label: "Answer", route: "/answer" }
   ];
@@ -46,19 +49,40 @@ const Dashboard = () => {
         </div>
       </Card>
 
-      {/* Icon Grid */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {menuItems.map((item) => (
-          <Button
-            key={item.route}
-            variant="outline"
-            className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
-            onClick={() => navigate(item.route)}
-          >
-            <item.icon className="h-8 w-8" />
-            <span>{item.label}</span>
-          </Button>
-        ))}
+      {/* Journaling Section */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-serif mb-4 text-gradient">Journaling</h2>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          {journalingItems.map((item) => (
+            <Button
+              key={item.route}
+              variant="outline"
+              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+              onClick={() => navigate(item.route)}
+            >
+              <item.icon className="h-8 w-8" />
+              <span>{item.label}</span>
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Tarot Card Reading Section */}
+      <div>
+        <h2 className="text-2xl font-serif mb-4 text-gradient">Tarot Card Reading</h2>
+        <div className="grid grid-cols-2 gap-4">
+          {tarotItems.map((item) => (
+            <Button
+              key={item.route}
+              variant="outline"
+              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+              onClick={() => navigate(item.route)}
+            >
+              <item.icon className="h-8 w-8" />
+              <span>{item.label}</span>
+            </Button>
+          ))}
+        </div>
       </div>
     </div>
   );
