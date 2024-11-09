@@ -22,9 +22,9 @@ const Dashboard = () => {
   }, [navigate]);
 
   const journalingItems = [
-    { icon: Pen, label: "Write", route: "/sentence" },
+    { icon: Pen, label: "Journal", route: "/sentence" },
     { icon: ChartBar, label: "Review", route: "/review" },
-    { icon: Lightbulb, label: "Analyze", route: "/analyze" }
+    { icon: Lightbulb, label: "Analysis", route: "/analyze" }
   ];
 
   const tarotItems = [
