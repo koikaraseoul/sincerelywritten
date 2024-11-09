@@ -125,6 +125,10 @@ const Sentence = () => {
         </div>
 
         <div className="mt-16 space-y-8">
+          <h1 className="text-3xl font-serif mb-8 text-center">
+            Your Journals
+          </h1>
+          
           <div className="space-y-4">
             <Textarea
               value={content}
