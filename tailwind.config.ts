@@ -18,16 +18,6 @@ export default {
       },
     },
     extend: {
-      fontSize: {
-        'responsive-xs': 'clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem)',
-        'responsive-sm': 'clamp(0.875rem, 0.8rem + 0.375vw, 1rem)',
-        'responsive-base': 'clamp(1rem, 0.9rem + 0.5vw, 1.125rem)',
-        'responsive-lg': 'clamp(1.125rem, 1rem + 0.625vw, 1.25rem)',
-        'responsive-xl': 'clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem)',
-        'responsive-2xl': 'clamp(1.5rem, 1.3rem + 1vw, 2rem)',
-        'responsive-3xl': 'clamp(1.875rem, 1.6rem + 1.375vw, 2.5rem)',
-        'responsive-4xl': 'clamp(2.25rem, 1.9rem + 1.75vw, 3rem)',
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

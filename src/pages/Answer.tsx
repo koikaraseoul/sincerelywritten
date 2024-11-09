@@ -54,16 +54,16 @@ const Answer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto relative">
-        <div className="flex justify-between items-center mb-6 md:mb-8">
+        <div className="flex justify-between items-center mb-8">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/dashboard")}
             className="absolute left-0"
           >
-            <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
+            <ArrowLeft className="h-6 w-6" />
           </Button>
 
           <DropdownMenu>
@@ -73,10 +73,10 @@ const Answer = () => {
                 size="icon"
                 className="absolute right-0"
               >
-                <ChevronDown className="h-5 w-5 md:h-6 md:w-6" />
+                <ChevronDown className="h-6 w-6" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px] md:w-[240px]">
+            <DropdownMenuContent align="end" className="w-[240px]">
               {isLoading ? (
                 <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
               ) : answers && answers.length > 0 ? (
@@ -84,7 +84,7 @@ const Answer = () => {
                   <DropdownMenuItem
                     key={answer.id}
                     onClick={() => setSelectedAnswer(answer)}
-                    className="cursor-pointer text-responsive-base"
+                    className="cursor-pointer"
                   >
                     {getOrdinalText(index)}
                   </DropdownMenuItem>
@@ -96,23 +96,23 @@ const Answer = () => {
           </DropdownMenu>
         </div>
 
-        <div className="mt-16 md:mt-20">
-          <h1 className="mb-6 md:mb-8 text-center">
+        <div className="mt-20">
+          <h1 className="text-3xl font-serif mb-8 text-center">
             Answers for you
           </h1>
 
           <div className="mt-8">
             {selectedAnswer ? (
               <div className="space-y-4 animate-fadeIn">
-                <div className="text-responsive-sm text-muted-foreground text-center">
+                <div className="text-sm text-muted-foreground text-center">
                   {format(new Date(selectedAnswer.created_at), "MMMM d, yyyy")}
                 </div>
-                <div className="text-responsive-base whitespace-pre-wrap bg-card p-4 md:p-6 rounded-lg border border-border">
+                <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border border-border">
                   {selectedAnswer.content}
                 </div>
               </div>
             ) : (
-              <div className="text-center text-responsive-base text-muted-foreground">
+              <div className="text-center text-muted-foreground">
                 {answers && answers.length > 0
                   ? "Select an answer to view its content"
                   : "No answers available"}
