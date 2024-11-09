@@ -34,7 +34,7 @@ const Analyze = () => {
         .from("analyses")
         .select("*")
         .eq("user_id", user.user.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
       return data as Analysis[];
