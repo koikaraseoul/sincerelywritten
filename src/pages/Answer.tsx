@@ -56,7 +56,7 @@ const Answer = () => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto relative">
-        <div className="flex justify-between items-center mb-24">
+        <div className="flex justify-between items-center mb-8">
           <Button
             variant="ghost"
             size="icon"
