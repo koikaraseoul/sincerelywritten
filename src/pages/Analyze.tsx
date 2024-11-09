@@ -115,3 +115,6 @@ const Analyze = () => {
       </div>
     </div>
   );
+};
+
+export default Analyze;

@@ -123,3 +123,6 @@ const Answer = () => {
       </div>
     </div>
   );
+};
+
+export default Answer;
