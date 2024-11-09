@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import type { Question, Answer } from "@/integrations/supabase/types";
+import type { Database } from "@/integrations/supabase/types";
+
+type QuestionWithAnswer = Database['public']['Tables']['questions']['Row'] & {
+  answer: string;
+};
 
 const AnswerPage = () => {
   const navigate = useNavigate();
@@ -78,7 +82,7 @@ const AnswerPage = () => {
       return questions?.map(question => ({
         ...question,
         answer: answers?.find(a => a.question_id === question.id)?.content || ''
-      })) || [];
+      })) as QuestionWithAnswer[];
     },
     enabled: !!user,
   });
