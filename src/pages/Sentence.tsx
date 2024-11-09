@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, LetterText } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
@@ -94,7 +94,7 @@ const Sentence = () => {
             className="absolute right-0"
             disabled={!content.trim() || isLoading}
           >
-            <LetterText className="h-6 w-6" />
+            <Mail className="h-6 w-6" />
           </Button>
         </div>
 
