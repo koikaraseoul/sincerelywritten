@@ -96,29 +96,27 @@ const Answer = () => {
           </DropdownMenu>
         </div>
 
-        <div className="mt-16 md:mt-20">
-          <h1 className="text-3xl font-serif mb-8 text-center">
-            Answers for you
-          </h1>
+        <h1 className="text-3xl font-serif mb-8 text-center">
+          Answers for you
+        </h1>
 
-          <div className="mt-8">
-            {selectedAnswer ? (
-              <div className="space-y-4 animate-fadeIn">
-                <div className="text-sm text-muted-foreground text-center">
-                  {format(new Date(selectedAnswer.created_at), "MMMM d, yyyy")}
-                </div>
-                <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border">
-                  {selectedAnswer.content}
-                </div>
+        <div className="mt-8">
+          {selectedAnswer ? (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="text-sm text-muted-foreground text-center">
+                {format(new Date(selectedAnswer.created_at), "MMMM d, yyyy")}
               </div>
-            ) : (
-              <div className="text-center text-muted-foreground">
-                {answers && answers.length > 0
-                  ? "Select an answer to view its content"
-                  : "No answers available"}
+              <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border">
+                {selectedAnswer.content}
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="text-center text-muted-foreground">
+              {answers && answers.length > 0
+                ? "Select an answer to view its content"
+                : "No answers available"}
+            </div>
+          )}
         </div>
       </div>
     </div>

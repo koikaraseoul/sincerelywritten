@@ -125,7 +125,7 @@ const Sentence = () => {
           </Button>
         </div>
 
-        <div className="mt-16 md:mt-20">
+        <div className="mt-16 space-y-8">
           <DailySentenceDisplay dailySentence={dailySentence} />
 
           <div className="space-y-4">
