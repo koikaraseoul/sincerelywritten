@@ -1,10 +1,8 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, ChevronDown } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,161 +10,112 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
-import type { Database } from "@/integrations/supabase/types";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 
-type QuestionWithAnswer = Database['public']['Tables']['questions']['Row'] & {
-  answer: string;
-  index: number;
-};
+interface Analysis {
+  id: string;
+  content: string;
+  created_at: string;
+}
 
-const AnswerPage = () => {
+const Answer = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const { toast } = useToast();
+  const [selectedAnswer, setSelectedAnswer] = useState<Analysis | null>(null);
 
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user }, error }) => {
-      if (error || !user) {
-        toast({
-          title: "Authentication required",
-          description: "Please log in to view answers",
-          variant: "destructive",
-        });
-        navigate('/login');
-      } else {
-        console.log("User authenticated:", user.id);
-        setUser(user);
-      }
-    });
-  }, [navigate, toast]);
-
-  // Fetch questions and their answers for the current user
-  const { data: questionsWithAnswers, isLoading } = useQuery({
-    queryKey: ['questions-with-answers', user?.id],
+  const { data: analyses, isLoading } = useQuery({
+    queryKey: ["analyses"],
     queryFn: async () => {
-      if (!user) return [];
-      
-      console.log("Fetching questions for user:", user.id);
-      
-      // First get the user's questions
-      const { data: questions, error: questionsError } = await supabase
-        .from('questions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true });
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error("Not authenticated");
 
-      if (questionsError) {
-        console.error("Questions fetch error:", questionsError);
-        toast({
-          title: "Error fetching questions",
-          description: questionsError.message,
-          variant: "destructive",
-        });
-        throw questionsError;
-      }
+      const { data, error } = await supabase
+        .from("analyses")
+        .select("*")
+        .eq("user_id", user.user.id)
+        .order("created_at", { ascending: true });
 
-      console.log("Questions fetched:", questions);
-
-      if (!questions || questions.length === 0) {
-        return [];
-      }
-
-      // Then get answers for these questions
-      const questionIds = questions.map(q => q.id);
-      const { data: answers, error: answersError } = await supabase
-        .from('answers')
-        .select('*')
-        .in('question_id', questionIds);
-
-      if (answersError) {
-        console.error("Answers fetch error:", answersError);
-        toast({
-          title: "Error fetching answers",
-          description: answersError.message,
-          variant: "destructive",
-        });
-        throw answersError;
-      }
-
-      console.log("Answers fetched:", answers);
-
-      // Only include questions that have answers
-      const questionsWithAnswers = questions
-        .filter(question => answers?.some(answer => answer.question_id === question.id))
-        .map((question, index) => ({
-          ...question,
-          answer: answers?.find(a => a.question_id === question.id)?.content || '',
-          index: index + 1
-        }));
-
-      return questionsWithAnswers as QuestionWithAnswer[];
+      if (error) throw error;
+      return data as Analysis[];
     },
-    enabled: !!user,
   });
 
-  const getOrdinalNumber = (index: number) => {
+  const getOrdinalText = (index: number): string => {
     const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
-    if (index < ordinals.length) {
-      return ordinals[index];
-    }
-    return `${index + 1}th`;
+    const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
+    return `The ${position} interpretation`;
   };
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <Button
-        variant="ghost"
-        className="absolute top-8 left-8 hover:bg-secondary"
-        onClick={() => navigate('/dashboard')}
-      >
-        <ArrowLeft className="h-6 w-6" />
-      </Button>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <div className="max-w-2xl mx-auto relative">
+        <div className="flex justify-between items-center mb-12">
           <Button
             variant="ghost"
-            className="absolute top-8 right-8 hover:bg-secondary"
+            size="icon"
+            onClick={() => navigate("/dashboard")}
+            className="absolute left-0"
           >
-            <ChevronDown className="h-6 w-6" />
+            <ArrowLeft className="h-6 w-6" />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[300px]">
-          {isLoading ? (
-            <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-          ) : questionsWithAnswers && questionsWithAnswers.length > 0 ? (
-            questionsWithAnswers.map((qa) => (
-              <DropdownMenuItem
-                key={qa.id}
-                onClick={() => setSelectedAnswer(qa.answer)}
-              >
-                {`The ${getOrdinalNumber(qa.index - 1)} interpretation`}
-              </DropdownMenuItem>
-            ))
-          ) : (
-            <DropdownMenuItem disabled>No interpretations available</DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
 
-      <div className="max-w-2xl mx-auto pt-16">
-        <Card className="p-6">
-          <h1 className="text-2xl font-serif mb-8 text-center">
-            Interpretation by Love Journey Tarot Deck
-          </h1>
-          
-          <Textarea
-            className="min-h-[200px] bg-secondary text-foreground resize-y"
-            placeholder="Your interpretation will appear here..."
-            value={selectedAnswer}
-            readOnly
-          />
-        </Card>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0"
+              >
+                <ChevronDown className="h-6 w-6" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[240px]">
+              {isLoading ? (
+                <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
+              ) : analyses && analyses.length > 0 ? (
+                analyses.map((analysis, index) => (
+                  <DropdownMenuItem
+                    key={analysis.id}
+                    onClick={() => setSelectedAnswer(analysis)}
+                    className="cursor-pointer"
+                  >
+                    {getOrdinalText(index)}
+                  </DropdownMenuItem>
+                ))
+              ) : (
+                <DropdownMenuItem disabled>No analyses found</DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <h1 className="text-3xl font-serif mb-8 text-center">
+          Your Interpretation
+        </h1>
+
+        <div className="mt-8">
+          {selectedAnswer ? (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="text-sm text-muted-foreground text-center">
+                {format(new Date(selectedAnswer.created_at), "MMMM d, yyyy")}
+              </div>
+              <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border">
+                {selectedAnswer.content}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-muted-foreground">
+              {analyses && analyses.length > 0
+                ? "Select an interpretation to view its content"
+                : "No interpretations available"}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default AnswerPage;
+export default Answer;

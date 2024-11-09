@@ -49,13 +49,13 @@ const Analyze = () => {
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+      <div className="max-w-2xl mx-auto relative">
+        <div className="flex justify-between items-center mb-12">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/dashboard")}
-            className="hover:bg-secondary"
+            className="absolute left-0"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
@@ -64,7 +64,8 @@ const Analyze = () => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="hover:bg-secondary"
+                size="icon"
+                className="absolute right-0"
               >
                 <ChevronDown className="h-6 w-6" />
               </Button>
@@ -89,10 +90,14 @@ const Analyze = () => {
           </DropdownMenu>
         </div>
 
+        <h1 className="text-3xl font-serif mb-8 text-center">
+          Your Analysis
+        </h1>
+
         <div className="mt-8">
           {selectedEntry ? (
             <div className="space-y-4 animate-fadeIn">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground text-center">
                 {format(new Date(selectedEntry.created_at), "MMMM d, yyyy")}
               </div>
               <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border">

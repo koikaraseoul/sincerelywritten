@@ -65,35 +65,32 @@ const Question = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+      <div className="max-w-2xl mx-auto relative">
+        <div className="flex justify-between items-center mb-12">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/dashboard")}
-            className="hover:bg-secondary"
+            className="absolute left-0"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
 
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={handleSubmit}
-            className="hover:bg-secondary"
+            className="absolute right-0"
             disabled={!question.trim() || isSubmitting}
           >
             <Wand2 className="h-6 w-6" />
           </Button>
         </div>
 
-        {/* Title */}
         <h1 className="text-3xl font-serif mb-8 text-center">
           Anything to ask on relationships
         </h1>
 
-        {/* Question Input */}
         <Textarea
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
