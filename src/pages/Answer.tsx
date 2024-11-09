@@ -36,16 +36,19 @@ const AnswerPage = () => {
         });
         navigate('/login');
       } else {
+        console.log("User authenticated:", user.id); // Debug log
         setUser(user);
       }
     });
   }, [navigate, toast]);
 
   // Fetch questions and their answers for the current user
-  const { data: questionsWithAnswers } = useQuery({
+  const { data: questionsWithAnswers, isLoading } = useQuery({
     queryKey: ['questions-with-answers', user?.id],
     queryFn: async () => {
       if (!user) return [];
+      
+      console.log("Fetching questions for user:", user.id); // Debug log
       
       // First get the user's questions
       const { data: questions, error: questionsError } = await supabase
@@ -55,6 +58,7 @@ const AnswerPage = () => {
         .order('created_at', { ascending: true });
 
       if (questionsError) {
+        console.error("Questions fetch error:", questionsError); // Debug log
         toast({
           title: "Error fetching questions",
           description: questionsError.message,
@@ -63,14 +67,21 @@ const AnswerPage = () => {
         throw questionsError;
       }
 
+      console.log("Questions fetched:", questions); // Debug log
+
+      if (!questions || questions.length === 0) {
+        return [];
+      }
+
       // Then get answers for these questions
-      const questionIds = questions?.map(q => q.id) || [];
+      const questionIds = questions.map(q => q.id);
       const { data: answers, error: answersError } = await supabase
         .from('answers')
         .select('*')
         .in('question_id', questionIds);
 
       if (answersError) {
+        console.error("Answers fetch error:", answersError); // Debug log
         toast({
           title: "Error fetching answers",
           description: answersError.message,
@@ -79,8 +90,10 @@ const AnswerPage = () => {
         throw answersError;
       }
 
+      console.log("Answers fetched:", answers); // Debug log
+
       // Combine questions with their answers and add index
-      return questions?.map((question, index) => ({
+      return questions.map((question, index) => ({
         ...question,
         answer: answers?.find(a => a.question_id === question.id)?.content || '',
         index: index + 1
@@ -117,7 +130,9 @@ const AnswerPage = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[300px]">
-          {questionsWithAnswers && questionsWithAnswers.length > 0 ? (
+          {isLoading ? (
+            <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
+          ) : questionsWithAnswers && questionsWithAnswers.length > 0 ? (
             questionsWithAnswers.map((qa) => (
               <DropdownMenuItem
                 key={qa.id}
