@@ -37,7 +37,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
             <DailySentenceDisplay dailySentence={entry.daily_sentence} />
           )}
           <div className="bg-card p-6 rounded-lg border border-border">
-            <p className="text-card-foreground whitespace-pre-wrap">
+            <p className="text-lg text-card-foreground whitespace-pre-wrap">
               {entry.content}
             </p>
           </div>
