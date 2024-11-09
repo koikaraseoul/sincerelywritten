@@ -105,7 +105,6 @@ const Sentence = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-serif text-center">Your Reflection</h3>
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
