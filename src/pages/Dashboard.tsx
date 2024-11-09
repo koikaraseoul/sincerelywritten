@@ -51,7 +51,7 @@ const Dashboard = () => {
 
       {/* Reflection Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-serif mb-4 text-gradient">Reflection</h2>
+        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Reflection</h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
           {journalingItems.map((item) => (
             <Button
@@ -69,7 +69,7 @@ const Dashboard = () => {
 
       {/* Tarot Card Reading Section */}
       <div>
-        <h2 className="text-2xl font-serif mb-4 text-gradient">Tarot Card Reading</h2>
+        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Tarot Card Reading</h2>
         <div className="grid grid-cols-2 gap-4">
           {tarotItems.map((item) => (
             <Button
