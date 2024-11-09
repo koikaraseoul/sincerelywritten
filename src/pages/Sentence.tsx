@@ -125,8 +125,6 @@ const Sentence = () => {
         </div>
 
         <div className="mt-16 space-y-8">
-          <DailySentenceDisplay dailySentence={dailySentence} />
-
           <div className="space-y-4">
             <Textarea
               value={content}
@@ -136,6 +134,8 @@ const Sentence = () => {
               disabled={isLoading}
             />
           </div>
+          
+          <DailySentenceDisplay dailySentence={dailySentence} />
         </div>
       </div>
     </div>
