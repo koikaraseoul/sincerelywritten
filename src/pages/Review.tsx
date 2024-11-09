@@ -126,23 +126,22 @@ const Review = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+      <div className="max-w-2xl mx-auto relative">
+        <div className="flex justify-between items-center mb-12">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/dashboard")}
-            className="hover:bg-secondary"
+            className="absolute left-0"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
-
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
-                className="hover:bg-secondary"
+                className="absolute right-0"
               >
                 <Hourglass className="h-6 w-6" />
               </Button>
