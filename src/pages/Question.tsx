@@ -95,7 +95,7 @@ const Question = () => {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="What do you wonder about your relationships?"
-            className="min-h-[200px] resize-none bg-background border-input mb-8"
+            className="min-h-[200px] resize-none bg-background border-input"
             disabled={isSubmitting}
           />
         </div>
