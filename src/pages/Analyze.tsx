@@ -96,7 +96,7 @@ const Analyze = () => {
           <div className="mt-8">
             {selectedEntry ? (
               <div className="space-y-4 animate-fadeIn">
-                <div className="text-sm text-muted-foreground text-center">
+                <div className="text-lg text-muted-foreground text-center">
                   {format(new Date(selectedEntry.created_at), "MMMM d, yyyy")}
                 </div>
                 <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border border-border">
@@ -104,7 +104,7 @@ const Analyze = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-center text-muted-foreground">
+              <div className="text-lg text-muted-foreground text-center">
                 {analyses && analyses.length > 0
                   ? "Select an analysis to view its content"
                   : "No analyses available"}
