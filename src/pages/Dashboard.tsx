@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pen, ChartBar, Lightbulb, HelpCircle, AlertCircle } from "lucide-react";
@@ -11,7 +12,6 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         navigate('/login');
@@ -34,11 +34,11 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
-      <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
+      <div className="w-full max-w-4xl mx-auto space-y-6 md:space-y-8">
         {/* User Information */}
         <Card className="p-4 md:p-6">
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-love-500 flex items-center justify-center">
+            <div className="w-[2.5rem] h-[2.5rem] md:w-[3rem] md:h-[3rem] rounded-full bg-love-500 flex items-center justify-center">
               <span className="text-lg md:text-xl text-white">
                 {user?.email?.[0].toUpperCase()}
               </span>
@@ -58,10 +58,10 @@ const Dashboard = () => {
               <Button
                 key={item.route}
                 variant="outline"
-                className="h-24 md:h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+                className="h-auto py-6 md:py-8 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
                 onClick={() => navigate(item.route)}
               >
-                <item.icon className="h-6 w-6 md:h-8 md:w-8" />
+                <item.icon className="w-6 h-6 md:w-8 md:h-8" />
                 <span className="text-sm md:text-base">{item.label}</span>
               </Button>
             ))}
@@ -76,10 +76,10 @@ const Dashboard = () => {
               <Button
                 key={item.route}
                 variant="outline"
-                className="h-24 md:h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+                className="h-auto py-6 md:py-8 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
                 onClick={() => navigate(item.route)}
               >
-                <item.icon className="h-6 w-6 md:h-8 md:w-8" />
+                <item.icon className="w-6 h-6 md:w-8 md:h-8" />
                 <span className="text-sm md:text-base">{item.label}</span>
               </Button>
             ))}
