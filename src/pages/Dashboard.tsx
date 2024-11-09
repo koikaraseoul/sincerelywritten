@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pen, Mail, Sun, Lamp, Wand } from "lucide-react";
+import { Pen, Postbox, Lightbulb, QuestionMark, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,13 +23,13 @@ const Dashboard = () => {
 
   const journalingItems = [
     { icon: Pen, label: "Write", route: "/sentence" },
-    { icon: Mail, label: "Review", route: "/review" },
-    { icon: Sun, label: "Analyze", route: "/analyze" }
+    { icon: Postbox, label: "Review", route: "/review" },
+    { icon: Lightbulb, label: "Analyze", route: "/analyze" }
   ];
 
   const tarotItems = [
-    { icon: Lamp, label: "Question", route: "/question" },
-    { icon: Wand, label: "Answer", route: "/answer" }
+    { icon: QuestionMark, label: "Question", route: "/question" },
+    { icon: AlertCircle, label: "Answer", route: "/answer" }
   ];
 
   return (
