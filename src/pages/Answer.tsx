@@ -12,16 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import type { Question, Answer } from "@/integrations/supabase/types";
 
-interface Question {
-  id: string;
-  content: string;
-  status: string;
-  created_at: string;
-}
-
-const Answer = () => {
+const AnswerPage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
@@ -38,39 +32,56 @@ const Answer = () => {
         navigate('/login');
       } else {
         setUser(user);
-        console.log("Current user:", user); // Log current user
       }
     });
   }, [navigate, toast]);
 
-  // Fetch questions for the current user
-  const { data: questions } = useQuery({
-    queryKey: ['questions', user?.id],
+  // Fetch questions and their answers for the current user
+  const { data: questionsWithAnswers } = useQuery({
+    queryKey: ['questions-with-answers', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      console.log("Fetching questions for user:", user.id); // Log user ID
-      const { data, error } = await supabase
+      
+      // First get the user's questions
+      const { data: questions, error: questionsError } = await supabase
         .from('questions')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: true });
-      
-      console.log("Supabase response - data:", data, "error:", error); // Log the response
-      
-      if (error) {
+
+      if (questionsError) {
         toast({
-          title: "Error fetching answers",
-          description: error.message,
+          title: "Error fetching questions",
+          description: questionsError.message,
           variant: "destructive",
         });
-        throw error;
+        throw questionsError;
       }
-      return data as Question[] || [];
+
+      // Then get answers for these questions
+      const questionIds = questions?.map(q => q.id) || [];
+      const { data: answers, error: answersError } = await supabase
+        .from('answers')
+        .select('*')
+        .in('question_id', questionIds);
+
+      if (answersError) {
+        toast({
+          title: "Error fetching answers",
+          description: answersError.message,
+          variant: "destructive",
+        });
+        throw answersError;
+      }
+
+      // Combine questions with their answers
+      return questions?.map(question => ({
+        ...question,
+        answer: answers?.find(a => a.question_id === question.id)?.content || ''
+      })) || [];
     },
     enabled: !!user,
   });
-
-  console.log("Questions from query:", questions); // Log the questions data
 
   const getOrdinalNumber = (index: number) => {
     const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
@@ -100,11 +111,11 @@ const Answer = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[300px]">
-          {questions && questions.length > 0 ? (
-            questions.map((question, index) => (
+          {questionsWithAnswers && questionsWithAnswers.length > 0 ? (
+            questionsWithAnswers.map((qa, index) => (
               <DropdownMenuItem
-                key={question.id}
-                onClick={() => setSelectedAnswer(question.status)}
+                key={qa.id}
+                onClick={() => setSelectedAnswer(qa.answer)}
               >
                 {`The ${getOrdinalNumber(index)} answer`}
               </DropdownMenuItem>
@@ -133,4 +144,4 @@ const Answer = () => {
   );
 };
 
-export default Answer;
+export default AnswerPage;
