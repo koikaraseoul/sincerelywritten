@@ -133,7 +133,7 @@ const Sentence = () => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="How do you feel or think?"
-              className="min-h-[200px] resize-y"
+              className="min-h-[200px] resize-y text-lg"
               disabled={isLoading}
             />
           </div>
