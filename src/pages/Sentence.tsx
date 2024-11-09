@@ -59,7 +59,7 @@ const Sentence = () => {
 
       toast({
         title: "Success",
-        description: "Your response has been saved",
+        description: "Your reflection has been saved",
       });
 
       setContent("");
@@ -68,7 +68,7 @@ const Sentence = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to save your response",
+        description: error.message || "Failed to save your reflection",
       });
     } finally {
       setIsLoading(false);
@@ -105,11 +105,11 @@ const Sentence = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-serif">Your Response</h3>
+            <h3 className="text-lg font-serif text-center">Your reflection</h3>
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your thoughts here..."
+              placeholder="How do you feel or think?"
               className="min-h-[200px] resize-y"
               disabled={isLoading}
             />
