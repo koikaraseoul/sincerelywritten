@@ -13,7 +13,6 @@ const Question = () => {
   const [question, setQuestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Check if user is authenticated
   const { data: session } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
@@ -66,7 +65,7 @@ const Question = () => {
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto relative">
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex justify-between items-center mb-16">
           <Button
             variant="ghost"
             size="icon"

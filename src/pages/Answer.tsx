@@ -29,7 +29,6 @@ const Answer = () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error("Not authenticated");
 
-      // First get the user's questions
       const { data: questions } = await supabase
         .from("questions")
         .select("id")
@@ -37,7 +36,6 @@ const Answer = () => {
 
       if (!questions || questions.length === 0) return [];
 
-      // Then get all answers for those questions
       const { data, error } = await supabase
         .from("answers")
         .select("*")
@@ -58,7 +56,7 @@ const Answer = () => {
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto relative">
-        <div className="flex justify-between items-center mb-12">
+        <div className="flex justify-between items-center mb-16">
           <Button
             variant="ghost"
             size="icon"

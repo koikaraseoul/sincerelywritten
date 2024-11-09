@@ -39,7 +39,7 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
 
   return (
     <>
-      <div className="flex justify-between items-center mb-12">
+      <div className="flex justify-between items-center mb-16">
         <Button
           variant="ghost"
           size="icon"
