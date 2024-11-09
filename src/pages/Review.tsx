@@ -26,6 +26,7 @@ const Review = () => {
   const [sentenceDates, setSentenceDates] = useState<string[]>([]);
   const [selectedSentence, setSelectedSentence] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
     const fetchSentenceDates = async () => {
@@ -136,10 +137,10 @@ const Review = () => {
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
-          <Popover>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
               <Button
-                variant="ghost"
+                variant={isCalendarOpen ? "default" : "ghost"}
                 size="icon"
                 className="absolute right-0"
               >
@@ -150,7 +151,10 @@ const Review = () => {
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={setDate}
+                onSelect={(newDate) => {
+                  setDate(newDate);
+                  setIsCalendarOpen(false);
+                }}
                 modifiers={modifiers}
                 modifiersStyles={modifiersStyles}
                 className="rounded-md border"
