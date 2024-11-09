@@ -6,7 +6,10 @@ interface DailySentenceDisplayProps {
 
 const DailySentenceDisplay = ({ dailySentence }: DailySentenceDisplayProps) => {
   return (
-    <p className="text-xl italic text-love-400">{dailySentence}</p>
+    <div className="text-center">
+      <h2 className="text-2xl font-serif mb-2">Today's Sentence</h2>
+      <p className="text-xl italic text-love-400">{dailySentence}</p>
+    </div>
   );
 };
 
