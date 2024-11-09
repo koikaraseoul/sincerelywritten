@@ -41,6 +41,12 @@ const Analyze = () => {
     },
   });
 
+  const getOrdinalText = (index: number): string => {
+    const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
+    const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
+    return `The ${position} analysis`;
+  };
+
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-2xl mx-auto">
@@ -67,13 +73,13 @@ const Analyze = () => {
               {isLoading ? (
                 <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
               ) : analyses && analyses.length > 0 ? (
-                analyses.map((analysis) => (
+                analyses.map((analysis, index) => (
                   <DropdownMenuItem
                     key={analysis.id}
                     onClick={() => setSelectedEntry(analysis)}
                     className="cursor-pointer"
                   >
-                    {format(new Date(analysis.created_at), "MMMM d, yyyy")}
+                    {getOrdinalText(index)}
                   </DropdownMenuItem>
                 ))
               ) : (
