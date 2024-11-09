@@ -39,14 +39,14 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
 
   return (
     <>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6 md:mb-8">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => navigate("/dashboard")}
           className="absolute left-0"
         >
-          <ArrowLeft className="h-6 w-6" />
+          <ArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
         </Button>
         <Popover>
           <PopoverTrigger asChild>
@@ -55,7 +55,7 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
               size="icon"
               className="absolute right-0"
             >
-              <Hourglass className="h-6 w-6" />
+              <Hourglass className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="end">
@@ -80,14 +80,14 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
         </Popover>
       </div>
 
-      <div className="mt-20">
-        <h1 className="text-3xl font-serif mb-8 text-center">
+      <div className="mt-16 md:mt-20">
+        <h1 className="text-2xl md:text-3xl font-serif mb-6 md:mb-8 text-center">
           Your Reflections
         </h1>
 
         {date && (
-          <div className="text-center mb-6">
-            <p className="text-lg text-muted-foreground">
+          <div className="text-center mb-4 md:mb-6">
+            <p className="text-base md:text-lg text-muted-foreground">
               {format(date, 'MMMM d, yyyy')}
             </p>
           </div>
