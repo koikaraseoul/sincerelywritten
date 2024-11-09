@@ -17,6 +17,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 type QuestionWithAnswer = Database['public']['Tables']['questions']['Row'] & {
   answer: string;
+  index: number;
 };
 
 const AnswerPage = () => {
@@ -78,10 +79,11 @@ const AnswerPage = () => {
         throw answersError;
       }
 
-      // Combine questions with their answers
-      return questions?.map(question => ({
+      // Combine questions with their answers and add index
+      return questions?.map((question, index) => ({
         ...question,
-        answer: answers?.find(a => a.question_id === question.id)?.content || ''
+        answer: answers?.find(a => a.question_id === question.id)?.content || '',
+        index: index + 1
       })) as QuestionWithAnswer[];
     },
     enabled: !!user,
@@ -116,16 +118,16 @@ const AnswerPage = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[300px]">
           {questionsWithAnswers && questionsWithAnswers.length > 0 ? (
-            questionsWithAnswers.map((qa, index) => (
+            questionsWithAnswers.map((qa) => (
               <DropdownMenuItem
                 key={qa.id}
                 onClick={() => setSelectedAnswer(qa.answer)}
               >
-                {`The ${getOrdinalNumber(index)} answer`}
+                {`The ${getOrdinalNumber(qa.index - 1)} interpretation`}
               </DropdownMenuItem>
             ))
           ) : (
-            <DropdownMenuItem disabled>No answers available</DropdownMenuItem>
+            <DropdownMenuItem disabled>No interpretations available</DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
