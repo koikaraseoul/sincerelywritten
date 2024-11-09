@@ -63,10 +63,10 @@ const Analyze = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="outline"
-                className="hover:bg-secondary flex items-center gap-2"
+                variant="ghost"
+                className="hover:bg-secondary"
               >
-                Select Analysis <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-6 w-6" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[240px]">
