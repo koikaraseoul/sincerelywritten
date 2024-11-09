@@ -40,7 +40,6 @@ const Sentence = () => {
     fetchDailySentence();
   }, [toast]);
 
-  // Check authentication on component mount
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -124,6 +123,10 @@ const Sentence = () => {
             <Mail className="h-6 w-6" />
           </Button>
         </div>
+
+        <h1 className="text-3xl font-serif mb-8 text-center">
+          Today's Sentence
+        </h1>
 
         <div className="mt-16 space-y-8">
           <DailySentenceDisplay dailySentence={dailySentence} />
