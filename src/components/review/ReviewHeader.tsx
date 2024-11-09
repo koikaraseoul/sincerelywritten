@@ -80,17 +80,19 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
         </Popover>
       </div>
 
-      <h1 className="text-3xl font-serif mb-8 text-center">
-        Your Reflections
-      </h1>
+      <div className="mt-16 md:mt-20">
+        <h1 className="text-3xl font-serif mb-8 text-center">
+          Your Reflections
+        </h1>
 
-      {date && (
-        <div className="text-center mb-6">
-          <p className="text-lg text-muted-foreground">
-            {format(date, 'MMMM d, yyyy')}
-          </p>
-        </div>
-      )}
+        {date && (
+          <div className="text-center mb-6">
+            <p className="text-lg text-muted-foreground">
+              {format(date, 'MMMM d, yyyy')}
+            </p>
+          </div>
+        )}
+      </div>
     </>
   );
 };
