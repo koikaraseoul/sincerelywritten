@@ -164,7 +164,7 @@ const Sentence = () => {
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder={`What personal experiences or emotions come to mind when you read this sentence, and why?\n\n(You can write one journal entry per day to capture your reflections.)`}
+              placeholder="What personal experiences or emotions come to mind when you read this sentence, and why? (You can write one journal entry per day to capture your reflections.)"
               className="min-h-[200px] resize-y text-lg"
               disabled={isLoading || hasWrittenToday}
             />
