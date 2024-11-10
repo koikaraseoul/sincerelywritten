@@ -13,6 +13,7 @@ const Sentence = () => {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [dailySentence, setDailySentence] = useState("");
+  const [hasWrittenToday, setHasWrittenToday] = useState(false);
 
   useEffect(() => {
     const fetchDailySentence = async () => {
@@ -50,6 +51,35 @@ const Sentence = () => {
           description: "Please login to access this page",
         });
         navigate("/login");
+        return;
+      }
+
+      // Check if user has already written today
+      const today = new Date().toISOString().split('T')[0];
+      const { data: existingEntry, error } = await supabase
+        .from('sentences')
+        .select('id')
+        .eq('user_id', user.id)
+        .gte('created_at', today)
+        .lt('created_at', new Date(new Date().setDate(new Date().getDate() + 1)).toISOString())
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
+        console.error('Error checking existing entry:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to check today's entry status",
+        });
+        return;
+      }
+
+      if (existingEntry) {
+        setHasWrittenToday(true);
+        toast({
+          title: "Daily Entry Limit Reached",
+          description: "You've already written your journal entry for today. Come back tomorrow!",
+        });
       }
     };
     
@@ -57,7 +87,7 @@ const Sentence = () => {
   }, [navigate, toast]);
 
   const handleSave = async () => {
-    if (!content.trim()) return;
+    if (!content.trim() || hasWrittenToday) return;
     
     setIsLoading(true);
     try {
@@ -89,6 +119,7 @@ const Sentence = () => {
       });
 
       setContent("");
+      setHasWrittenToday(true);
     } catch (error: any) {
       console.error('Save error:', error);
       toast({
@@ -118,7 +149,7 @@ const Sentence = () => {
             size="icon"
             onClick={handleSave}
             className="absolute right-0"
-            disabled={!content.trim() || isLoading}
+            disabled={!content.trim() || isLoading || hasWrittenToday}
           >
             <Mail className="h-6 w-6" />
           </Button>
@@ -135,8 +166,13 @@ const Sentence = () => {
               onChange={(e) => setContent(e.target.value)}
               placeholder="What personal experiences or emotions come to mind when you read this sentence, and why? (You can write one journal entry per day to capture your reflections.)"
               className="min-h-[200px] resize-y text-lg"
-              disabled={isLoading}
+              disabled={isLoading || hasWrittenToday}
             />
+            {hasWrittenToday && (
+              <p className="text-muted-foreground text-center">
+                You've already written your journal entry for today. Come back tomorrow!
+              </p>
+            )}
           </div>
           
           <DailySentenceDisplay dailySentence={dailySentence} />
