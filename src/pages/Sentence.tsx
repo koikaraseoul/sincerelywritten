@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
@@ -102,9 +102,9 @@ const Sentence = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-0 px-8 pb-8">
+    <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto relative">
-        <div className="flex justify-between items-center mb-8 pt-4">
+        <div className="flex justify-between items-center mb-8">
           <Button
             variant="ghost"
             size="icon"
@@ -124,7 +124,7 @@ const Sentence = () => {
           </Button>
         </div>
 
-        <div className="mt-20">
+        <div className="mt-16 space-y-8">
           <h1 className="text-3xl font-serif mb-8 text-center">
             Your Journals
           </h1>

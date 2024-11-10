@@ -63,9 +63,9 @@ const Question = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-0 px-8 pb-8">
+    <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto relative">
-        <div className="flex justify-between items-center mb-8 pt-4">
+        <div className="flex justify-between items-center mb-8">
           <Button
             variant="ghost"
             size="icon"
