@@ -126,7 +126,7 @@ const Question = () => {
           <Textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="What do you wonder about your relationships? (Once you submit a question, you can ask additional questions after one week.)"
+            placeholder={`What do you wonder about your relationships?\n(Once you submit a question, you can ask additional questions after one week.)`}
             className="min-h-[200px] resize-none bg-background border-input text-lg"
             disabled={isSubmitting || !canAskQuestion}
           />
