@@ -124,7 +124,7 @@ const Sentence = () => {
           </Button>
         </div>
 
-        <div className="mt-16 space-y-8">
+        <div className="mt-20">
           <h1 className="text-3xl font-serif mb-8 text-center">
             Your Journals
           </h1>
