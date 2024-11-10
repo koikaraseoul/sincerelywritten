@@ -64,7 +64,7 @@ const Sentence = () => {
         .lt('created_at', new Date(new Date().setDate(new Date().getDate() + 1)).toISOString())
         .single();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
+      if (error && error.code !== 'PGRST116') {
         console.error('Error checking existing entry:', error);
         toast({
           variant: "destructive",
@@ -168,11 +168,6 @@ const Sentence = () => {
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
               disabled={isLoading || hasWrittenToday}
             />
-            {hasWrittenToday && (
-              <p className="text-muted-foreground text-center">
-                You've already written your journal entry for today. Come back tomorrow!
-              </p>
-            )}
           </div>
           
           <DailySentenceDisplay dailySentence={dailySentence} />
