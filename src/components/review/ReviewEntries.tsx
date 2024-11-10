@@ -1,4 +1,5 @@
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface Entry {
   id: string;
@@ -29,20 +30,33 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
     );
   }
 
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   return (
     <div className="space-y-8">
-      {entries.map((entry, index) => (
-        <div key={entry.id} className="space-y-8">
-          {index === 0 && (
-            <DailySentenceDisplay dailySentence={entry.daily_sentence} />
-          )}
-          <div className="bg-card p-6 rounded-lg border border-border">
-            <p className="text-lg text-card-foreground whitespace-pre-wrap">
-              {entry.content}
-            </p>
+      {entries.map((entry, index) => {
+        const localDate = formatInTimeZone(
+          new Date(entry.created_at),
+          timezone,
+          'yyyy-MM-dd HH:mm:ss'
+        );
+
+        return (
+          <div key={entry.id} className="space-y-8">
+            {index === 0 && (
+              <DailySentenceDisplay dailySentence={entry.daily_sentence} />
+            )}
+            <div className="bg-card p-6 rounded-lg border border-border">
+              <p className="text-lg text-card-foreground whitespace-pre-wrap">
+                {entry.content}
+              </p>
+              <p className="text-sm text-muted-foreground mt-4">
+                Written on: {localDate}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

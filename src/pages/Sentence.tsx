@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
+import { formatInTimeZone } from 'date-fns-tz';
 
 const Sentence = () => {
   const navigate = useNavigate();
@@ -17,10 +18,16 @@ const Sentence = () => {
 
   useEffect(() => {
     const fetchDailySentence = async () => {
+      const localDate = formatInTimeZone(
+        new Date(),
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        'yyyy-MM-dd'
+      );
+
       const { data, error } = await supabase
         .from('daily_sentences')
         .select('content')
-        .eq('active_date', new Date().toISOString().split('T')[0])
+        .eq('active_date', localDate)
         .single();
 
       if (error) {
@@ -54,14 +61,21 @@ const Sentence = () => {
         return;
       }
 
-      // Check if user has already written today
-      const today = new Date().toISOString().split('T')[0];
+      // Check if user has already written today using local timezone
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const today = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
+      const tomorrow = formatInTimeZone(
+        new Date(new Date().setDate(new Date().getDate() + 1)),
+        timezone,
+        'yyyy-MM-dd'
+      );
+
       const { data: existingEntry, error } = await supabase
         .from('sentences')
         .select('id')
         .eq('user_id', user.id)
         .gte('created_at', today)
-        .lt('created_at', new Date(new Date().setDate(new Date().getDate() + 1)).toISOString())
+        .lt('created_at', tomorrow)
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -103,12 +117,20 @@ const Sentence = () => {
         return;
       }
 
+      const now = new Date();
+      const localTimestamp = formatInTimeZone(
+        now,
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        "yyyy-MM-dd'T'HH:mm:ssXXX"
+      );
+
       const { error } = await supabase
         .from("sentences")
         .insert({
           content: content.trim(),
           user_id: user.id,
           daily_sentence: dailySentence,
+          created_at: localTimestamp
         });
 
       if (error) throw error;

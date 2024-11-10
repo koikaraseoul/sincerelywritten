@@ -6,7 +6,8 @@ import { ArrowLeft, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { addDays, isBefore } from "date-fns";
+import { addDays, isBefore, parseISO } from "date-fns";
+import { formatInTimeZone } from 'date-fns-tz';
 
 const Question = () => {
   const navigate = useNavigate();
@@ -53,11 +54,11 @@ const Question = () => {
   });
 
   const canAskQuestion = !lastQuestion?.created_at || 
-    isBefore(new Date(lastQuestion.created_at), addDays(new Date(), -7));
+    isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
 
   const getRemainingDays = () => {
     if (!lastQuestion?.created_at) return 0;
-    const lastDate = new Date(lastQuestion.created_at);
+    const lastDate = parseISO(lastQuestion.created_at);
     const nextAvailableDate = addDays(lastDate, 7);
     const today = new Date();
     const diffTime = nextAvailableDate.getTime() - today.getTime();
@@ -69,12 +70,16 @@ const Question = () => {
 
     setIsSubmitting(true);
     try {
+      const now = new Date();
+      const localTimestamp = formatInTimeZone(now, Intl.DateTimeFormat().resolvedOptions().timeZone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+
       const { error: questionError } = await supabase
         .from("questions")
         .insert({
           content: question.trim(),
           user_id: session.user.id,
-          status: 'pending'
+          status: 'pending',
+          created_at: localTimestamp
         });
 
       if (questionError) throw questionError;
