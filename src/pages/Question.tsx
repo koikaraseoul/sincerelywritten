@@ -123,16 +123,10 @@ const Question = () => {
             Your Questions
           </h1>
 
-          {!canAskQuestion && (
-            <div className="mb-4 p-4 bg-background border border-border rounded-md text-foreground text-center">
-              You can ask another question in {getRemainingDays()} days.
-            </div>
-          )}
-
           <Textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="What do you wonder about your relationships?"
+            placeholder="What do you wonder about your relationships? (Once you submit a question, you can ask additional questions after one week.)"
             className="min-h-[200px] resize-none bg-background border-input text-lg"
             disabled={isSubmitting || !canAskQuestion}
           />
