@@ -6,6 +6,7 @@ import { ArrowLeft, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
+import { addDays, isBefore } from "date-fns";
 
 const Question = () => {
   const navigate = useNavigate();
@@ -25,8 +26,27 @@ const Question = () => {
     },
   });
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", session?.user.id],
+    queryFn: async () => {
+      if (!session?.user.id) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("last_question_date")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user.id,
+  });
+
+  const canAskQuestion = !profile?.last_question_date || 
+    isBefore(new Date(profile.last_question_date), addDays(new Date(), -7));
+
   const handleSubmit = async () => {
-    if (!question.trim()) return;
+    if (!question.trim() || !canAskQuestion) return;
 
     setIsSubmitting(true);
     try {
@@ -35,7 +55,8 @@ const Question = () => {
         return;
       }
 
-      const { error } = await supabase
+      // Start a transaction to update both tables
+      const { error: questionError } = await supabase
         .from("questions")
         .insert({
           content: question.trim(),
@@ -43,7 +64,15 @@ const Question = () => {
           status: 'pending'
         });
 
-      if (error) throw error;
+      if (questionError) throw questionError;
+
+      // Update the last question date
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ last_question_date: new Date().toISOString() })
+        .eq("id", session.user.id);
+
+      if (profileError) throw profileError;
 
       toast({
         title: "Question submitted",
@@ -80,7 +109,7 @@ const Question = () => {
             size="icon"
             onClick={handleSubmit}
             className="absolute right-0"
-            disabled={!question.trim() || isSubmitting}
+            disabled={!question.trim() || isSubmitting || !canAskQuestion}
           >
             <Wand2 className="h-6 w-6" />
           </Button>
@@ -91,12 +120,18 @@ const Question = () => {
             Your Questions
           </h1>
 
+          {!canAskQuestion && (
+            <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-md text-center">
+              You can ask another question after 7 days from your last question.
+            </div>
+          )}
+
           <Textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="What do you wonder about your relationships?"
             className="min-h-[200px] resize-none bg-background border-input text-lg"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !canAskQuestion}
           />
         </div>
       </div>
