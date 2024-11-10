@@ -23,27 +23,33 @@ const queryClient = new QueryClient({
   },
 });
 
+const AppContent = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider delayDuration={0}>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/sentence" element={<Sentence />} />
+            <Route path="/review" element={<Review />} />
+            <Route path="/analyze" element={<Analyze />} />
+            <Route path="/question" element={<Question />} />
+            <Route path="/answer" element={<Answer />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
 const App = () => {
   return (
     <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider delayDuration={0}>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/sentence" element={<Sentence />} />
-              <Route path="/review" element={<Review />} />
-              <Route path="/analyze" element={<Analyze />} />
-              <Route path="/question" element={<Question />} />
-              <Route path="/answer" element={<Answer />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </QueryClientProvider>
+      <AppContent />
     </React.StrictMode>
   );
 };
