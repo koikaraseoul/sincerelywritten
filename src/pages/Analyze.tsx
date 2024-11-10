@@ -46,7 +46,7 @@ const Analyze = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-8">
+    <div className="min-h-screen bg-background text-foreground p-8 pt-4">
       <div className="max-w-2xl mx-auto relative">
         <div className="flex justify-between items-center mb-8">
           <Button
@@ -88,7 +88,7 @@ const Analyze = () => {
           </DropdownMenu>
         </div>
 
-        <div className="mt-20">
+        <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
             Analyses for you
           </h1>

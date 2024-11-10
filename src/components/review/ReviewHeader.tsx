@@ -39,7 +39,7 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
 
   return (
     <>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 pt-4">
         <Button
           variant="ghost"
           size="icon"
@@ -80,7 +80,7 @@ const ReviewHeader = ({ date, setDate, navigate, sentenceDates }: ReviewHeaderPr
         </Popover>
       </div>
 
-      <div className="mt-20">
+      <div className="mt-16">
         <h1 className="text-3xl font-serif mb-8 text-center">
           Reviews for you
         </h1>
