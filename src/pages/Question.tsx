@@ -39,6 +39,14 @@ const Question = () => {
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;
+
+      if (data) {
+        toast({
+          title: "Daily Entry Limit Reached",
+          description: "You've already submitted a question. Please wait 7 days before asking another one.",
+        });
+      }
+      
       return data;
     },
     enabled: !!session?.user.id,
@@ -127,7 +135,7 @@ const Question = () => {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={`What do you wonder about your relationships?\n(After submitting your questions, please wait one week before asking more.)`}
-            className="min-h-[200px] resize-y text-lg"
+            className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
             disabled={isSubmitting || !canAskQuestion}
           />
         </div>
