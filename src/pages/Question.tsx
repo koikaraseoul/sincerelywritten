@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { addDays, isBefore } from "date-fns";
 
@@ -26,28 +26,30 @@ const Question = () => {
     },
   });
 
-  const { data: profile, isLoading: isLoadingProfile } = useQuery({
-    queryKey: ["profile", session?.user.id],
+  const { data: lastQuestion, isLoading: isLoadingLastQuestion } = useQuery({
+    queryKey: ["lastQuestion", session?.user.id],
     queryFn: async () => {
       if (!session?.user.id) return null;
       const { data, error } = await supabase
-        .from("profiles")
-        .select("last_question_date")
-        .eq("id", session.user.id)
+        .from("questions")
+        .select("created_at")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .single();
 
-      if (error) throw error;
+      if (error && error.code !== 'PGRST116') throw error; // PGRST116 is the "no rows returned" error
       return data;
     },
     enabled: !!session?.user.id,
   });
 
-  const canAskQuestion = !profile?.last_question_date || 
-    isBefore(new Date(profile.last_question_date), addDays(new Date(), -7));
+  const canAskQuestion = !lastQuestion?.created_at || 
+    isBefore(new Date(lastQuestion.created_at), addDays(new Date(), -7));
 
   const getRemainingDays = () => {
-    if (!profile?.last_question_date) return 0;
-    const lastDate = new Date(profile.last_question_date);
+    if (!lastQuestion?.created_at) return 0;
+    const lastDate = new Date(lastQuestion.created_at);
     const nextAvailableDate = addDays(lastDate, 7);
     const today = new Date();
     const diffTime = nextAvailableDate.getTime() - today.getTime();
@@ -59,7 +61,6 @@ const Question = () => {
 
     setIsSubmitting(true);
     try {
-      // Start a transaction to update both tables
       const { error: questionError } = await supabase
         .from("questions")
         .insert({
@@ -69,14 +70,6 @@ const Question = () => {
         });
 
       if (questionError) throw questionError;
-
-      // Update the last question date
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ last_question_date: new Date().toISOString() })
-        .eq("id", session.user.id);
-
-      if (profileError) throw profileError;
 
       toast({
         title: "Question submitted",
@@ -95,7 +88,7 @@ const Question = () => {
     }
   };
 
-  if (isLoadingProfile) {
+  if (isLoadingLastQuestion) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       Loading...
     </div>;
