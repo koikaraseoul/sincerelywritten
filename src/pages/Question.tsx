@@ -42,8 +42,8 @@ const Question = () => {
 
       if (data) {
         toast({
-          title: "Daily Entry Limit Reached",
-          description: "You've already submitted a question. Please wait 7 days before asking another one.",
+          title: "Weekly Entry Limit Reached",
+          description: "Since you've already submitted your questions, please wait one week before submitting more.",
         });
       }
       
