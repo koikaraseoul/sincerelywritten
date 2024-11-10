@@ -38,7 +38,7 @@ const Question = () => {
         .limit(1)
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 is the "no rows returned" error
+      if (error && error.code !== 'PGRST116') throw error;
       return data;
     },
     enabled: !!session?.user.id,
@@ -124,7 +124,7 @@ const Question = () => {
           </h1>
 
           {!canAskQuestion && (
-            <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-md text-center">
+            <div className="mb-4 p-4 bg-background border border-border rounded-md text-foreground text-center">
               You can ask another question in {getRemainingDays()} days.
             </div>
           )}
