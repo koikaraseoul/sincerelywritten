@@ -26,7 +26,7 @@ const Question = () => {
     },
   });
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ["profile", session?.user.id],
     queryFn: async () => {
       if (!session?.user.id) return null;
@@ -45,16 +45,20 @@ const Question = () => {
   const canAskQuestion = !profile?.last_question_date || 
     isBefore(new Date(profile.last_question_date), addDays(new Date(), -7));
 
+  const getRemainingDays = () => {
+    if (!profile?.last_question_date) return 0;
+    const lastDate = new Date(profile.last_question_date);
+    const nextAvailableDate = addDays(lastDate, 7);
+    const today = new Date();
+    const diffTime = nextAvailableDate.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
   const handleSubmit = async () => {
-    if (!question.trim() || !canAskQuestion) return;
+    if (!question.trim() || !canAskQuestion || !session?.user.id) return;
 
     setIsSubmitting(true);
     try {
-      if (!session?.user.id) {
-        navigate("/login");
-        return;
-      }
-
       // Start a transaction to update both tables
       const { error: questionError } = await supabase
         .from("questions")
@@ -91,6 +95,12 @@ const Question = () => {
     }
   };
 
+  if (isLoadingProfile) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">
+      Loading...
+    </div>;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto relative">
@@ -122,7 +132,7 @@ const Question = () => {
 
           {!canAskQuestion && (
             <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-md text-center">
-              You can ask another question after 7 days from your last question.
+              You can ask another question in {getRemainingDays()} days.
             </div>
           )}
 
