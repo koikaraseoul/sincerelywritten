@@ -126,7 +126,7 @@ const Question = () => {
           <Textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder={`What do you wonder about your relationships?\n(After submitting your questions, please wait one week before asking more.)`}
+            placeholder={`What do you wonder about your relationships?\n\n(After submitting your questions, please wait one week before asking more.)`}
             className="min-h-[200px] resize-y text-lg"
             disabled={isSubmitting || !canAskQuestion}
           />
