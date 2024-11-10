@@ -39,7 +39,6 @@ const Login = () => {
         <div className="w-full max-w-md p-8 space-y-8">
           <div className="text-center">
             <Heart className="w-12 h-12 text-love-500 mx-auto" />
-            <h2 className="mt-6 font-serif text-3xl font-bold">Welcome Back</h2>
             <p className="mt-2 text-muted-foreground">
               Deepen your understanding of love and discover yourself
             </p>
