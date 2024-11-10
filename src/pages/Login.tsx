@@ -39,7 +39,7 @@ const Login = () => {
         <div className="w-full max-w-md p-8 space-y-8">
           <div className="text-center">
             <Heart className="w-12 h-12 text-love-500 mx-auto" />
-            <p className="mt-2 text-white">
+            <p className="mt-4 font-serif text-xl text-gradient tracking-wide animate-fadeIn">
               Deepen your understanding of love and discover yourself
             </p>
           </div>
