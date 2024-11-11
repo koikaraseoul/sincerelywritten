@@ -14,7 +14,6 @@ const Question = () => {
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasShownToast, setHasShownToast] = useState(false);
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -49,11 +48,11 @@ const Question = () => {
   const canAskQuestion = !lastQuestion?.created_at || 
     isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
 
-  // Show toast only once when page loads if user can't ask questions
+  // Show toast immediately when page loads if user can't ask questions
   useQuery({
     queryKey: ["checkRestriction", lastQuestion?.created_at],
     queryFn: async () => {
-      if (lastQuestion?.created_at && !canAskQuestion && !hasShownToast) {
+      if (lastQuestion?.created_at && !canAskQuestion) {
         const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
         const daysRemaining = Math.ceil(
           (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
@@ -63,11 +62,10 @@ const Question = () => {
           title: "Weekly Entry Limit Reached",
           description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
         });
-        setHasShownToast(true);
       }
       return null;
     },
-    enabled: !!lastQuestion?.created_at && !canAskQuestion && !hasShownToast,
+    enabled: !!lastQuestion?.created_at && !canAskQuestion,
   });
 
   const handleSubmit = async () => {
