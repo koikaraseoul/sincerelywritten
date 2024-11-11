@@ -160,12 +160,6 @@ const Practice = () => {
             Your Practices
           </h1>
           
-          {hasWrittenThisWeek && (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800">
-              You've already written your practice entry for this week. A new entry will be available next week.
-            </div>
-          )}
-          
           <div className="space-y-6">
             <Textarea
               value={actionTaken}
