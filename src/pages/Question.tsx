@@ -14,6 +14,7 @@ const Question = () => {
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmittedRecently, setHasSubmittedRecently] = useState(false);
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -45,41 +46,35 @@ const Question = () => {
     enabled: !!session?.user.id,
   });
 
-  const canAskQuestion = !lastQuestion?.created_at || 
-    isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
-
-  // Show toast once when component mounts
   useEffect(() => {
-    if (lastQuestion?.created_at && !canAskQuestion) {
-      const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
-      const daysRemaining = Math.ceil(
-        (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-      );
-      
-      toast({
-        title: "Weekly Entry Limit Reached",
-        description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
-      });
+    if (lastQuestion?.created_at) {
+      const cooldownPeriod = addDays(parseISO(lastQuestion.created_at), 4);
+      const isInCooldown = !isBefore(cooldownPeriod, new Date());
+      setHasSubmittedRecently(isInCooldown);
+
+      if (isInCooldown) {
+        const daysRemaining = Math.ceil(
+          (cooldownPeriod.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+        );
+        toast({
+          title: "Cooldown Period Active",
+          description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
+        });
+      }
     }
-  }, [lastQuestion?.created_at, canAskQuestion, toast]);
+  }, [lastQuestion?.created_at, toast]);
 
   const handleSubmit = async () => {
-    if (!question.trim() || !session?.user.id) return;
-    
-    // Double-check the time restriction before submitting
-    if (!canAskQuestion) {
-      toast({
-        variant: "destructive",
-        title: "Weekly Entry Limit Reached",
-        description: "Please wait one week between submissions.",
-      });
-      return;
-    }
+    if (!question.trim() || !session?.user.id || hasSubmittedRecently) return;
 
     setIsSubmitting(true);
     try {
       const now = new Date();
-      const localTimestamp = formatInTimeZone(now, Intl.DateTimeFormat().resolvedOptions().timeZone, "yyyy-MM-dd'T'HH:mm:ssXXX");
+      const localTimestamp = formatInTimeZone(
+        now, 
+        Intl.DateTimeFormat().resolvedOptions().timeZone, 
+        "yyyy-MM-dd'T'HH:mm:ssXXX"
+      );
 
       const { error: questionError } = await supabase
         .from("questions")
@@ -92,6 +87,7 @@ const Question = () => {
 
       if (questionError) throw questionError;
 
+      setHasSubmittedRecently(true);
       toast({
         title: "Question submitted",
         description: "Under interpreting by the Love Journey Tarot Decks, It will soon reach to you.",
@@ -134,7 +130,7 @@ const Question = () => {
             size="icon"
             onClick={handleSubmit}
             className="absolute right-0"
-            disabled={!question.trim() || isSubmitting || !canAskQuestion}
+            disabled={!question.trim() || isSubmitting || hasSubmittedRecently}
           >
             <Wand2 className="h-6 w-6" />
           </Button>
@@ -148,9 +144,9 @@ const Question = () => {
           <Textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder={`What do you wonder about your relationships?\n(After submitting your questions, please wait one week before asking more.)`}
+            placeholder={`What do you wonder about your relationships?\n(After submitting your questions, please wait 4 days before asking more.)`}
             className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-            disabled={isSubmitting || !canAskQuestion}
+            disabled={isSubmitting || hasSubmittedRecently}
           />
         </div>
       </div>
