@@ -25,7 +25,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
   if (entries.length === 0) {
     return (
       <div className="text-center text-muted-foreground">
-        Your canvas for this day is still blank. Write today to uncover your reflections.
+        Your canvas for this day is blank. Write today to uncover your reflections.
       </div>
     );
   }
