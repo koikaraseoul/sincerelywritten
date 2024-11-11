@@ -25,7 +25,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
   if (entries.length === 0) {
     return (
       <div className="text-center text-muted-foreground">
-        Your canvas for this day is blank. Each day brings a fresh space to dive deeper into your journey.
+        Your leaf for this day is fallen and faded, but each day begins with a fresh leaf for your story.
       </div>
     );
   }
