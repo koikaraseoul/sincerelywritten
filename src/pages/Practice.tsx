@@ -76,7 +76,7 @@ const Practice = () => {
 
       toast({
         title: "Success",
-        description: "Your practice has been saved",
+        description: "Your step toward growth has been captured. Keep discovering new horizons.",
       });
 
       setActionTaken("");
