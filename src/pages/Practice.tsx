@@ -34,7 +34,7 @@ const Practice = () => {
     if (!analysesLoading && (!analyses || analyses.length === 0)) {
       toast({
         title: "Practice not available yet",
-        description: "You can write a practice entry once at least five of your journals have been analyzed.",
+        description: "You can write a practice entry after your journals are analyzed.",
         duration: 5000,
       });
     }
