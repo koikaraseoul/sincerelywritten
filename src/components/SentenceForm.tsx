@@ -72,22 +72,24 @@ const SentenceForm = ({ dailySentence, hasWrittenToday, setHasWrittenToday }: Se
 
   return (
     <div className="space-y-4">
-      <Textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder={"What personal experiences or emotions come to mind when you read this sentence, and why?\n(You can write one journal entry a day to capture your reflections.)"}
-        className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-        disabled={isLoading || hasWrittenToday}
-      />
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleSave}
-        className="absolute right-0"
-        disabled={!content.trim() || isLoading || hasWrittenToday}
-      >
-        <Mail className="h-6 w-6" />
-      </Button>
+      <div className="relative">
+        <Textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder={"What personal experiences or emotions come to mind when you read this sentence, and why?\n(You can write one journal entry a day to capture your reflections.)"}
+          className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
+          disabled={isLoading || hasWrittenToday}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleSave}
+          className="absolute top-0 right-0 mt-4 mr-4"
+          disabled={!content.trim() || isLoading || hasWrittenToday}
+        >
+          <Mail className="h-6 w-6" />
+        </Button>
+      </div>
     </div>
   );
 };
