@@ -25,7 +25,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
   if (entries.length === 0) {
     return (
       <div className="text-center text-muted-foreground">
-        No entries found for this date
+        Your canvas for this day is still blank. Write today to uncover your reflections.
       </div>
     );
   }
