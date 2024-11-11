@@ -75,8 +75,8 @@ const Practice = () => {
       if (error) throw error;
 
       toast({
-        title: "Step Forward!",
-        description: "Your step toward growth has been captured. Keep discovering new horizons.",
+        title: "Growth in Progress!",
+        description: "Your growth is on track! A new record unlocks each week—take action, reflect, and get ready to share your journey.",
       });
 
       setActionTaken("");
