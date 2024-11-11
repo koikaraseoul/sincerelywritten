@@ -11,6 +11,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import EmptyPracticeMessage from "@/components/practice/EmptyPracticeMessage";
+import PracticeEntry from "@/components/practice/PracticeEntry";
 
 interface Practice {
   id: string;
@@ -95,20 +97,6 @@ const PracticeReview = () => {
     fetchPractice();
   }, [date, toast]);
 
-  const modifiers = {
-    highlighted: (date: Date) => {
-      const dateStr = format(date, 'yyyy-MM-dd');
-      return practiceDates.includes(dateStr);
-    }
-  };
-
-  const modifiersStyles = {
-    highlighted: {
-      opacity: 1,
-      fontWeight: "bold",
-    }
-  };
-
   const getDayStyle = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     return practiceDates.includes(dateStr) 
@@ -143,8 +131,6 @@ const PracticeReview = () => {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                modifiers={modifiers}
-                modifiersStyles={modifiersStyles}
                 className="rounded-md border"
                 disabled={{ after: new Date() }}
                 defaultMonth={date}
@@ -178,24 +164,10 @@ const PracticeReview = () => {
               Loading...
             </div>
           ) : !practice ? (
-            <div className="text-center text-muted-foreground">
-              No practice entry found for this week.
-            </div>
+            <EmptyPracticeMessage />
           ) : (
             <div className="space-y-8">
-              <div className="bg-card p-6 rounded-lg border border-border">
-                <h2 className="text-xl font-serif mb-4">Action Taken</h2>
-                <p className="text-lg text-card-foreground whitespace-pre-wrap mb-6">
-                  {practice.action_taken}
-                </p>
-                <h2 className="text-xl font-serif mb-4">Reflection</h2>
-                <p className="text-lg text-card-foreground whitespace-pre-wrap">
-                  {practice.reflection}
-                </p>
-                <p className="text-sm text-muted-foreground mt-4">
-                  Written on: {format(new Date(practice.created_at), 'MMMM d, yyyy')}
-                </p>
-              </div>
+              <PracticeEntry practice={practice} />
             </div>
           )}
         </div>
