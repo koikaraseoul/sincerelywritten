@@ -1,11 +1,11 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Heart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const Practice = () => {
   const navigate = useNavigate();
@@ -14,14 +14,31 @@ const Practice = () => {
   const [reflection, setReflection] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const { data: analyses, isLoading: analysesLoading } = useQuery({
+    queryKey: ["analyses"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("analyses")
+        .select("*")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
   useEffect(() => {
-    // Check if user is logged in
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        navigate('/login');
-      }
-    });
-  }, [navigate]);
+    if (!analysesLoading && (!analyses || analyses.length === 0)) {
+      toast({
+        title: "Practice not available yet",
+        description: "You can write a practice entry once at least five of your journals have been analyzed.",
+        duration: 5000,
+      });
+    }
+  }, [analyses, analysesLoading, toast]);
 
   const handleSave = async () => {
     if (!actionTaken.trim() || !reflection.trim()) {
@@ -93,7 +110,7 @@ const Practice = () => {
             size="icon"
             onClick={handleSave}
             className="absolute right-0"
-            disabled={isLoading || !actionTaken.trim() || !reflection.trim()}
+            disabled={isLoading || !actionTaken.trim() || !reflection.trim() || (!analyses || analyses.length === 0)}
           >
             <Heart className="h-6 w-6" />
           </Button>
@@ -110,7 +127,7 @@ const Practice = () => {
               onChange={(e) => setActionTaken(e.target.value)}
               placeholder="What step did you take based on the analysis?"
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-              disabled={isLoading}
+              disabled={isLoading || (!analyses || analyses.length === 0)}
             />
             
             <Textarea
@@ -118,7 +135,7 @@ const Practice = () => {
               onChange={(e) => setReflection(e.target.value)}
               placeholder="What did you learn or feel from this action?"
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-              disabled={isLoading}
+              disabled={isLoading || (!analyses || analyses.length === 0)}
             />
           </div>
         </div>
