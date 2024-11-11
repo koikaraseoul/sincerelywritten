@@ -48,13 +48,19 @@ const Question = () => {
   const canAskQuestion = !lastQuestion?.created_at || 
     isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
 
+  // Show toast immediately when page loads if user can't ask questions
   useQuery({
     queryKey: ["checkRestriction", lastQuestion?.created_at],
     queryFn: async () => {
       if (lastQuestion?.created_at && !canAskQuestion) {
+        const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
+        const daysRemaining = Math.ceil(
+          (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+        );
+        
         toast({
           title: "Weekly Entry Limit Reached",
-          description: "Since you've already submitted your questions, please wait one week before submitting more.",
+          description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
         });
       }
       return null;
@@ -63,7 +69,17 @@ const Question = () => {
   });
 
   const handleSubmit = async () => {
-    if (!question.trim() || !canAskQuestion || !session?.user.id) return;
+    if (!question.trim() || !session?.user.id) return;
+    
+    // Double-check the time restriction before submitting
+    if (!canAskQuestion) {
+      toast({
+        variant: "destructive",
+        title: "Weekly Entry Limit Reached",
+        description: "Please wait one week between submissions.",
+      });
+      return;
+    }
 
     setIsSubmitting(true);
     try {
