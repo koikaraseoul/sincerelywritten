@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { startOfWeek, endOfWeek } from "date-fns";
 
 const Practice = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Practice = () => {
   const [actionTaken, setActionTaken] = useState("");
   const [reflection, setReflection] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [hasWrittenThisWeek, setHasWrittenThisWeek] = useState(false);
 
   const { data: analyses, isLoading: analysesLoading } = useQuery({
     queryKey: ["analyses"],
@@ -30,6 +32,33 @@ const Practice = () => {
     }
   });
 
+  const { data: weeklyPractice, isLoading: practiceLoading } = useQuery({
+    queryKey: ["weekly-practice"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const start = startOfWeek(new Date());
+      const end = endOfWeek(new Date());
+
+      const { data, error } = await supabase
+        .from("practices")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("created_at", start.toISOString())
+        .lte("created_at", end.toISOString());
+
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  useEffect(() => {
+    if (!practiceLoading && weeklyPractice) {
+      setHasWrittenThisWeek(weeklyPractice.length > 0);
+    }
+  }, [weeklyPractice, practiceLoading]);
+
   useEffect(() => {
     if (!analysesLoading && (!analyses || analyses.length === 0)) {
       toast({
@@ -46,6 +75,15 @@ const Practice = () => {
         variant: "destructive",
         title: "Error",
         description: "Please fill in both fields before saving",
+      });
+      return;
+    }
+
+    if (hasWrittenThisWeek) {
+      toast({
+        variant: "destructive",
+        title: "Weekly limit reached",
+        description: "You can write one practice entry per week. Please try again next week.",
       });
       return;
     }
@@ -81,6 +119,7 @@ const Practice = () => {
 
       setActionTaken("");
       setReflection("");
+      setHasWrittenThisWeek(true);
     } catch (error: any) {
       console.error('Save error:', error);
       toast({
@@ -110,7 +149,7 @@ const Practice = () => {
             size="icon"
             onClick={handleSave}
             className="absolute right-0"
-            disabled={isLoading || !actionTaken.trim() || !reflection.trim() || (!analyses || analyses.length === 0)}
+            disabled={isLoading || !actionTaken.trim() || !reflection.trim() || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
           >
             <Heart className="h-6 w-6" />
           </Button>
@@ -121,13 +160,19 @@ const Practice = () => {
             Your Practices
           </h1>
           
+          {hasWrittenThisWeek && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800">
+              You've already written your practice entry for this week. A new entry will be available next week.
+            </div>
+          )}
+          
           <div className="space-y-6">
             <Textarea
               value={actionTaken}
               onChange={(e) => setActionTaken(e.target.value)}
               placeholder="How did you turn your insights into action? Share the steps you took clearly—what inspired you and how you made it happen."
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-              disabled={isLoading || (!analyses || analyses.length === 0)}
+              disabled={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
             />
             
             <Textarea
@@ -135,7 +180,7 @@ const Practice = () => {
               onChange={(e) => setReflection(e.target.value)}
               placeholder="Reflect deeply on your experience—what lessons stood out to you? Share your thoughts vividly, including any emotions or insights that made this moment meaningful."
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-              disabled={isLoading || (!analyses || analyses.length === 0)}
+              disabled={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
             />
           </div>
         </div>
