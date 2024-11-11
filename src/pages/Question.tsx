@@ -40,14 +40,6 @@ const Question = () => {
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;
-
-      if (data) {
-        toast({
-          title: "Weekly Entry Limit Reached",
-          description: "Since you've already submitted your questions, please wait one week before submitting more.",
-        });
-      }
-      
       return data;
     },
     enabled: !!session?.user.id,
@@ -56,14 +48,19 @@ const Question = () => {
   const canAskQuestion = !lastQuestion?.created_at || 
     isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
 
-  const getRemainingDays = () => {
-    if (!lastQuestion?.created_at) return 0;
-    const lastDate = parseISO(lastQuestion.created_at);
-    const nextAvailableDate = addDays(lastDate, 7);
-    const today = new Date();
-    const diffTime = nextAvailableDate.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
+  useQuery({
+    queryKey: ["checkRestriction", lastQuestion?.created_at],
+    queryFn: async () => {
+      if (lastQuestion?.created_at && !canAskQuestion) {
+        toast({
+          title: "Weekly Entry Limit Reached",
+          description: "Since you've already submitted your questions, please wait one week before submitting more.",
+        });
+      }
+      return null;
+    },
+    enabled: !!lastQuestion?.created_at && !canAskQuestion,
+  });
 
   const handleSubmit = async () => {
     if (!question.trim() || !canAskQuestion || !session?.user.id) return;
@@ -90,6 +87,7 @@ const Question = () => {
       });
 
       setQuestion("");
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
         variant: "destructive",
