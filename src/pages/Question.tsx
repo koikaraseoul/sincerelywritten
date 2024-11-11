@@ -149,7 +149,7 @@ const Question = () => {
           <Textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder={`What do you wonder about your relationships?\n(After submitting your questions, please wait 4 days before asking more.)`}
+            placeholder="What do you wonder about your relationships? Share your sincere thoughts and questions to reveal profound insights and meaningful guidance."
             className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
             disabled={isSubmitting || hasSubmittedRecently}
           />
