@@ -28,7 +28,7 @@ const Question = () => {
     },
   });
 
-  const { data: lastQuestion, isLoading: isLoadingLastQuestion } = useQuery({
+  const { data: lastQuestion, refetch: refetchLastQuestion } = useQuery({
     queryKey: ["lastQuestion", session?.user.id],
     queryFn: async () => {
       if (!session?.user.id) return null;
@@ -46,7 +46,7 @@ const Question = () => {
     enabled: !!session?.user.id,
   });
 
-  useEffect(() => {
+  const checkCooldownPeriod = () => {
     if (lastQuestion?.created_at) {
       const cooldownPeriod = addDays(parseISO(lastQuestion.created_at), 4);
       const isInCooldown = !isBefore(cooldownPeriod, new Date());
@@ -62,7 +62,12 @@ const Question = () => {
         });
       }
     }
-  }, [lastQuestion?.created_at, toast]);
+  };
+
+  // Check cooldown period on mount and when lastQuestion changes
+  useEffect(() => {
+    checkCooldownPeriod();
+  }, [lastQuestion?.created_at]);
 
   const handleSubmit = async () => {
     if (!question.trim() || !session?.user.id || hasSubmittedRecently) return;
@@ -87,7 +92,10 @@ const Question = () => {
 
       if (questionError) throw questionError;
 
+      // Refetch last question to update the cooldown state
+      await refetchLastQuestion();
       setHasSubmittedRecently(true);
+      
       toast({
         title: "Question submitted",
         description: "Under interpreting by the Love Journey Tarot Decks, It will soon reach to you.",
@@ -106,7 +114,7 @@ const Question = () => {
     }
   };
 
-  if (isLoadingLastQuestion) {
+  if (!session) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       Loading...
     </div>;
