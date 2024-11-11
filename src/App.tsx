@@ -9,6 +9,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Sentence from "./pages/Sentence";
 import Review from "./pages/Review";
+import JournalReview from "./pages/JournalReview";
+import PracticeReview from "./pages/PracticeReview";
 import Analyze from "./pages/Analyze";
 import Question from "./pages/Question";
 import Answer from "./pages/Answer";
@@ -37,6 +39,8 @@ const AppContent = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/sentence" element={<Sentence />} />
             <Route path="/review" element={<Review />} />
+            <Route path="/journal-review" element={<JournalReview />} />
+            <Route path="/practice-review" element={<PracticeReview />} />
             <Route path="/analyze" element={<Analyze />} />
             <Route path="/question" element={<Question />} />
             <Route path="/answer" element={<Answer />} />
