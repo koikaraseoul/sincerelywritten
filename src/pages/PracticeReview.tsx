@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { format, startOfWeek, endOfWeek } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, TableClock } from "lucide-react";
+import { ArrowLeft, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -135,7 +135,7 @@ const PracticeReview = () => {
                 size="icon"
                 className="absolute right-0"
               >
-                <TableClock className="h-6 w-6" />
+                <Clock className="h-6 w-6" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
