@@ -48,9 +48,9 @@ const Question = () => {
   const canAskQuestion = !lastQuestion?.created_at || 
     isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
 
-  // Show toast on every page load if user can't ask questions
+  // Show toast only once when the component mounts and user can't ask questions
   useQuery({
-    queryKey: ["checkRestriction", lastQuestion?.created_at, Date.now()], // Add Date.now() to force re-fetch
+    queryKey: ["checkRestriction", lastQuestion?.created_at],
     queryFn: async () => {
       if (lastQuestion?.created_at && !canAskQuestion) {
         const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
@@ -66,10 +66,8 @@ const Question = () => {
       return null;
     },
     enabled: !!lastQuestion?.created_at,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    gcTime: 0, // Using gcTime instead of cacheTime
-    staleTime: 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   const handleSubmit = async () => {
