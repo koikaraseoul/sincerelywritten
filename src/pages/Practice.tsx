@@ -125,7 +125,7 @@ const Practice = () => {
             <Textarea
               value={actionTaken}
               onChange={(e) => setActionTaken(e.target.value)}
-              placeholder="What step did you take based on the analysis?"
+              placeholder="How did you turn your insights into action? Share the steps you took clearly—what inspired you and how you made it happen."
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
               disabled={isLoading || (!analyses || analyses.length === 0)}
             />
@@ -133,7 +133,7 @@ const Practice = () => {
             <Textarea
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
-              placeholder="What did you learn or feel from this action?"
+              placeholder="Reflect deeply on your experience—what lessons stood out to you? Share your thoughts vividly, including any emotions or insights that made this moment meaningful."
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
               disabled={isLoading || (!analyses || analyses.length === 0)}
             />
