@@ -75,7 +75,7 @@ const Practice = () => {
       if (error) throw error;
 
       toast({
-        title: "Success",
+        title: "Step Forward!",
         description: "Your step toward growth has been captured. Keep discovering new horizons.",
       });
 
