@@ -107,7 +107,7 @@ const Analyze = () => {
               <div className="text-lg text-muted-foreground text-center">
                 {analyses && analyses.length > 0
                   ? "Dive into your insights by selecting an analysis to explore."
-                  : "Begin your reflection to reveal personalized analyses."}
+                  : "Personalized analyses are waiting for you to discover."}
               </div>
             )}
           </div>
