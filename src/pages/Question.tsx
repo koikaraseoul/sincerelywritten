@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,27 +48,20 @@ const Question = () => {
   const canAskQuestion = !lastQuestion?.created_at || 
     isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
 
-  // Show toast only once when the component mounts and user can't ask questions
-  useQuery({
-    queryKey: ["checkRestriction", lastQuestion?.created_at],
-    queryFn: async () => {
-      if (lastQuestion?.created_at && !canAskQuestion) {
-        const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
-        const daysRemaining = Math.ceil(
-          (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-        );
-        
-        toast({
-          title: "Weekly Entry Limit Reached",
-          description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
-        });
-      }
-      return null;
-    },
-    enabled: !!lastQuestion?.created_at,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  // Show toast once when component mounts
+  useEffect(() => {
+    if (lastQuestion?.created_at && !canAskQuestion) {
+      const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
+      const daysRemaining = Math.ceil(
+        (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      );
+      
+      toast({
+        title: "Weekly Entry Limit Reached",
+        description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
+      });
+    }
+  }, [lastQuestion?.created_at, canAskQuestion, toast]);
 
   const handleSubmit = async () => {
     if (!question.trim() || !session?.user.id) return;
