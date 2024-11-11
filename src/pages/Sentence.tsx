@@ -136,8 +136,8 @@ const Sentence = () => {
       if (error) throw error;
 
       toast({
-        title: "Success",
-        description: "Your reflection has been saved",
+        title: "Saved!",
+        description: "Your journal is now part of your journey.",
       });
 
       setContent("");
