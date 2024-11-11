@@ -90,7 +90,7 @@ const Answer = () => {
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem disabled>No answers found</DropdownMenuItem>
+                <DropdownMenuItem disabled>The answers you seek are ready to unfold</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -115,7 +115,7 @@ const Answer = () => {
               <div className="text-lg text-muted-foreground text-center">
                 {answers && answers.length > 0
                   ? "Tap an answer to reveal its wisdom."
-                  : "No answers available"}
+                  : "Heartfelt questions lead to transformative answers."}
               </div>
             )}
           </div>
