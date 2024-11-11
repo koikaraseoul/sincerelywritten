@@ -61,7 +61,7 @@ const Practice = () => {
       if (hasWritten) {
         toast({
           title: "Journey Continues Next Week",
-          description: "You've already written your practice entry for this week. A new entry will be available next week.",
+          description: "You've made great strides this week. See you next week to take the next step.",
           duration: 5000,
         });
       }
