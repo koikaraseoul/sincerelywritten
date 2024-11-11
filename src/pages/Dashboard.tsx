@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pen, ChartBar, Lightbulb, HelpCircle, AlertCircle } from "lucide-react";
+import { Pen, ChartBar, Lightbulb, HelpCircle, AlertCircle, Footprints } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,7 +24,8 @@ const Dashboard = () => {
   const journalingItems = [
     { icon: Pen, label: "Journal", route: "/sentence" },
     { icon: ChartBar, label: "Review", route: "/review" },
-    { icon: Lightbulb, label: "Analysis", route: "/analyze" }
+    { icon: Lightbulb, label: "Analysis", route: "/analyze" },
+    { icon: Footprints, label: "Practice", route: "/practice" }
   ];
 
   const tarotItems = [
@@ -52,7 +53,7 @@ const Dashboard = () => {
       {/* Reflection Section */}
       <div className="mb-8">
         <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Reflection</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {journalingItems.map((item) => (
             <Button
               key={item.route}

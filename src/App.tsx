@@ -12,6 +12,7 @@ import Review from "./pages/Review";
 import Analyze from "./pages/Analyze";
 import Question from "./pages/Question";
 import Answer from "./pages/Answer";
+import Practice from "./pages/Practice";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -39,6 +40,7 @@ const AppContent = () => {
             <Route path="/analyze" element={<Analyze />} />
             <Route path="/question" element={<Question />} />
             <Route path="/answer" element={<Answer />} />
+            <Route path="/practice" element={<Practice />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
