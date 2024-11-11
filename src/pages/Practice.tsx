@@ -48,7 +48,7 @@ const Practice = () => {
       }
 
       const { error } = await supabase
-        .from("practices")
+        .from('practices')
         .insert({
           user_id: user.id,
           action_taken: actionTaken.trim(),

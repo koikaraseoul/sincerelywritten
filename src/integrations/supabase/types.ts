@@ -83,6 +83,30 @@ export type Database = {
         }
         Relationships: []
       }
+      practices: {
+        Row: {
+          action_taken: string
+          created_at: string
+          id: string
+          reflection: string
+          user_id: string
+        }
+        Insert: {
+          action_taken: string
+          created_at?: string
+          id?: string
+          reflection: string
+          user_id: string
+        }
+        Update: {
+          action_taken?: string
+          created_at?: string
+          id?: string
+          reflection?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
