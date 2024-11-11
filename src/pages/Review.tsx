@@ -24,22 +24,22 @@ const Review = () => {
             Reviews for you
           </h1>
 
-          <div className="flex flex-col gap-4 items-center">
+          <div className="grid grid-cols-2 gap-4">
             <Button
-              variant="ghost"
-              className="w-full max-w-xs flex items-center gap-2 text-lg py-6"
+              variant="outline"
+              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
               onClick={() => navigate("/journal-review")}
             >
-              <Leaf className="h-5 w-5" />
-              Journals
+              <Leaf className="h-8 w-8" />
+              <span>Journals</span>
             </Button>
             <Button
-              variant="ghost"
-              className="w-full max-w-xs flex items-center gap-2 text-lg py-6"
+              variant="outline"
+              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
               onClick={() => navigate("/practice-review")}
             >
-              <Flower className="h-5 w-5" />
-              Practices
+              <Flower className="h-8 w-8" />
+              <span>Practices</span>
             </Button>
           </div>
         </div>
