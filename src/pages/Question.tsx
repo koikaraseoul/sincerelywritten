@@ -48,7 +48,7 @@ const Question = () => {
   const canAskQuestion = !lastQuestion?.created_at || 
     isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
 
-  // Show toast immediately when page loads if user can't ask questions
+  // Show toast on every page load if user can't ask questions
   useQuery({
     queryKey: ["checkRestriction", lastQuestion?.created_at],
     queryFn: async () => {
@@ -65,7 +65,9 @@ const Question = () => {
       }
       return null;
     },
-    enabled: !!lastQuestion?.created_at && !canAskQuestion,
+    enabled: !!lastQuestion?.created_at,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const handleSubmit = async () => {
