@@ -50,7 +50,7 @@ const Question = () => {
 
   // Show toast on every page load if user can't ask questions
   useQuery({
-    queryKey: ["checkRestriction", lastQuestion?.created_at],
+    queryKey: ["checkRestriction", lastQuestion?.created_at, Date.now()], // Add Date.now() to force re-fetch
     queryFn: async () => {
       if (lastQuestion?.created_at && !canAskQuestion) {
         const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
@@ -68,6 +68,8 @@ const Question = () => {
     enabled: !!lastQuestion?.created_at,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
+    cacheTime: 0, // Disable caching
+    staleTime: 0, // Consider data always stale
   });
 
   const handleSubmit = async () => {
