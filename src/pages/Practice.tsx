@@ -55,9 +55,18 @@ const Practice = () => {
 
   useEffect(() => {
     if (!practiceLoading && weeklyPractice) {
-      setHasWrittenThisWeek(weeklyPractice.length > 0);
+      const hasWritten = weeklyPractice.length > 0;
+      setHasWrittenThisWeek(hasWritten);
+      
+      if (hasWritten) {
+        toast({
+          title: "Journey Continues Next Week",
+          description: "You've already written your practice entry for this week. A new entry will be available next week.",
+          duration: 5000,
+        });
+      }
     }
-  }, [weeklyPractice, practiceLoading]);
+  }, [weeklyPractice, practiceLoading, toast]);
 
   useEffect(() => {
     if (!analysesLoading && (!analyses || analyses.length === 0)) {
