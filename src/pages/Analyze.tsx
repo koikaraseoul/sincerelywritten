@@ -39,23 +39,6 @@ const Analyze = () => {
     },
   });
 
-  // Query to check if user has any journal entries
-  const { data: hasJournalEntries } = useQuery({
-    queryKey: ["hasJournalEntries"],
-    queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error("Not authenticated");
-
-      const { count, error } = await supabase
-        .from("sentences")
-        .select("*", { count: 'exact', head: true })
-        .eq("user_id", user.user.id);
-
-      if (error) throw error;
-      return count && count > 0;
-    },
-  });
-
   const getOrdinalText = (index: number): string => {
     const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
     const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
@@ -124,9 +107,7 @@ const Analyze = () => {
               <div className="text-lg text-muted-foreground text-center">
                 {analyses && analyses.length > 0
                   ? "Dive into your insights by selecting an analysis to explore."
-                  : hasJournalEntries
-                    ? "Keep reflecting to reveal personalized analyses."
-                    : "Begin your reflection to reveal personalized analyses."}
+                  : "Begin your reflection to reveal personalized analyses."}
               </div>
             )}
           </div>
