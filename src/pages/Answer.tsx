@@ -114,7 +114,7 @@ const Answer = () => {
             ) : (
               <div className="text-lg text-muted-foreground text-center">
                 {answers && answers.length > 0
-                  ? "Select an answer to view its content"
+                  ? "Tap an answer to reveal its wisdom."
                   : "No answers available"}
               </div>
             )}
