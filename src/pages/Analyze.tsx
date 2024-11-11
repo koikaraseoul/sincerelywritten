@@ -82,7 +82,7 @@ const Analyze = () => {
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem disabled>No analyses found</DropdownMenuItem>
+                <DropdownMenuItem disabled>Write at least 5 journal entries to unlock your analyses.</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
