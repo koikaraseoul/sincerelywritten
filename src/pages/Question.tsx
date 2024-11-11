@@ -14,7 +14,6 @@ const Question = () => {
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSubmittedRecently, setHasSubmittedRecently] = useState(true); // Start with true until we verify
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -28,7 +27,7 @@ const Question = () => {
     },
   });
 
-  const { data: lastQuestion } = useQuery({
+  const { data: lastQuestion, isLoading: isLoadingLastQuestion } = useQuery({
     queryKey: ["lastQuestion", session?.user.id],
     queryFn: async () => {
       if (!session?.user.id) return null;
@@ -46,45 +45,43 @@ const Question = () => {
     enabled: !!session?.user.id,
   });
 
-  // Check if user can ask a question and update state accordingly
+  const canAskQuestion = !lastQuestion?.created_at || 
+    isBefore(parseISO(lastQuestion.created_at), addDays(new Date(), -7));
+
+  // Show toast once when component mounts
   useEffect(() => {
-    if (lastQuestion?.created_at) {
-      const lastQuestionDate = parseISO(lastQuestion.created_at);
-      const oneWeekAgo = addDays(new Date(), -7);
-      const canAskQuestion = isBefore(lastQuestionDate, oneWeekAgo);
+    if (lastQuestion?.created_at && !canAskQuestion) {
+      const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
+      const daysRemaining = Math.ceil(
+        (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      );
       
-      setHasSubmittedRecently(!canAskQuestion);
-      
-      if (!canAskQuestion) {
-        const nextAvailableDate = addDays(lastQuestionDate, 7);
-        const daysRemaining = Math.ceil(
-          (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-        );
-        
-        toast({
-          title: "Weekly Entry Limit Reached",
-          description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
-        });
-      }
-    } else {
-      // If there's no last question, user can submit
-      setHasSubmittedRecently(false);
+      toast({
+        title: "Weekly Entry Limit Reached",
+        description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
+      });
     }
-  }, [lastQuestion?.created_at, toast]);
+  }, [lastQuestion?.created_at, canAskQuestion, toast]);
 
   const handleSubmit = async () => {
-    if (!question.trim() || !session?.user.id || hasSubmittedRecently) return;
+    if (!question.trim() || !session?.user.id) return;
     
+    // Double-check the time restriction before submitting
+    if (!canAskQuestion) {
+      toast({
+        variant: "destructive",
+        title: "Weekly Entry Limit Reached",
+        description: "Please wait one week between submissions.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const now = new Date();
-      const localTimestamp = formatInTimeZone(
-        now,
-        Intl.DateTimeFormat().resolvedOptions().timeZone,
-        "yyyy-MM-dd'T'HH:mm:ssXXX"
-      );
+      const localTimestamp = formatInTimeZone(now, Intl.DateTimeFormat().resolvedOptions().timeZone, "yyyy-MM-dd'T'HH:mm:ssXXX");
 
-      const { error } = await supabase
+      const { error: questionError } = await supabase
         .from("questions")
         .insert({
           content: question.trim(),
@@ -93,15 +90,14 @@ const Question = () => {
           created_at: localTimestamp
         });
 
-      if (error) throw error;
+      if (questionError) throw questionError;
 
       toast({
         title: "Question submitted",
-        description: "Your question will be answered soon.",
+        description: "Under interpreting by the Love Journey Tarot Decks, It will soon reach to you.",
       });
 
       setQuestion("");
-      setHasSubmittedRecently(true);
       navigate("/dashboard");
     } catch (error: any) {
       toast({
@@ -113,6 +109,12 @@ const Question = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoadingLastQuestion) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">
+      Loading...
+    </div>;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -132,7 +134,7 @@ const Question = () => {
             size="icon"
             onClick={handleSubmit}
             className="absolute right-0"
-            disabled={!question.trim() || isSubmitting || hasSubmittedRecently}
+            disabled={!question.trim() || isSubmitting || !canAskQuestion}
           >
             <Wand2 className="h-6 w-6" />
           </Button>
@@ -148,7 +150,7 @@ const Question = () => {
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={`What do you wonder about your relationships?\n(After submitting your questions, please wait one week before asking more.)`}
             className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-            disabled={isSubmitting || hasSubmittedRecently}
+            disabled={isSubmitting || !canAskQuestion}
           />
         </div>
       </div>
