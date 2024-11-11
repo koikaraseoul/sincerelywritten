@@ -53,12 +53,9 @@ const Question = () => {
       setHasSubmittedRecently(isInCooldown);
 
       if (isInCooldown) {
-        const daysRemaining = Math.ceil(
-          (cooldownPeriod.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-        );
         toast({
-          title: "Cooldown Period Active",
-          description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
+          title: "Take a Breather",
+          description: "Your next question will be available in a few days.",
         });
       }
     }
