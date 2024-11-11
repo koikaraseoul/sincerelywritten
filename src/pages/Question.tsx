@@ -68,8 +68,8 @@ const Question = () => {
     enabled: !!lastQuestion?.created_at,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    cacheTime: 0, // Disable caching
-    staleTime: 0, // Consider data always stale
+    gcTime: 0, // Using gcTime instead of cacheTime
+    staleTime: 0,
   });
 
   const handleSubmit = async () => {
