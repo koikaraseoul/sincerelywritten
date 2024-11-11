@@ -91,8 +91,8 @@ const Sentence = () => {
       if (existingEntry) {
         setHasWrittenToday(true);
         toast({
-          title: "Daily Entry Limit Reached",
-          description: "You've already written your journal entry for today. Come back tomorrow!",
+          title: "Journey Continues Tomorrow",
+          description: "You've poured your heart out today. Come back tomorrow to continue your journey of reflection.",
         });
       }
     };
