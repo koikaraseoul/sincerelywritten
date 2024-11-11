@@ -1,10 +1,18 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { ArrowLeft, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const Practice = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [actionTaken, setActionTaken] = useState("");
+  const [reflection, setReflection] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -15,20 +23,106 @@ const Practice = () => {
     });
   }, [navigate]);
 
+  const handleSave = async () => {
+    if (!actionTaken.trim() || !reflection.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please fill in both fields before saving",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please login to save your practice",
+        });
+        navigate("/login");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("practices")
+        .insert({
+          user_id: user.id,
+          action_taken: actionTaken.trim(),
+          reflection: reflection.trim(),
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Your practice has been saved",
+      });
+
+      setActionTaken("");
+      setReflection("");
+    } catch (error: any) {
+      console.error('Save error:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to save your practice",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background p-8">
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-serif text-gradient text-center">
-            Practice Your Insights
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-center text-muted-foreground">
-            Coming soon: Practice exercises to help you implement your insights in daily life.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="max-w-4xl mx-auto relative">
+        <div className="flex justify-between items-center mb-8 pt-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/dashboard")}
+            className="absolute left-0"
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSave}
+            className="absolute right-0"
+            disabled={isLoading || !actionTaken.trim() || !reflection.trim()}
+          >
+            <Heart className="h-6 w-6" />
+          </Button>
+        </div>
+
+        <div className="mt-16">
+          <h1 className="text-3xl font-serif mb-8 text-center">
+            Your Practices
+          </h1>
+          
+          <div className="space-y-6">
+            <Textarea
+              value={actionTaken}
+              onChange={(e) => setActionTaken(e.target.value)}
+              placeholder="What step did you take based on the analysis?"
+              className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
+              disabled={isLoading}
+            />
+            
+            <Textarea
+              value={reflection}
+              onChange={(e) => setReflection(e.target.value)}
+              placeholder="What did you learn or feel from this action?"
+              className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
+              disabled={isLoading}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
