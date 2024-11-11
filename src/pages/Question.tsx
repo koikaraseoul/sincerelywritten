@@ -14,7 +14,7 @@ const Question = () => {
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSubmittedRecently, setHasSubmittedRecently] = useState(false);
+  const [hasSubmittedRecently, setHasSubmittedRecently] = useState(true); // Start with true until we verify
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -46,17 +46,17 @@ const Question = () => {
     enabled: !!session?.user.id,
   });
 
+  // Check if user can ask a question and update state accordingly
   useEffect(() => {
     if (lastQuestion?.created_at) {
-      const canAskQuestion = isBefore(
-        parseISO(lastQuestion.created_at), 
-        addDays(new Date(), -7)
-      );
+      const lastQuestionDate = parseISO(lastQuestion.created_at);
+      const oneWeekAgo = addDays(new Date(), -7);
+      const canAskQuestion = isBefore(lastQuestionDate, oneWeekAgo);
       
       setHasSubmittedRecently(!canAskQuestion);
       
       if (!canAskQuestion) {
-        const nextAvailableDate = addDays(parseISO(lastQuestion.created_at), 7);
+        const nextAvailableDate = addDays(lastQuestionDate, 7);
         const daysRemaining = Math.ceil(
           (nextAvailableDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
         );
@@ -66,6 +66,9 @@ const Question = () => {
           description: `You can submit another question in ${daysRemaining} day${daysRemaining > 1 ? 's' : ''}.`,
         });
       }
+    } else {
+      // If there's no last question, user can submit
+      setHasSubmittedRecently(false);
     }
   }, [lastQuestion?.created_at, toast]);
 
