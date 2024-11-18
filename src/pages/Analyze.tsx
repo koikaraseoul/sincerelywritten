@@ -11,6 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { id } from 'date-fns/locale';
 
 interface Analysis {
   id: string;
@@ -97,7 +98,7 @@ const Analyze = () => {
             {selectedEntry ? (
               <div className="space-y-4 animate-fadeIn">
                 <div className="text-lg text-muted-foreground text-center">
-                  {format(new Date(selectedEntry.created_at), "MMMM d, yyyy")}
+                  {format(new Date(selectedEntry.created_at), "d MMMM yyyy", { locale: id })}
                 </div>
                 <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border border-border">
                   {selectedEntry.content}
