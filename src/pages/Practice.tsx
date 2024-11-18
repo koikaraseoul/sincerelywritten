@@ -166,14 +166,14 @@ const Practice = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Your Practices
+            Latihan Anda
           </h1>
           
           <div className="space-y-6">
             <Textarea
               value={actionTaken}
               onChange={(e) => setActionTaken(e.target.value)}
-              placeholder="How did you turn your insights into action? Share the steps you took clearly—what inspired you and how you made it happen."
+              placeholder="Bagaimana Anda menerapkan wawasan Anda menjadi tindakan? Bagikan langkah-langkah yang Anda ambil dengan jelas—apa yang menginspirasi Anda dan bagaimana Anda mewujudkannya."
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
               disabled={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
             />
@@ -181,7 +181,7 @@ const Practice = () => {
             <Textarea
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
-              placeholder="Reflect deeply on your experience—what lessons stood out to you? Share your thoughts vividly, including any emotions or insights that made this moment meaningful."
+              placeholder="Renungkan pengalaman Anda secara mendalam—pelajaran apa yang paling berkesan bagi Anda? Bagikan pemikiran Anda secara jelas, termasuk emosi atau wawasan yang membuat momen ini bermakna."
               className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
               disabled={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
             />
