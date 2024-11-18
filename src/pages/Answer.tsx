@@ -48,9 +48,9 @@ const Answer = () => {
   });
 
   const getOrdinalText = (index: number): string => {
-    const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
-    const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
-    return `The ${position} answer`;
+    const ordinals = ["Analisis pertama", "Analisis kedua", "Analisis ketiga", "Analisis keempat", "Analisis kelima", "Analisis keenam", "Analisis ketujuh", "Analisis kedelapan", "Analisis kesembilan", "Analisis kesepuluh"];
+    const position = index < ordinals.length ? ordinals[index] : `Analisis ke-${index + 1}`;
+    return position;
   };
 
   return (
