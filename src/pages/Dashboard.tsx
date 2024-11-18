@@ -70,7 +70,7 @@ const Dashboard = () => {
 
       {/* Tarot Card Reading Section */}
       <div>
-        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Tarot Card Reading</h2>
+        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Pembacaan Kartu Tarot</h2>
         <div className="grid grid-cols-2 gap-4">
           {tarotItems.map((item) => (
             <Button
