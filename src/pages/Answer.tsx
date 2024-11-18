@@ -98,7 +98,7 @@ const Answer = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Answers for you
+            Jawaban untuk Anda
           </h1>
 
           <div className="mt-8">
@@ -114,7 +114,7 @@ const Answer = () => {
             ) : (
               <div className="text-lg text-muted-foreground text-center">
                 {answers && answers.length > 0
-                  ? "Tap an answer to reveal its wisdom."
+                  ? "Ketuk sebuah jawaban untuk mengungkap kebijaksanaannya."
                   : "Insightful answers await your heartfelt questions."}
               </div>
             )}
