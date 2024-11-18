@@ -22,15 +22,15 @@ const Dashboard = () => {
   }, [navigate]);
 
   const journalingItems = [
-    { icon: Pen, label: "Journal", route: "/sentence" },
-    { icon: ChartBar, label: "Review", route: "/review" },
-    { icon: Lightbulb, label: "Analysis", route: "/analyze" },
-    { icon: Footprints, label: "Practice", route: "/practice" }
+    { icon: Pen, label: "Jurnal", route: "/sentence" },
+    { icon: ChartBar, label: "Ulasan", route: "/review" },
+    { icon: Lightbulb, label: "Analisis", route: "/analyze" },
+    { icon: Footprints, label: "Latihan", route: "/practice" }
   ];
 
   const tarotItems = [
-    { icon: HelpCircle, label: "Question", route: "/question" },
-    { icon: AlertCircle, label: "Answer", route: "/answer" }
+    { icon: HelpCircle, label: "Pertanyaan", route: "/question" },
+    { icon: AlertCircle, label: "Jawaban", route: "/answer" }
   ];
 
   return (
@@ -52,7 +52,7 @@ const Dashboard = () => {
 
       {/* Reflection Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Reflection</h2>
+        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Refleksi</h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {journalingItems.map((item) => (
             <Button
