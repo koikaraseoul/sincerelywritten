@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Leaf, Flower } from "lucide-react";
+import { ArrowLeft, Search, Flower } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Review = () => {
@@ -30,7 +30,7 @@ const Review = () => {
               className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
               onClick={() => navigate("/journal-review")}
             >
-              <Leaf className="h-8 w-8" />
+              <Search className="h-8 w-8" />
               <span>Jurnal</span>
             </Button>
             <Button
