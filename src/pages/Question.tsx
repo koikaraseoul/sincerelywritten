@@ -61,7 +61,6 @@ const Question = () => {
     }
   };
 
-  // Check cooldown period on mount and when lastQuestion changes
   useEffect(() => {
     checkCooldownPeriod();
   }, [lastQuestion?.created_at]);
@@ -89,7 +88,6 @@ const Question = () => {
 
       if (questionError) throw questionError;
 
-      // Refetch last question to update the cooldown state
       await refetchLastQuestion();
       setHasSubmittedRecently(true);
       
@@ -143,13 +141,13 @@ const Question = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Your Questions
+            Pertanyaan Anda
           </h1>
 
           <Textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="What do you wonder about your relationships? Share your sincere thoughts and questions to reveal profound insights and meaningful guidance."
+            placeholder="Apa yang Anda ingin ketahui tentang hubungan Anda? Bagikan pemikiran dan pertanyaan Anda dengan tulus untuk mengungkap wawasan mendalam dan panduan yang bermakna."
             className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
             disabled={isSubmitting || hasSubmittedRecently}
           />
