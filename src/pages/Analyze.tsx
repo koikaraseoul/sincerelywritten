@@ -90,7 +90,7 @@ const Analyze = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Analyses for you
+            Analisis untuk Anda
           </h1>
 
           <div className="mt-8">
@@ -105,9 +105,7 @@ const Analyze = () => {
               </div>
             ) : (
               <div className="text-lg text-muted-foreground text-center">
-                {analyses && analyses.length > 0
-                  ? "Dive into your insights by selecting an analysis to explore."
-                  : "Personalized analyses are waiting for you to discover."}
+                Jelajahi wawasan Anda dengan memilih analisis untuk dieksplorasi.
               </div>
             )}
           </div>
