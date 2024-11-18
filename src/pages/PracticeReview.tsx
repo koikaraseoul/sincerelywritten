@@ -148,13 +148,13 @@ const PracticeReview = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Practice Reviews
+            Ulasan Latihan
           </h1>
 
           {date && (
             <div className="text-center mb-6">
               <p className="text-lg text-muted-foreground">
-                Week of {format(startOfWeek(date, { weekStartsOn: 1 }), 'MMMM d, yyyy')}
+                Minggu {format(startOfWeek(date, { weekStartsOn: 1 }), 'd MMMM yyyy')}
               </p>
             </div>
           )}

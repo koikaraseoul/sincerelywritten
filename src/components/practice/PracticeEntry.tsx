@@ -20,7 +20,7 @@ const PracticeEntry = ({ practice }: PracticeEntryProps) => {
         {practice.reflection}
       </p>
       <p className="text-sm text-muted-foreground mt-4">
-        Written on: {format(new Date(practice.created_at), 'MMMM d, yyyy')}
+        Ditulis pada: {format(new Date(practice.created_at), 'd MMMM yyyy')}
       </p>
     </div>
   );
