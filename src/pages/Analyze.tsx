@@ -40,9 +40,9 @@ const Analyze = () => {
   });
 
   const getOrdinalText = (index: number): string => {
-    const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
-    const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
-    return `The ${position} analysis`;
+    const ordinals = ["Pertama", "Kedua", "Ketiga", "Keempat", "Kelima", "Keenam", "Ketujuh", "Kedelapan", "Kesembilan", "Kesepuluh"];
+    const position = index < ordinals.length ? ordinals[index] : `Ke-${index + 1}`;
+    return `Analisis ${position}`;
   };
 
   return (
