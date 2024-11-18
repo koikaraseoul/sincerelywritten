@@ -25,7 +25,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
   if (entries.length === 0) {
     return (
       <div className="text-center text-muted-foreground">
-        Your leaf for this day is fallen and faded, but each day begins with a fresh leaf for your story.
+        Daunmu untuk hari ini telah gugur dan memudar, tetapi setiap hari dimulai dengan daun baru untuk ceritamu.
       </div>
     );
   }
@@ -38,7 +38,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
         const localDate = formatInTimeZone(
           new Date(entry.created_at),
           timezone,
-          'yyyy-MM-dd HH:mm:ss'
+          'd MMMM yyyy HH:mm'
         );
 
         return (
@@ -51,7 +51,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
                 {entry.content}
               </p>
               <p className="text-sm text-muted-foreground mt-4">
-                Written on: {localDate}
+                Ditulis pada: {localDate}
               </p>
             </div>
           </div>
