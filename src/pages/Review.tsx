@@ -21,7 +21,7 @@ const Review = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-12 text-center">
-            Ulasan untuk Anda
+            Reviews for you
           </h1>
 
           <div className="grid grid-cols-2 gap-4">
@@ -31,7 +31,7 @@ const Review = () => {
               onClick={() => navigate("/journal-review")}
             >
               <Leaf className="h-8 w-8" />
-              <span>Jurnal</span>
+              <span>Journals</span>
             </Button>
             <Button
               variant="outline"
@@ -39,7 +39,7 @@ const Review = () => {
               onClick={() => navigate("/practice-review")}
             >
               <Flower className="h-8 w-8" />
-              <span>Latihan</span>
+              <span>Practices</span>
             </Button>
           </div>
         </div>

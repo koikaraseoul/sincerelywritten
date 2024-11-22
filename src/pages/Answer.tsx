@@ -11,7 +11,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { id } from 'date-fns/locale';
 
 interface Answer {
   id: string;
@@ -49,9 +48,9 @@ const Answer = () => {
   });
 
   const getOrdinalText = (index: number): string => {
-    const ordinals = ["Jawaban pertama", "Jawaban kedua", "Jawaban ketiga", "Jawaban keempat", "Jawaban kelima", "Jawaban keenam", "Jawaban ketujuh", "Jawaban kedelapan", "Jawaban kesembilan", "Jawaban kesepuluh"];
-    const position = index < ordinals.length ? ordinals[index] : `Jawaban ke-${index + 1}`;
-    return position;
+    const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
+    const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
+    return `The ${position} answer`;
   };
 
   return (
@@ -99,14 +98,14 @@ const Answer = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Jawaban untuk Anda
+            Answers for you
           </h1>
 
           <div className="mt-8">
             {selectedAnswer ? (
               <div className="space-y-4 animate-fadeIn">
                 <div className="text-lg text-muted-foreground text-center">
-                  {format(new Date(selectedAnswer.created_at), "d MMMM yyyy", { locale: id })}
+                  {format(new Date(selectedAnswer.created_at), "MMMM d, yyyy")}
                 </div>
                 <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border border-border">
                   {selectedAnswer.content}
@@ -115,7 +114,7 @@ const Answer = () => {
             ) : (
               <div className="text-lg text-muted-foreground text-center">
                 {answers && answers.length > 0
-                  ? "Ketuk sebuah jawaban untuk mengungkap kebijaksanaannya."
+                  ? "Tap an answer to reveal its wisdom."
                   : "Insightful answers await your heartfelt questions."}
               </div>
             )}

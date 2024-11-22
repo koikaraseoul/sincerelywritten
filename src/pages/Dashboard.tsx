@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pen, Search, Lightbulb, HelpCircle, AlertCircle, Footprints } from "lucide-react";
+import { Pen, ChartBar, Lightbulb, HelpCircle, AlertCircle, Footprints } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,15 +22,15 @@ const Dashboard = () => {
   }, [navigate]);
 
   const journalingItems = [
-    { icon: Pen, label: "Jurnal", route: "/sentence" },
-    { icon: Search, label: "Ulasan", route: "/review" },
-    { icon: Lightbulb, label: "Analisis", route: "/analyze" },
-    { icon: Footprints, label: "Latihan", route: "/practice" }
+    { icon: Pen, label: "Journal", route: "/sentence" },
+    { icon: ChartBar, label: "Review", route: "/review" },
+    { icon: Lightbulb, label: "Analysis", route: "/analyze" },
+    { icon: Footprints, label: "Practice", route: "/practice" }
   ];
 
   const tarotItems = [
-    { icon: HelpCircle, label: "Pertanyaan", route: "/question" },
-    { icon: AlertCircle, label: "Jawaban", route: "/answer" }
+    { icon: HelpCircle, label: "Question", route: "/question" },
+    { icon: AlertCircle, label: "Answer", route: "/answer" }
   ];
 
   return (
@@ -52,7 +52,7 @@ const Dashboard = () => {
 
       {/* Reflection Section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Refleksi</h2>
+        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Reflection</h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {journalingItems.map((item) => (
             <Button
@@ -70,7 +70,7 @@ const Dashboard = () => {
 
       {/* Tarot Card Reading Section */}
       <div>
-        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Pembacaan Kartu Tarot</h2>
+        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Tarot Card Reading</h2>
         <div className="grid grid-cols-2 gap-4">
           {tarotItems.map((item) => (
             <Button

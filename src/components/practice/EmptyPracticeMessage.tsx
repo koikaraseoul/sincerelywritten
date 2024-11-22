@@ -1,7 +1,7 @@
 const EmptyPracticeMessage = () => {
   return (
     <div className="text-center text-muted-foreground">
-      Bungamu untuk minggu ini belum mekar—ambil langkah untuk merenung dan biarkan ia berkembang.
+      Your flower for this week is unbloomed—take a step to reflect and let it flourish.
     </div>
   );
 };

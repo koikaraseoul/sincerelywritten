@@ -8,7 +8,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
       <div className="text-center space-y-8 animate-fadeIn">
         <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl font-bold text-gradient">
-          Cinta?
+          Love?
         </h1>
         
         <button

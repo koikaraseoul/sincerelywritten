@@ -156,13 +156,13 @@ const JournalReview = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Ulasan Jurnal
+            Journal Reviews
           </h1>
 
           {date && (
             <div className="text-center mb-6">
               <p className="text-lg text-muted-foreground">
-                {format(date, 'd MMMM yyyy')}
+                {format(date, 'MMMM d, yyyy')}
               </p>
             </div>
           )}

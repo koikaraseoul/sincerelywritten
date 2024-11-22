@@ -11,7 +11,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { id } from 'date-fns/locale';
 
 interface Analysis {
   id: string;
@@ -41,9 +40,9 @@ const Analyze = () => {
   });
 
   const getOrdinalText = (index: number): string => {
-    const ordinals = ["Pertama", "Kedua", "Ketiga", "Keempat", "Kelima", "Keenam", "Ketujuh", "Kedelapan", "Kesembilan", "Kesepuluh"];
-    const position = index < ordinals.length ? ordinals[index] : `Ke-${index + 1}`;
-    return `Analisis ${position}`;
+    const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
+    const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
+    return `The ${position} analysis`;
   };
 
   return (
@@ -91,14 +90,14 @@ const Analyze = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Analisis untuk Anda
+            Analyses for you
           </h1>
 
           <div className="mt-8">
             {selectedEntry ? (
               <div className="space-y-4 animate-fadeIn">
                 <div className="text-lg text-muted-foreground text-center">
-                  {format(new Date(selectedEntry.created_at), "d MMMM yyyy", { locale: id })}
+                  {format(new Date(selectedEntry.created_at), "MMMM d, yyyy")}
                 </div>
                 <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border border-border">
                   {selectedEntry.content}
@@ -106,7 +105,9 @@ const Analyze = () => {
               </div>
             ) : (
               <div className="text-lg text-muted-foreground text-center">
-                Jelajahi wawasan Anda dengan memilih analisis untuk dieksplorasi.
+                {analyses && analyses.length > 0
+                  ? "Dive into your insights by selecting an analysis to explore."
+                  : "Personalized analyses are waiting for you to discover."}
               </div>
             )}
           </div>

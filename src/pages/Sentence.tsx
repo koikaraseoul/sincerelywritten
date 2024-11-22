@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
-import SentenceHeader from "@/components/sentence/SentenceHeader";
-import SentenceForm from "@/components/sentence/SentenceForm";
 import { formatInTimeZone } from 'date-fns-tz';
 
 const Sentence = () => {
@@ -60,6 +61,7 @@ const Sentence = () => {
         return;
       }
 
+      // Check if user has already written today using local timezone
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const today = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
       const tomorrow = formatInTimeZone(
@@ -155,19 +157,43 @@ const Sentence = () => {
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto relative">
-        <SentenceHeader 
-          onBack={() => navigate("/dashboard")}
-          onSave={handleSave}
-          isDisabled={!content.trim() || isLoading || hasWrittenToday}
-        />
-        
-        <SentenceForm
-          content={content}
-          onChange={setContent}
-          isDisabled={isLoading || hasWrittenToday}
-        />
-        
-        <DailySentenceDisplay dailySentence={dailySentence} />
+        <div className="flex justify-between items-center mb-8 pt-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/dashboard")}
+            className="absolute left-0"
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSave}
+            className="absolute right-0"
+            disabled={!content.trim() || isLoading || hasWrittenToday}
+          >
+            <Mail className="h-6 w-6" />
+          </Button>
+        </div>
+
+        <div className="mt-16">
+          <h1 className="text-3xl font-serif mb-8 text-center">
+            Your Journals
+          </h1>
+          
+          <div className="space-y-4">
+            <Textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="What personal experiences or emotions come to mind when you read this sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions."
+              className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
+              disabled={isLoading || hasWrittenToday}
+            />
+          </div>
+          
+          <DailySentenceDisplay dailySentence={dailySentence} />
+        </div>
       </div>
     </div>
   );
