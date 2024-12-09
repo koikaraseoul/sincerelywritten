@@ -1,8 +1,4 @@
-interface SubmittedMessageProps {
-  dailySentence: string | undefined;
-}
-
-const SubmittedMessage = ({ dailySentence }: SubmittedMessageProps) => {
+const SubmittedMessage = () => {
   return (
     <div className="mt-16">
       <h1 className="text-3xl font-serif mb-8 text-center">

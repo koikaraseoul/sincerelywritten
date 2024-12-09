@@ -8,12 +8,14 @@ import { startOfDay, endOfDay } from 'date-fns';
 import WriteInputLayout from "@/components/write/WriteInputLayout";
 import SentenceHeader from "@/components/sentence/SentenceHeader";
 import SubmittedMessage from "@/components/sentence/SubmittedMessage";
+import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 
 const Sentence = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -47,7 +49,6 @@ const Sentence = () => {
     queryFn: async () => {
       if (!session?.user.id) return false;
 
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const now = new Date();
       const start = startOfDay(now);
       const end = endOfDay(now);
@@ -78,7 +79,7 @@ const Sentence = () => {
       const now = new Date();
       const localTimestamp = formatInTimeZone(
         now,
-        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone,
         "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
 
@@ -129,7 +130,7 @@ const Sentence = () => {
             isSubmitting={isSubmitting}
             hasSubmittedToday={hasSubmittedToday}
           />
-          <SubmittedMessage dailySentence={dailySentence} />
+          <SubmittedMessage />
         </div>
       </div>
     );
@@ -150,9 +151,7 @@ const Sentence = () => {
           </h1>
 
           {dailySentence && (
-            <div className="text-center mt-8">
-              <p className="text-xl italic text-love-400">{dailySentence}</p>
-            </div>
+            <DailySentenceDisplay dailySentence={dailySentence} />
           )}
 
           <div className="mt-8">
