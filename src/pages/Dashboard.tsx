@@ -45,7 +45,7 @@ const Dashboard = () => {
           </div>
           <div className="flex-1">
             <h2 className="text-xl font-serif">{user?.email}</h2>
-            <p className="text-muted-foreground">Welcome back!</p>
+            <p className="text-muted-foreground">Write sincerely to discover yourself</p>
           </div>
         </div>
       </Card>
