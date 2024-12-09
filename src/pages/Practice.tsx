@@ -145,47 +145,47 @@ const Practice = () => {
   const reflectionPrompt = "Reflect deeply on your experience—what lessons stood out to you? Share your thoughts vividly, including any emotions or insights that made this moment meaningful.";
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-4xl mx-auto relative">
-        <div className="flex justify-between items-center mb-8 pt-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/dashboard")}
-            className="absolute left-0"
-          >
-            <ArrowLeft className="h-6 w-6" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSave}
-            className="absolute right-0"
-            disabled={isLoading || !actionTaken.trim() || !reflection.trim() || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
-          >
-            <Heart className="h-6 w-6" />
-          </Button>
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative pt-8">
+          <div className="flex justify-between items-center mb-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/dashboard")}
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSave}
+              disabled={isLoading || !actionTaken.trim() || !reflection.trim() || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
+            >
+              <Heart className="h-6 w-6" />
+            </Button>
+          </div>
 
-        <div className="mt-16">
-          <h1 className="text-3xl font-serif mb-8 text-center">
-            Your Practices
-          </h1>
-          
-          <div className="space-y-8">
-            <WriteInputLayout
-              question={actionPrompt}
-              answer={actionTaken}
-              onAnswerChange={setActionTaken}
-              isSubmitting={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
-            />
+          <div className="mt-8">
+            <h1 className="text-3xl font-serif mb-8 text-center">
+              Your Practices
+            </h1>
             
-            <WriteInputLayout
-              question={reflectionPrompt}
-              answer={reflection}
-              onAnswerChange={setReflection}
-              isSubmitting={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
-            />
+            <div className="space-y-8">
+              <WriteInputLayout
+                question={actionPrompt}
+                answer={actionTaken}
+                onAnswerChange={setActionTaken}
+                isSubmitting={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
+              />
+              
+              <WriteInputLayout
+                question={reflectionPrompt}
+                answer={reflection}
+                onAnswerChange={setReflection}
+                isSubmitting={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
+              />
+            </div>
           </div>
         </div>
       </div>
