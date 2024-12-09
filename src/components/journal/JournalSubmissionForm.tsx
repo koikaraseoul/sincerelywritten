@@ -80,13 +80,12 @@ const JournalSubmissionForm = ({
       {dailySentence && <DailySentenceDisplay dailySentence={dailySentence} />}
 
       <div className="mt-8">
-        <div className="flex justify-between items-center mb-8 pt-4">
+        <div className="absolute top-8 right-8">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleSubmit}
             disabled={!content.trim() || isSubmitting || hasCooldown}
-            className="ml-auto"
           >
             <Mail className="h-6 w-6" />
           </Button>
