@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { formatInTimeZone } from 'date-fns-tz';
+import { startOfDay, endOfDay } from 'date-fns';
 import WriteInputLayout from "@/components/write/WriteInputLayout";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 
@@ -41,8 +42,37 @@ const Sentence = () => {
     },
   });
 
+  // Check if user has already submitted a journal entry today
+  const { data: hasSubmittedToday } = useQuery({
+    queryKey: ["todayEntry", session?.user.id],
+    queryFn: async () => {
+      if (!session?.user.id) return false;
+
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const now = new Date();
+      const start = startOfDay(now);
+      const end = endOfDay(now);
+
+      const { data, error } = await supabase
+        .from("sentences")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .gte("created_at", start.toISOString())
+        .lte("created_at", end.toISOString())
+        .limit(1);
+
+      if (error) {
+        console.error("Error checking today's entry:", error);
+        return false;
+      }
+
+      return data && data.length > 0;
+    },
+    enabled: !!session?.user.id,
+  });
+
   const handleSubmit = async () => {
-    if (!content.trim() || !session?.user.id) return;
+    if (!content.trim() || !session?.user.id || hasSubmittedToday) return;
 
     setIsSubmitting(true);
     try {
@@ -90,6 +120,34 @@ const Sentence = () => {
 
   const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
 
+  // Show message if user has already submitted today
+  if (hasSubmittedToday) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-8">
+        <div className="max-w-2xl mx-auto relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/dashboard")}
+            className="absolute left-0"
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </Button>
+
+          <div className="mt-16 text-center">
+            <h1 className="text-3xl font-serif mb-8">Your Journals</h1>
+            {dailySentence && <DailySentenceDisplay dailySentence={dailySentence} />}
+            <div className="mt-8 p-6 bg-muted rounded-lg">
+              <p className="text-muted-foreground">
+                You've already shared your thoughts for today. Return tomorrow for a fresh reflection.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
       <div className="max-w-2xl mx-auto relative">
@@ -108,7 +166,7 @@ const Sentence = () => {
             size="icon"
             onClick={handleSubmit}
             className="absolute right-0"
-            disabled={!content.trim() || isSubmitting}
+            disabled={!content.trim() || isSubmitting || hasSubmittedToday}
           >
             <Wand2 className="h-6 w-6" />
           </Button>
