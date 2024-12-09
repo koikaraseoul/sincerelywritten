@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { LetterText } from "lucide-react";
+import { Mail } from "lucide-react";
 import WriteInputLayout from "@/components/write/WriteInputLayout";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 import { formatInTimeZone } from 'date-fns-tz';
@@ -87,7 +87,7 @@ const JournalSubmissionForm = ({
             onClick={handleSubmit}
             disabled={!content.trim() || isSubmitting || hasCooldown}
           >
-            <LetterText className="h-6 w-6" />
+            <Mail className="h-6 w-6" />
           </Button>
         </div>
 
