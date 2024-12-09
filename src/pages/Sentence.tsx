@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Wand2 } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
@@ -28,27 +28,35 @@ const Sentence = () => {
     },
   });
 
+  // Get user's local timezone and format the date accordingly
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const localDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
+
   const { data: dailySentence } = useQuery({
-    queryKey: ["dailySentence"],
+    queryKey: ["dailySentence", localDate],
     queryFn: async () => {
+      console.log('Fetching daily sentence for local date:', localDate);
       const { data, error } = await supabase
         .from("daily_sentences")
         .select("content")
-        .eq("active_date", new Date().toISOString().split("T")[0])
+        .eq("active_date", localDate)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching daily sentence:', error);
+        throw error;
+      }
+      console.log('Daily sentence data:', data);
       return data?.content;
     },
   });
 
   // Check if user has already submitted a journal entry today
   const { data: hasSubmittedToday } = useQuery({
-    queryKey: ["todayEntry", session?.user.id],
+    queryKey: ["todayEntry", session?.user.id, localDate],
     queryFn: async () => {
       if (!session?.user.id) return false;
 
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const now = new Date();
       const start = startOfDay(now);
       const end = endOfDay(now);
@@ -79,7 +87,7 @@ const Sentence = () => {
       const now = new Date();
       const localTimestamp = formatInTimeZone(
         now,
-        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone,
         "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
 
@@ -174,7 +182,7 @@ const Sentence = () => {
             className="absolute right-0"
             disabled={!content.trim() || isSubmitting || hasSubmittedToday}
           >
-            <Wand2 className="h-6 w-6" />
+            <Heart className="h-6 w-6" />
           </Button>
         </div>
 
@@ -190,7 +198,7 @@ const Sentence = () => {
               question={reflectionPrompt}
               answer={content}
               onAnswerChange={setContent}
-              isSubmitting={isSubmitting}
+              isSubmitting={isSubmitting || hasSubmittedToday}
             />
           </div>
         </div>
