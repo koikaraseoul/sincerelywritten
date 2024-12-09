@@ -29,23 +29,30 @@ const Sentence = () => {
     },
   });
 
+  // Fetch daily sentence based on user's local date
   const { data: dailySentence } = useQuery({
-    queryKey: ["dailySentence"],
+    queryKey: ["dailySentence", timezone],
     queryFn: async () => {
+      const localDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
+      console.log('Fetching daily sentence for local date:', localDate);
+      
       const { data, error } = await supabase
         .from("daily_sentences")
         .select("content")
-        .eq("active_date", new Date().toISOString().split("T")[0])
+        .eq("active_date", localDate)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching daily sentence:', error);
+        throw error;
+      }
       return data?.content;
     },
   });
 
   // Check if user has already submitted a journal entry today
   const { data: hasSubmittedToday } = useQuery({
-    queryKey: ["todayEntry", session?.user.id],
+    queryKey: ["todayEntry", session?.user.id, timezone],
     queryFn: async () => {
       if (!session?.user.id) return false;
 
@@ -118,8 +125,6 @@ const Sentence = () => {
     </div>;
   }
 
-  const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
-
   // Show message if user has already submitted today
   if (hasSubmittedToday) {
     return (
@@ -135,6 +140,8 @@ const Sentence = () => {
       </div>
     );
   }
+
+  const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
