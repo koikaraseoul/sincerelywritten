@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
+import { LetterText } from "lucide-react";
 import WriteInputLayout from "@/components/write/WriteInputLayout";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 import { formatInTimeZone } from 'date-fns-tz';
@@ -78,15 +78,14 @@ const JournalSubmissionForm = ({
       {dailySentence && <DailySentenceDisplay dailySentence={dailySentence} />}
 
       <div className="mt-8">
-        <div className="relative">
+        <div className="absolute top-8 right-8">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleSubmit}
-            className="absolute right-0"
             disabled={!content.trim() || isSubmitting || hasSubmittedToday}
           >
-            <Heart className="h-6 w-6" />
+            <LetterText className="h-6 w-6" />
           </Button>
         </div>
 
