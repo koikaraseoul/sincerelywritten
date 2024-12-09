@@ -134,20 +134,13 @@ const Sentence = () => {
             <ArrowLeft className="h-6 w-6" />
           </Button>
 
-          <div className="mt-16">
-            <h1 className="text-3xl font-serif mb-8 text-center">
-              Your Journals
-            </h1>
-            
+          <div className="mt-16 text-center">
+            <h1 className="text-3xl font-serif mb-8">Your Journals</h1>
             {dailySentence && <DailySentenceDisplay dailySentence={dailySentence} />}
-            
-            <div className="mt-8">
-              <div className="p-6 bg-card rounded-lg border border-border">
-                <h2 className="text-xl font-semibold mb-2">Take a Breather</h2>
-                <p className="text-muted-foreground">
-                  Your next journal entry will be available tomorrow.
-                </p>
-              </div>
+            <div className="mt-8 p-6 bg-muted rounded-lg">
+              <p className="text-muted-foreground">
+                You've already shared your thoughts for today. Return tomorrow for a fresh reflection.
+              </p>
             </div>
           </div>
         </div>
