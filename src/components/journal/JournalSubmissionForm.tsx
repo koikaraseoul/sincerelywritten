@@ -23,11 +23,12 @@ const JournalSubmissionForm = ({
 }: JournalSubmissionFormProps) => {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasCooldown, setHasCooldown] = useState(hasSubmittedToday);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    if (!content.trim() || !userId || hasSubmittedToday) return;
+    if (!content.trim() || !userId || hasCooldown) return;
 
     setIsSubmitting(true);
     try {
@@ -55,6 +56,7 @@ const JournalSubmissionForm = ({
       });
 
       setContent("");
+      setHasCooldown(true);
       navigate("/dashboard");
     } catch (error: any) {
       toast({
@@ -83,7 +85,7 @@ const JournalSubmissionForm = ({
             variant="ghost"
             size="icon"
             onClick={handleSubmit}
-            disabled={!content.trim() || isSubmitting || hasSubmittedToday}
+            disabled={!content.trim() || isSubmitting || hasCooldown}
           >
             <LetterText className="h-6 w-6" />
           </Button>
@@ -93,7 +95,7 @@ const JournalSubmissionForm = ({
           question={reflectionPrompt}
           answer={content}
           onAnswerChange={setContent}
-          isSubmitting={isSubmitting || hasSubmittedToday}
+          isSubmitting={isSubmitting || hasCooldown}
         />
       </div>
     </div>
