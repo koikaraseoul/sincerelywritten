@@ -17,6 +17,7 @@ const SentenceHeader = ({ onSubmit, isSubmitting, hasSubmittedToday }: SentenceH
         variant="ghost"
         size="icon"
         onClick={() => navigate("/dashboard")}
+        className="absolute left-0"
       >
         <ArrowLeft className="h-6 w-6" />
       </Button>
@@ -26,6 +27,7 @@ const SentenceHeader = ({ onSubmit, isSubmitting, hasSubmittedToday }: SentenceH
         size="icon"
         onClick={onSubmit}
         disabled={isSubmitting || hasSubmittedToday}
+        className="absolute right-0"
       >
         <Mail className="h-6 w-6" />
       </Button>
