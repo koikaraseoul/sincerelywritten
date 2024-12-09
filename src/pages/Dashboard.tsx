@@ -11,7 +11,6 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         navigate('/login');
@@ -34,55 +33,54 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      {/* User Information */}
-      <Card className="mb-8 p-6">
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-full bg-love-500 flex items-center justify-center">
-            <span className="text-xl text-white">
-              {user?.email?.[0].toUpperCase()}
-            </span>
+    <div className="min-h-screen bg-background text-foreground p-8">
+      <div className="max-w-2xl mx-auto">
+        <Card className="mb-8 p-6">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-full bg-love-500 flex items-center justify-center">
+              <span className="text-xl text-white">
+                {user?.email?.[0].toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-serif">{user?.email}</h2>
+              <p className="text-muted-foreground">Write sincerely to discover yourself</p>
+            </div>
           </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-serif">{user?.email}</h2>
-            <p className="text-muted-foreground">Write sincerely to discover yourself</p>
+        </Card>
+
+        <div className="mb-8">
+          <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Reflection</h2>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {journalingItems.map((item) => (
+              <Button
+                key={item.route}
+                variant="outline"
+                className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+                onClick={() => navigate(item.route)}
+              >
+                <item.icon className="h-8 w-8" />
+                <span>{item.label}</span>
+              </Button>
+            ))}
           </div>
         </div>
-      </Card>
 
-      {/* Reflection Section */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Reflection</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {journalingItems.map((item) => (
-            <Button
-              key={item.route}
-              variant="outline"
-              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
-              onClick={() => navigate(item.route)}
-            >
-              <item.icon className="h-8 w-8" />
-              <span>{item.label}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tarot Card Reading Section */}
-      <div>
-        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Tarot Card Reading</h2>
-        <div className="grid grid-cols-2 gap-4">
-          {tarotItems.map((item) => (
-            <Button
-              key={item.route}
-              variant="outline"
-              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
-              onClick={() => navigate(item.route)}
-            >
-              <item.icon className="h-8 w-8" />
-              <span>{item.label}</span>
-            </Button>
-          ))}
+        <div>
+          <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Tarot Card Reading</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {tarotItems.map((item) => (
+              <Button
+                key={item.route}
+                variant="outline"
+                className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+                onClick={() => navigate(item.route)}
+              >
+                <item.icon className="h-8 w-8" />
+                <span>{item.label}</span>
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
