@@ -118,6 +118,8 @@ const Sentence = () => {
     </div>;
   }
 
+  const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
+
   // Show message if user has already submitted today
   if (hasSubmittedToday) {
     return (
