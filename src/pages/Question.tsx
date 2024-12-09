@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Wand2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { addDays, isBefore, parseISO } from "date-fns";
 import { formatInTimeZone } from 'date-fns-tz';
+import WriteInputLayout from "@/components/write/WriteInputLayout";
 
 const Question = () => {
   const navigate = useNavigate();
@@ -111,6 +111,8 @@ const Question = () => {
     }
   };
 
+  const questionPrompt = "What do you wonder about your relationships? Share your sincere thoughts and questions to reveal profound insights and meaningful guidance.";
+
   if (!session) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       Loading...
@@ -146,12 +148,11 @@ const Question = () => {
             Your Questions
           </h1>
 
-          <Textarea
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="What do you wonder about your relationships? Share your sincere thoughts and questions to reveal profound insights and meaningful guidance."
-            className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-            disabled={isSubmitting || hasSubmittedRecently}
+          <WriteInputLayout
+            question={questionPrompt}
+            answer={question}
+            onAnswerChange={setQuestion}
+            isSubmitting={isSubmitting || hasSubmittedRecently}
           />
         </div>
       </div>
