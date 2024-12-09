@@ -3,7 +3,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { createBrowserSupabaseClient } from '@supabase/auth-helpers-shared';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -15,6 +17,7 @@ import Analyze from "./pages/Analyze";
 import Question from "./pages/Question";
 import Answer from "./pages/Answer";
 import Practice from "./pages/Practice";
+import { supabase } from "@/integrations/supabase/client";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -26,28 +29,104 @@ const queryClient = new QueryClient({
   },
 });
 
+// Protected Route component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const session = supabase.auth.getSession();
+  
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
 const AppContent = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider delayDuration={0}>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/sentence" element={<Sentence />} />
-            <Route path="/review" element={<Review />} />
-            <Route path="/journal-review" element={<JournalReview />} />
-            <Route path="/practice-review" element={<PracticeReview />} />
-            <Route path="/analyze" element={<Analyze />} />
-            <Route path="/question" element={<Question />} />
-            <Route path="/answer" element={<Answer />} />
-            <Route path="/practice" element={<Practice />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <SessionContextProvider supabaseClient={supabase}>
+        <TooltipProvider delayDuration={0}>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/sentence"
+                element={
+                  <ProtectedRoute>
+                    <Sentence />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/review"
+                element={
+                  <ProtectedRoute>
+                    <Review />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/journal-review"
+                element={
+                  <ProtectedRoute>
+                    <JournalReview />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/practice-review"
+                element={
+                  <ProtectedRoute>
+                    <PracticeReview />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/analyze"
+                element={
+                  <ProtectedRoute>
+                    <Analyze />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/question"
+                element={
+                  <ProtectedRoute>
+                    <Question />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/answer"
+                element={
+                  <ProtectedRoute>
+                    <Answer />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/practice"
+                element={
+                  <ProtectedRoute>
+                    <Practice />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </SessionContextProvider>
     </QueryClientProvider>
   );
 };
