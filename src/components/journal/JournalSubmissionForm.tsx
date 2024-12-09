@@ -73,23 +73,24 @@ const JournalSubmissionForm = ({
 
   return (
     <div className="mt-16">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-serif">
-          Your Journals
-        </h1>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleSubmit}
-          disabled={!content.trim() || isSubmitting || hasCooldown}
-        >
-          <Mail className="h-6 w-6" />
-        </Button>
-      </div>
+      <h1 className="text-3xl font-serif mb-8 text-center">
+        Your Journals
+      </h1>
 
       {dailySentence && <DailySentenceDisplay dailySentence={dailySentence} />}
 
       <div className="mt-8">
+        <div className="absolute top-8 right-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSubmit}
+            disabled={!content.trim() || isSubmitting || hasCooldown}
+          >
+            <Mail className="h-6 w-6" />
+          </Button>
+        </div>
+
         <WriteInputLayout
           question={reflectionPrompt}
           answer={content}
