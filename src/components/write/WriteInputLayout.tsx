@@ -16,7 +16,7 @@ const WriteInputLayout = ({
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">{question}</p>
+        <p className="text-base md:text-lg text-white">{question}</p>
         <Textarea
           value={answer}
           onChange={(e) => onAnswerChange(e.target.value)}
