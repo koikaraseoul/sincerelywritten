@@ -80,7 +80,7 @@ const JournalSubmissionForm = ({
       {dailySentence && <DailySentenceDisplay dailySentence={dailySentence} />}
 
       <div className="mt-8">
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-8 right-8">
           <Button
             variant="ghost"
             size="icon"
