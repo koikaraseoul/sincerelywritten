@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { startOfWeek, endOfWeek } from "date-fns";
+import WriteInputLayout from "@/components/write/WriteInputLayout";
 
 const Practice = () => {
   const navigate = useNavigate();
@@ -141,6 +141,9 @@ const Practice = () => {
     }
   };
 
+  const actionPrompt = "How did you turn your insights into action? Share the steps you took clearly—what inspired you and how you made it happen.";
+  const reflectionPrompt = "Reflect deeply on your experience—what lessons stood out to you? Share your thoughts vividly, including any emotions or insights that made this moment meaningful.";
+
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-4xl mx-auto relative">
@@ -169,21 +172,19 @@ const Practice = () => {
             Your Practices
           </h1>
           
-          <div className="space-y-6">
-            <Textarea
-              value={actionTaken}
-              onChange={(e) => setActionTaken(e.target.value)}
-              placeholder="How did you turn your insights into action? Share the steps you took clearly—what inspired you and how you made it happen."
-              className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-              disabled={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
+          <div className="space-y-8">
+            <WriteInputLayout
+              question={actionPrompt}
+              answer={actionTaken}
+              onAnswerChange={setActionTaken}
+              isSubmitting={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
             />
             
-            <Textarea
-              value={reflection}
-              onChange={(e) => setReflection(e.target.value)}
-              placeholder="Reflect deeply on your experience—what lessons stood out to you? Share your thoughts vividly, including any emotions or insights that made this moment meaningful."
-              className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
-              disabled={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
+            <WriteInputLayout
+              question={reflectionPrompt}
+              answer={reflection}
+              onAnswerChange={setReflection}
+              isSubmitting={isLoading || (!analyses || analyses.length === 0) || hasWrittenThisWeek}
             />
           </div>
         </div>
