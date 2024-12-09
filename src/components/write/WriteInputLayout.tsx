@@ -1,4 +1,3 @@
-import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 
 interface WriteInputLayoutProps {
@@ -12,25 +11,17 @@ const WriteInputLayout = ({
   question,
   answer,
   onAnswerChange,
-  isSubmitting = false,
+  isSubmitting,
 }: WriteInputLayoutProps) => {
   return (
-    <div className="space-y-6">
-      {/* Question Section */}
-      <div className="bg-muted/30 p-6 rounded-lg border border-border">
-        <h2 className="text-xl font-serif mb-4">Question</h2>
-        <p className="text-lg text-card-foreground whitespace-pre-wrap">
-          {question}
-        </p>
-      </div>
-
-      {/* Answer Section */}
-      <div className="space-y-4">
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">{question}</p>
         <Textarea
           value={answer}
           onChange={(e) => onAnswerChange(e.target.value)}
-          placeholder="Click here to write down anything"
-          className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
+          placeholder="Tap here to share your reflections"
+          className="min-h-[200px] resize-none"
           disabled={isSubmitting}
         />
       </div>
