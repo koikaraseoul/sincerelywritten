@@ -5,8 +5,8 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-8">
-      <div className="max-w-2xl mx-auto relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
+      <div className="w-full max-w-2xl mx-auto relative">
         <div className="text-center space-y-8 animate-fadeIn">
           <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl font-bold text-gradient">
             Love?
@@ -23,7 +23,7 @@ const Index = () => {
             </div>
           </button>
 
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">
+          <p className="text-lg text-muted-foreground max-w-md mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             Begin your journey of love and reflection
           </p>
         </div>
