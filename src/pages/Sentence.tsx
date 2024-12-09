@@ -65,7 +65,7 @@ const Sentence = () => {
       if (sentenceError) throw sentenceError;
 
       toast({
-        title: "Reflection submitted",
+        title: "Journal submitted",
         description: "Your thoughts have been saved successfully.",
       });
 
@@ -75,7 +75,7 @@ const Sentence = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to submit reflection. Please try again.",
+        description: error.message || "Failed to submit journal. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -87,6 +87,8 @@ const Sentence = () => {
       Loading...
     </div>;
   }
+
+  const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
@@ -114,14 +116,14 @@ const Sentence = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Daily Reflection
+            Your Journals
           </h1>
 
           {dailySentence && <DailySentenceDisplay dailySentence={dailySentence} />}
 
           <div className="mt-8">
             <WriteInputLayout
-              question={dailySentence || "Loading..."}
+              question={reflectionPrompt}
               answer={content}
               onAnswerChange={setContent}
               isSubmitting={isSubmitting}

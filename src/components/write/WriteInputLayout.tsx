@@ -26,11 +26,10 @@ const WriteInputLayout = ({
 
       {/* Answer Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-serif">Your Answer</h2>
         <Textarea
           value={answer}
           onChange={(e) => onAnswerChange(e.target.value)}
-          placeholder="Share your thoughts and reflections..."
+          placeholder="Click here to write down anything"
           className="min-h-[200px] resize-y text-lg whitespace-pre-wrap"
           disabled={isSubmitting}
         />
