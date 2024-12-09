@@ -46,22 +46,32 @@ const Sentence = () => {
     },
   });
 
-  // Check if user has already submitted a journal entry today
+  // Check if user has already submitted a journal entry today using local timezone
   const { data: hasSubmittedToday } = useQuery({
     queryKey: ["todayEntry", session?.user.id, localDate],
     queryFn: async () => {
       if (!session?.user.id) return false;
 
-      const now = new Date();
-      const start = startOfDay(now);
-      const end = endOfDay(now);
+      // Convert the start and end of the local day to UTC for database query
+      const localStart = formatInTimeZone(
+        startOfDay(new Date()),
+        timezone,
+        "yyyy-MM-dd'T'HH:mm:ssXXX"
+      );
+      const localEnd = formatInTimeZone(
+        endOfDay(new Date()),
+        timezone,
+        "yyyy-MM-dd'T'HH:mm:ssXXX"
+      );
+
+      console.log('Checking submissions between:', localStart, 'and', localEnd);
 
       const { data, error } = await supabase
         .from("sentences")
         .select("id")
         .eq("user_id", session.user.id)
-        .gte("created_at", start.toISOString())
-        .lte("created_at", end.toISOString())
+        .gte("created_at", localStart)
+        .lte("created_at", localEnd)
         .limit(1);
 
       if (error) {
@@ -69,6 +79,7 @@ const Sentence = () => {
         return false;
       }
 
+      console.log('Found submissions:', data?.length > 0);
       return data && data.length > 0;
     },
     enabled: !!session?.user.id,
