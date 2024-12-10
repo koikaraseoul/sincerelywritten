@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface Analysis {
   id: string;
@@ -21,6 +21,7 @@ interface Analysis {
 const Analyze = () => {
   const navigate = useNavigate();
   const [selectedEntry, setSelectedEntry] = useState<Analysis | null>(null);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const { data: analyses, isLoading } = useQuery({
     queryKey: ["analyses"],
@@ -97,7 +98,7 @@ const Analyze = () => {
             {selectedEntry ? (
               <div className="space-y-4 animate-fadeIn">
                 <div className="text-lg text-muted-foreground text-center">
-                  {format(new Date(selectedEntry.created_at), "MMMM d, yyyy")}
+                  {formatInTimeZone(new Date(selectedEntry.created_at), timezone, "MMMM d, yyyy")}
                 </div>
                 <div className="text-lg whitespace-pre-wrap bg-card p-6 rounded-lg border border-border">
                   {selectedEntry.content}

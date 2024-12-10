@@ -38,7 +38,7 @@ const ReviewEntries = ({ entries, isLoading }: ReviewEntriesProps) => {
         const localDate = formatInTimeZone(
           new Date(entry.created_at),
           timezone,
-          'yyyy-MM-dd HH:mm:ss'
+          'MMMM d, yyyy HH:mm:ss'
         );
 
         return (

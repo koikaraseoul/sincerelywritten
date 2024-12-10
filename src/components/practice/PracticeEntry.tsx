@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface PracticeEntryProps {
   practice: {
@@ -9,6 +9,8 @@ interface PracticeEntryProps {
 }
 
 const PracticeEntry = ({ practice }: PracticeEntryProps) => {
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
   return (
     <div className="bg-card p-6 rounded-lg border border-border">
       <h2 className="text-xl font-serif mb-4">Actions Taken</h2>
@@ -20,7 +22,7 @@ const PracticeEntry = ({ practice }: PracticeEntryProps) => {
         {practice.reflection}
       </p>
       <p className="text-sm text-muted-foreground mt-4">
-        Written on: {format(new Date(practice.created_at), 'MMMM d, yyyy')}
+        Written on: {formatInTimeZone(new Date(practice.created_at), timezone, 'MMMM d, yyyy')}
       </p>
     </div>
   );
