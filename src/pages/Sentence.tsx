@@ -16,6 +16,7 @@ const Sentence = () => {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -30,22 +31,24 @@ const Sentence = () => {
   });
 
   const { data: dailySentence } = useQuery({
-    queryKey: ["dailySentence"],
+    queryKey: ["dailySentence", currentDate],
     queryFn: async () => {
+      console.log('Fetching daily sentence for date:', currentDate);
       const { data, error } = await supabase
         .from("daily_sentences")
         .select("content")
-        .eq("active_date", new Date().toISOString().split("T")[0])
+        .eq("active_date", currentDate)
         .single();
 
       if (error) throw error;
+      console.log('Daily sentence data:', data);
       return data?.content;
     },
   });
 
   // Check if user has already submitted a journal entry today
   const { data: hasSubmittedToday } = useQuery({
-    queryKey: ["todayEntry", session?.user.id],
+    queryKey: ["todayEntry", session?.user.id, currentDate],
     queryFn: async () => {
       if (!session?.user.id) return false;
 
@@ -100,7 +103,6 @@ const Sentence = () => {
       });
 
       setContent("");
-      navigate("/dashboard");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -151,7 +153,10 @@ const Sentence = () => {
           </h1>
 
           {dailySentence && (
-            <DailySentenceDisplay dailySentence={dailySentence} />
+            <DailySentenceDisplay 
+              dailySentence={dailySentence} 
+              showSentence={!hasSubmittedToday}
+            />
           )}
 
           <div className="mt-8">
