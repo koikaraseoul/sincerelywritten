@@ -15,6 +15,7 @@ const Sentence = () => {
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localSubmitted, setLocalSubmitted] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
@@ -97,6 +98,8 @@ const Sentence = () => {
 
       if (sentenceError) throw sentenceError;
 
+      setLocalSubmitted(true); // Set local submitted state immediately
+      
       toast({
         title: "Journal submitted",
         description: "Your thoughts have been saved successfully.",
@@ -123,14 +126,14 @@ const Sentence = () => {
   const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
 
   // Show message if user has already submitted today
-  if (hasSubmittedToday) {
+  if (hasSubmittedToday || localSubmitted) {
     return (
       <div className="min-h-screen bg-background text-foreground p-8">
         <div className="max-w-2xl mx-auto relative">
           <SentenceHeader 
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
-            hasSubmittedToday={hasSubmittedToday}
+            hasSubmittedToday={true}
           />
           <SubmittedMessage />
         </div>
@@ -144,7 +147,7 @@ const Sentence = () => {
         <SentenceHeader 
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
-          hasSubmittedToday={hasSubmittedToday}
+          hasSubmittedToday={hasSubmittedToday || localSubmitted}
         />
 
         <div className="mt-16">
@@ -155,7 +158,7 @@ const Sentence = () => {
           {dailySentence && (
             <DailySentenceDisplay 
               dailySentence={dailySentence} 
-              showSentence={!hasSubmittedToday}
+              showSentence={!hasSubmittedToday && !localSubmitted}
             />
           )}
 
@@ -164,7 +167,7 @@ const Sentence = () => {
               question={reflectionPrompt}
               answer={content}
               onAnswerChange={setContent}
-              isSubmitting={isSubmitting}
+              isSubmitting={isSubmitting || localSubmitted}
             />
           </div>
         </div>
