@@ -19,18 +19,6 @@ const Sentence = () => {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
-  // Check local storage for today's submission status on component mount
-  useEffect(() => {
-    const lastSubmissionDate = localStorage.getItem('lastSentenceSubmissionDate');
-    if (lastSubmissionDate === currentDate) {
-      setLocalSubmitted(true);
-    } else if (lastSubmissionDate !== null && lastSubmissionDate !== currentDate) {
-      // Clear local storage if it's a different day
-      localStorage.removeItem('lastSentenceSubmissionDate');
-      setLocalSubmitted(false);
-    }
-  }, [currentDate]);
-
   const { data: session } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
@@ -81,10 +69,30 @@ const Sentence = () => {
         return false;
       }
 
-      return data && data.length > 0;
+      // If we found an entry in the database, update local storage
+      if (data && data.length > 0) {
+        localStorage.setItem('lastSentenceSubmissionDate', currentDate);
+        setLocalSubmitted(true);
+        return true;
+      }
+
+      return false;
     },
     enabled: !!session?.user.id,
   });
+
+  // Check local storage for today's submission status on component mount
+  useEffect(() => {
+    const lastSubmissionDate = localStorage.getItem('lastSentenceSubmissionDate');
+    // Only set localSubmitted to true if we have both a local storage entry AND a database entry
+    if (lastSubmissionDate === currentDate && hasSubmittedToday) {
+      setLocalSubmitted(true);
+    } else if (lastSubmissionDate !== currentDate) {
+      // Clear local storage if it's a different day
+      localStorage.removeItem('lastSentenceSubmissionDate');
+      setLocalSubmitted(false);
+    }
+  }, [currentDate, hasSubmittedToday]);
 
   const handleSubmit = async () => {
     if (!content.trim() || !session?.user.id || hasSubmittedToday) return;
