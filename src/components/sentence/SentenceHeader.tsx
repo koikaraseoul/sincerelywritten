@@ -27,9 +27,9 @@ const SentenceHeader = ({ onSubmit, isSubmitting, hasSubmittedToday }: SentenceH
         size="icon"
         onClick={onSubmit}
         disabled={isSubmitting || hasSubmittedToday}
-        className="absolute right-0"
+        className={`absolute right-0 ${(isSubmitting || hasSubmittedToday) ? "opacity-50" : ""}`}
       >
-        <Mail className="h-6 w-6" />
+        <Mail className={`h-6 w-6 ${(isSubmitting || hasSubmittedToday) ? "text-muted-foreground" : ""}`} />
       </Button>
     </div>
   );
