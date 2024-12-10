@@ -20,7 +20,7 @@ const WriteInputLayout = ({
         <Textarea
           value={answer}
           onChange={(e) => onAnswerChange(e.target.value)}
-          placeholder="Tap here to share your reflections"
+          placeholder="Tap here to tell your story"
           className="min-h-[200px] resize-none"
           disabled={isSubmitting}
         />
