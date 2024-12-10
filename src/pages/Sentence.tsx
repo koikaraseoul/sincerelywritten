@@ -15,7 +15,7 @@ const Sentence = () => {
   const { toast } = useToast();
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [localSubmitted, setLocalSubmitted] = useState(false);
+  const [hasSubmittedLocally, setHasSubmittedLocally] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
@@ -47,7 +47,7 @@ const Sentence = () => {
     },
   });
 
-  const { data: hasSubmittedToday } = useQuery({
+  const { data: hasSubmittedToday, refetch: refetchSubmissionStatus } = useQuery({
     queryKey: ["todayEntry", session?.user.id, currentDate],
     queryFn: async () => {
       if (!session?.user.id) return false;
@@ -55,6 +55,8 @@ const Sentence = () => {
       const now = new Date();
       const start = startOfDay(now);
       const end = endOfDay(now);
+
+      console.log('Checking for today\'s entry between:', start, 'and', end);
 
       const { data, error } = await supabase
         .from("sentences")
@@ -69,33 +71,29 @@ const Sentence = () => {
         return false;
       }
 
-      // If we found an entry in the database, update local storage
-      if (data && data.length > 0) {
-        localStorage.setItem('lastSentenceSubmissionDate', currentDate);
-        setLocalSubmitted(true);
-        return true;
-      }
-
-      return false;
+      console.log('Found entries for today:', data?.length || 0);
+      return data && data.length > 0;
     },
     enabled: !!session?.user.id,
   });
 
-  // Check local storage for today's submission status on component mount
+  // Check submission status on component mount and after submissions
   useEffect(() => {
-    const lastSubmissionDate = localStorage.getItem('lastSentenceSubmissionDate');
-    // Only set localSubmitted to true if we have both a local storage entry AND a database entry
-    if (lastSubmissionDate === currentDate && hasSubmittedToday) {
-      setLocalSubmitted(true);
-    } else if (lastSubmissionDate !== currentDate) {
-      // Clear local storage if it's a different day
-      localStorage.removeItem('lastSentenceSubmissionDate');
-      setLocalSubmitted(false);
+    if (hasSubmittedToday) {
+      setHasSubmittedLocally(true);
     }
-  }, [currentDate, hasSubmittedToday]);
+  }, [hasSubmittedToday]);
 
   const handleSubmit = async () => {
-    if (!content.trim() || !session?.user.id || hasSubmittedToday) return;
+    if (!content.trim() || !session?.user.id || hasSubmittedToday || hasSubmittedLocally) {
+      console.log('Submission blocked:', {
+        hasContent: !!content.trim(),
+        hasSession: !!session?.user.id,
+        hasSubmittedToday,
+        hasSubmittedLocally
+      });
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -105,6 +103,8 @@ const Sentence = () => {
         timezone,
         "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
+
+      console.log('Submitting entry with timestamp:', localTimestamp);
 
       const { error: sentenceError } = await supabase
         .from("sentences")
@@ -117,9 +117,8 @@ const Sentence = () => {
 
       if (sentenceError) throw sentenceError;
 
-      // Store submission date in local storage
-      localStorage.setItem('lastSentenceSubmissionDate', currentDate);
-      setLocalSubmitted(true);
+      setHasSubmittedLocally(true);
+      await refetchSubmissionStatus();
       
       toast({
         title: "Journal submitted",
@@ -128,6 +127,7 @@ const Sentence = () => {
 
       setContent("");
     } catch (error: any) {
+      console.error('Submission error:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -147,7 +147,7 @@ const Sentence = () => {
   const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
 
   // Show message if user has already submitted today
-  if (hasSubmittedToday || localSubmitted) {
+  if (hasSubmittedToday || hasSubmittedLocally) {
     return (
       <div className="min-h-screen bg-background text-foreground p-8">
         <div className="max-w-2xl mx-auto relative">
@@ -168,7 +168,7 @@ const Sentence = () => {
         <SentenceHeader 
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
-          hasSubmittedToday={hasSubmittedToday || localSubmitted}
+          hasSubmittedToday={hasSubmittedToday || hasSubmittedLocally}
         />
 
         <div className="mt-16">
@@ -179,7 +179,7 @@ const Sentence = () => {
           {dailySentence && (
             <DailySentenceDisplay 
               dailySentence={dailySentence} 
-              showSentence={!hasSubmittedToday && !localSubmitted}
+              showSentence={!hasSubmittedToday && !hasSubmittedLocally}
             />
           )}
 
@@ -188,7 +188,7 @@ const Sentence = () => {
               question={reflectionPrompt}
               answer={content}
               onAnswerChange={setContent}
-              isSubmitting={isSubmitting || localSubmitted}
+              isSubmitting={isSubmitting || hasSubmittedLocally}
             />
           </div>
         </div>
