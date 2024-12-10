@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +18,18 @@ const Sentence = () => {
   const [localSubmitted, setLocalSubmitted] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
+
+  // Check local storage for today's submission status on component mount
+  useEffect(() => {
+    const lastSubmissionDate = localStorage.getItem('lastSentenceSubmissionDate');
+    if (lastSubmissionDate === currentDate) {
+      setLocalSubmitted(true);
+    } else if (lastSubmissionDate !== null && lastSubmissionDate !== currentDate) {
+      // Clear local storage if it's a different day
+      localStorage.removeItem('lastSentenceSubmissionDate');
+      setLocalSubmitted(false);
+    }
+  }, [currentDate]);
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -47,7 +59,6 @@ const Sentence = () => {
     },
   });
 
-  // Check if user has already submitted a journal entry today
   const { data: hasSubmittedToday } = useQuery({
     queryKey: ["todayEntry", session?.user.id, currentDate],
     queryFn: async () => {
@@ -98,7 +109,9 @@ const Sentence = () => {
 
       if (sentenceError) throw sentenceError;
 
-      setLocalSubmitted(true); // Set local submitted state immediately
+      // Store submission date in local storage
+      localStorage.setItem('lastSentenceSubmissionDate', currentDate);
+      setLocalSubmitted(true);
       
       toast({
         title: "Journal submitted",
