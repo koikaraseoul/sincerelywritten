@@ -61,7 +61,6 @@ const Question = () => {
     }
   };
 
-  // Check cooldown period on mount and when lastQuestion changes
   useEffect(() => {
     checkCooldownPeriod();
   }, [lastQuestion?.created_at]);
@@ -78,18 +77,23 @@ const Question = () => {
         "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
 
+      console.log('Submitting question with user email:', session.user.email);
+
       const { error: questionError } = await supabase
         .from("questions")
         .insert({
           content: question.trim(),
           user_id: session.user.id,
           status: 'pending',
-          created_at: localTimestamp
+          created_at: localTimestamp,
+          email: session.user.email // Add the user's email here
         });
 
-      if (questionError) throw questionError;
+      if (questionError) {
+        console.error('Error submitting question:', questionError);
+        throw questionError;
+      }
 
-      // Refetch last question to update the cooldown state
       await refetchLastQuestion();
       setHasSubmittedRecently(true);
       
@@ -101,6 +105,7 @@ const Question = () => {
       setQuestion("");
       navigate("/dashboard");
     } catch (error: any) {
+      console.error('Submission error:', error);
       toast({
         variant: "destructive",
         title: "Error",
