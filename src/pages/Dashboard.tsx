@@ -73,6 +73,7 @@ const Dashboard = () => {
                   <p><span className="font-medium">2. Review:</span> Look back at your past writings by date.</p>
                   <p><span className="font-medium">3. Analysis:</span> Get insights to help you understand yourself better.</p>
                   <p><span className="font-medium">4. Practice:</span> Turn insights into actions and learn from them.</p>
+                  <p className="pt-2 italic text-muted-foreground">Start journaling today to let your story unfold and embark on a journey of self-discovery.</p>
                 </div>
               </div>
             </PopoverContent>
