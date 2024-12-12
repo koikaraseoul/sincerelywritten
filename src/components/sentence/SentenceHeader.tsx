@@ -6,9 +6,10 @@ interface SentenceHeaderProps {
   onSubmit: () => void;
   isSubmitting: boolean;
   hasSubmittedToday: boolean;
+  content: string;
 }
 
-const SentenceHeader = ({ onSubmit, isSubmitting, hasSubmittedToday }: SentenceHeaderProps) => {
+const SentenceHeader = ({ onSubmit, isSubmitting, hasSubmittedToday, content }: SentenceHeaderProps) => {
   const navigate = useNavigate();
 
   return (
@@ -26,10 +27,10 @@ const SentenceHeader = ({ onSubmit, isSubmitting, hasSubmittedToday }: SentenceH
         variant="ghost"
         size="icon"
         onClick={onSubmit}
-        disabled={isSubmitting || hasSubmittedToday}
-        className={`absolute right-0 ${(isSubmitting || hasSubmittedToday) ? "opacity-50" : ""}`}
+        disabled={isSubmitting || hasSubmittedToday || !content.trim()}
+        className={`absolute right-0 ${(isSubmitting || hasSubmittedToday || !content.trim()) ? "opacity-50" : ""}`}
       >
-        <Mail className={`h-6 w-6 ${(isSubmitting || hasSubmittedToday) ? "text-muted-foreground" : ""}`} />
+        <Mail className={`h-6 w-6 ${(isSubmitting || hasSubmittedToday || !content.trim()) ? "text-muted-foreground" : ""}`} />
       </Button>
     </div>
   );

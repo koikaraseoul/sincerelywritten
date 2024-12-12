@@ -16,7 +16,6 @@ const Sentence = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [content, setContent] = useState(() => {
-    // Initialize content from localStorage if available
     return localStorage.getItem(DRAFT_KEY) || "";
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,7 +81,6 @@ const Sentence = () => {
     enabled: !!session?.user.id,
   });
 
-  // Save draft to localStorage whenever content changes
   useEffect(() => {
     if (content && !hasSubmittedToday && !hasSubmittedLocally) {
       localStorage.setItem(DRAFT_KEY, content);
@@ -90,7 +88,6 @@ const Sentence = () => {
     }
   }, [content, hasSubmittedToday, hasSubmittedLocally]);
 
-  // Clear draft after successful submission
   useEffect(() => {
     if (hasSubmittedToday || hasSubmittedLocally) {
       localStorage.removeItem(DRAFT_KEY);
@@ -98,7 +95,6 @@ const Sentence = () => {
     }
   }, [hasSubmittedToday, hasSubmittedLocally]);
 
-  // Check submission status on component mount and after submissions
   useEffect(() => {
     if (hasSubmittedToday) {
       setHasSubmittedLocally(true);
@@ -169,7 +165,6 @@ const Sentence = () => {
 
   const reflectionPrompt = "What personal experiences or emotions come to mind when you read sentence, and why? Reflect on how it connects to your life, values, or experiences, and let your thoughts flow to uncover new insights or emotions.";
 
-  // Show message if user has already submitted today
   if (hasSubmittedToday || hasSubmittedLocally) {
     return (
       <div className="min-h-screen bg-background text-foreground p-8">
@@ -178,6 +173,7 @@ const Sentence = () => {
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             hasSubmittedToday={true}
+            content={content}
           />
           <SubmittedMessage />
         </div>
@@ -192,6 +188,7 @@ const Sentence = () => {
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
           hasSubmittedToday={hasSubmittedToday || hasSubmittedLocally}
+          content={content}
         />
 
         <div className="mt-16">
