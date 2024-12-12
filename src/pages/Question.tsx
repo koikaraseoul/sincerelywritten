@@ -9,10 +9,17 @@ import { addDays, isBefore, parseISO } from "date-fns";
 import { formatInTimeZone } from 'date-fns-tz';
 import WriteInputLayout from "@/components/write/WriteInputLayout";
 
+const QUESTION_DRAFT_KEY = 'question_draft';
+
 const Question = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [question, setQuestion] = useState("");
+  const [question, setQuestion] = useState(() => {
+    // Initialize content from localStorage if available
+    const draft = localStorage.getItem(QUESTION_DRAFT_KEY);
+    console.log('Retrieved question draft:', draft);
+    return draft || "";
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmittedRecently, setHasSubmittedRecently] = useState(false);
 
@@ -46,6 +53,22 @@ const Question = () => {
     enabled: !!session?.user.id,
   });
 
+  // Save draft to localStorage whenever content changes
+  useEffect(() => {
+    if (question && !hasSubmittedRecently) {
+      localStorage.setItem(QUESTION_DRAFT_KEY, question);
+      console.log('Saved question draft to localStorage');
+    }
+  }, [question, hasSubmittedRecently]);
+
+  // Clear draft if user has submitted recently
+  useEffect(() => {
+    if (hasSubmittedRecently) {
+      localStorage.removeItem(QUESTION_DRAFT_KEY);
+      console.log('Cleared question draft - already submitted recently');
+    }
+  }, [hasSubmittedRecently]);
+
   const checkCooldownPeriod = () => {
     if (lastQuestion?.created_at) {
       const cooldownPeriod = addDays(parseISO(lastQuestion.created_at), 4);
@@ -53,6 +76,7 @@ const Question = () => {
       setHasSubmittedRecently(isInCooldown);
 
       if (isInCooldown) {
+        localStorage.removeItem(QUESTION_DRAFT_KEY); // Clear draft if in cooldown
         toast({
           title: "Take a Breather",
           description: "Your next question will be available in a few days.",
@@ -86,7 +110,7 @@ const Question = () => {
           user_id: session.user.id,
           status: 'pending',
           created_at: localTimestamp,
-          email: session.user.email // Add the user's email here
+          email: session.user.email
         });
 
       if (questionError) {
@@ -96,6 +120,7 @@ const Question = () => {
 
       await refetchLastQuestion();
       setHasSubmittedRecently(true);
+      localStorage.removeItem(QUESTION_DRAFT_KEY); // Clear draft after successful submission
       
       toast({
         title: "Question submitted",
