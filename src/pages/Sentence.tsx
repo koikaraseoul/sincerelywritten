@@ -10,10 +10,15 @@ import SentenceHeader from "@/components/sentence/SentenceHeader";
 import SubmittedMessage from "@/components/sentence/SubmittedMessage";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 
+const DRAFT_KEY = 'sentence_draft';
+
 const Sentence = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(() => {
+    // Initialize content from localStorage if available
+    return localStorage.getItem(DRAFT_KEY) || "";
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmittedLocally, setHasSubmittedLocally] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -77,10 +82,27 @@ const Sentence = () => {
     enabled: !!session?.user.id,
   });
 
+  // Save draft to localStorage whenever content changes
+  useEffect(() => {
+    if (content && !hasSubmittedToday && !hasSubmittedLocally) {
+      localStorage.setItem(DRAFT_KEY, content);
+      console.log('Saved draft to localStorage');
+    }
+  }, [content, hasSubmittedToday, hasSubmittedLocally]);
+
+  // Clear draft after successful submission
+  useEffect(() => {
+    if (hasSubmittedToday || hasSubmittedLocally) {
+      localStorage.removeItem(DRAFT_KEY);
+      console.log('Cleared draft from localStorage after submission');
+    }
+  }, [hasSubmittedToday, hasSubmittedLocally]);
+
   // Check submission status on component mount and after submissions
   useEffect(() => {
     if (hasSubmittedToday) {
       setHasSubmittedLocally(true);
+      localStorage.removeItem(DRAFT_KEY); // Clear draft if already submitted
     }
   }, [hasSubmittedToday]);
 
@@ -125,6 +147,7 @@ const Sentence = () => {
         description: "Your thoughts have been saved successfully.",
       });
 
+      localStorage.removeItem(DRAFT_KEY); // Clear draft after successful submission
       setContent("");
     } catch (error: any) {
       console.error('Submission error:', error);
