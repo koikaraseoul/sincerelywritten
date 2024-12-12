@@ -8,11 +8,37 @@ import { useQuery } from "@tanstack/react-query";
 import { startOfWeek, endOfWeek } from "date-fns";
 import WriteInputLayout from "@/components/write/WriteInputLayout";
 
+const PRACTICE_DRAFT_KEY = 'practice_draft';
+
 const Practice = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [actionTaken, setActionTaken] = useState("");
-  const [reflection, setReflection] = useState("");
+  const [actionTaken, setActionTaken] = useState(() => {
+    const draft = localStorage.getItem(PRACTICE_DRAFT_KEY);
+    if (draft) {
+      try {
+        const { actionTaken } = JSON.parse(draft);
+        return actionTaken || "";
+      } catch (e) {
+        console.error('Error parsing draft:', e);
+        return "";
+      }
+    }
+    return "";
+  });
+  const [reflection, setReflection] = useState(() => {
+    const draft = localStorage.getItem(PRACTICE_DRAFT_KEY);
+    if (draft) {
+      try {
+        const { reflection } = JSON.parse(draft);
+        return reflection || "";
+      } catch (e) {
+        console.error('Error parsing draft:', e);
+        return "";
+      }
+    }
+    return "";
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [hasWrittenThisWeek, setHasWrittenThisWeek] = useState(false);
 
@@ -78,6 +104,23 @@ const Practice = () => {
     }
   }, [analyses, analysesLoading, toast]);
 
+  // Save draft to localStorage whenever content changes
+  useEffect(() => {
+    if ((actionTaken || reflection) && !hasWrittenThisWeek) {
+      const draft = JSON.stringify({ actionTaken, reflection });
+      localStorage.setItem(PRACTICE_DRAFT_KEY, draft);
+      console.log('Saved practice draft to localStorage');
+    }
+  }, [actionTaken, reflection, hasWrittenThisWeek]);
+
+  // Clear draft if user has already written this week
+  useEffect(() => {
+    if (hasWrittenThisWeek) {
+      localStorage.removeItem(PRACTICE_DRAFT_KEY);
+      console.log('Cleared practice draft - already written this week');
+    }
+  }, [hasWrittenThisWeek]);
+
   const handleSave = async () => {
     if (!actionTaken.trim() || !reflection.trim()) {
       toast({
@@ -126,6 +169,7 @@ const Practice = () => {
         description: "Your growth is on track! A new record unlocks each week—take action, reflect, and get ready to share your journey.",
       });
 
+      localStorage.removeItem(PRACTICE_DRAFT_KEY); // Clear draft after successful submission
       setActionTaken("");
       setReflection("");
       setHasWrittenThisWeek(true);
