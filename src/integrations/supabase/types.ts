@@ -166,6 +166,7 @@ export type Database = {
           content: string
           created_at: string
           daily_sentence: string
+          email: string
           id: string
           user_id: string
         }
@@ -173,6 +174,7 @@ export type Database = {
           content: string
           created_at?: string
           daily_sentence: string
+          email: string
           id?: string
           user_id: string
         }
@@ -180,6 +182,7 @@ export type Database = {
           content?: string
           created_at?: string
           daily_sentence?: string
+          email?: string
           id?: string
           user_id?: string
         }

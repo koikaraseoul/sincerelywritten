@@ -26,11 +26,19 @@ const Sentence = () => {
   const { data: session } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
+      console.log('Fetching session data...');
       const { data: { session }, error } = await supabase.auth.getSession();
-      if (error || !session) {
+      if (error) {
+        console.error('Session fetch error:', error);
         navigate("/login");
         return null;
       }
+      if (!session) {
+        console.log('No active session found, redirecting to login');
+        navigate("/login");
+        return null;
+      }
+      console.log('Session fetched successfully for user:', session.user.email);
       return session;
     },
   });
@@ -45,8 +53,11 @@ const Sentence = () => {
         .eq("active_date", currentDate)
         .single();
 
-      if (error) throw error;
-      console.log('Daily sentence data:', data);
+      if (error) {
+        console.error('Daily sentence fetch error:', error);
+        throw error;
+      }
+      console.log('Daily sentence fetched successfully:', data?.content);
       return data?.content;
     },
   });
@@ -54,7 +65,10 @@ const Sentence = () => {
   const { data: hasSubmittedToday, refetch: refetchSubmissionStatus } = useQuery({
     queryKey: ["todayEntry", session?.user.id, currentDate],
     queryFn: async () => {
-      if (!session?.user.id) return false;
+      if (!session?.user.id) {
+        console.log('No user ID available for submission check');
+        return false;
+      }
 
       const now = new Date();
       const start = startOfDay(now);
@@ -103,6 +117,8 @@ const Sentence = () => {
   }, [hasSubmittedToday]);
 
   const handleSubmit = async () => {
+    console.log('Starting journal submission process...');
+    
     if (!content.trim() || !session?.user.id || hasSubmittedToday || hasSubmittedLocally) {
       console.log('Submission blocked:', {
         hasContent: !!content.trim(),
@@ -122,7 +138,11 @@ const Sentence = () => {
         "yyyy-MM-dd'T'HH:mm:ssXXX"
       );
 
-      console.log('Submitting entry with timestamp:', localTimestamp);
+      console.log('Preparing submission with:', {
+        timestamp: localTimestamp,
+        userEmail: session.user.email,
+        contentLength: content.trim().length
+      });
 
       const { error: sentenceError } = await supabase
         .from("sentences")
@@ -130,11 +150,16 @@ const Sentence = () => {
           content: content.trim(),
           user_id: session.user.id,
           daily_sentence: dailySentence,
-          created_at: localTimestamp
+          created_at: localTimestamp,
+          email: session.user.email // Adding email from session
         });
 
-      if (sentenceError) throw sentenceError;
+      if (sentenceError) {
+        console.error('Submission error:', sentenceError);
+        throw sentenceError;
+      }
 
+      console.log('Journal entry submitted successfully');
       setHasSubmittedLocally(true);
       await refetchSubmissionStatus();
       
@@ -143,7 +168,7 @@ const Sentence = () => {
         description: "Your thoughts have been saved successfully.",
       });
 
-      localStorage.removeItem(DRAFT_KEY); // Clear draft after successful submission
+      localStorage.removeItem(DRAFT_KEY);
       setContent("");
     } catch (error: any) {
       console.error('Submission error:', error);
