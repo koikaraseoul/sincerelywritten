@@ -87,6 +87,7 @@ export type Database = {
         Row: {
           action_taken: string
           created_at: string
+          email: string
           id: string
           reflection: string
           user_id: string
@@ -94,6 +95,7 @@ export type Database = {
         Insert: {
           action_taken: string
           created_at?: string
+          email: string
           id?: string
           reflection: string
           user_id: string
@@ -101,6 +103,7 @@ export type Database = {
         Update: {
           action_taken?: string
           created_at?: string
+          email?: string
           id?: string
           reflection?: string
           user_id?: string

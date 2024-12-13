@@ -42,18 +42,46 @@ const Practice = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasWrittenThisWeek, setHasWrittenThisWeek] = useState(false);
 
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      console.log('Fetching session data...');
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Session fetch error:', error);
+        navigate("/login");
+        return null;
+      }
+      if (!session) {
+        console.log('No active session found, redirecting to login');
+        navigate("/login");
+        return null;
+      }
+      console.log('Session fetched successfully for user:', session.user.email);
+      return session;
+    },
+  });
+
   const { data: analyses, isLoading: analysesLoading } = useQuery({
     queryKey: ["analyses"],
     queryFn: async () => {
+      console.log('Fetching analyses...');
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        console.log('No user found for analyses fetch');
+        throw new Error("Not authenticated");
+      }
 
       const { data, error } = await supabase
         .from("analyses")
         .select("*")
         .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Analyses fetch error:', error);
+        throw error;
+      }
+      console.log('Analyses fetched successfully, count:', data?.length);
       return data;
     }
   });
@@ -61,11 +89,17 @@ const Practice = () => {
   const { data: weeklyPractice, isLoading: practiceLoading } = useQuery({
     queryKey: ["weekly-practice"],
     queryFn: async () => {
+      console.log('Checking weekly practice entries...');
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        console.log('No user found for weekly practice check');
+        throw new Error("Not authenticated");
+      }
 
       const start = startOfWeek(new Date());
       const end = endOfWeek(new Date());
+
+      console.log('Checking practice entries between:', start, 'and', end);
 
       const { data, error } = await supabase
         .from("practices")
@@ -74,7 +108,11 @@ const Practice = () => {
         .gte("created_at", start.toISOString())
         .lte("created_at", end.toISOString());
 
-      if (error) throw error;
+      if (error) {
+        console.error('Weekly practice fetch error:', error);
+        throw error;
+      }
+      console.log('Weekly practice entries found:', data?.length);
       return data;
     }
   });
@@ -122,7 +160,10 @@ const Practice = () => {
   }, [hasWrittenThisWeek]);
 
   const handleSave = async () => {
+    console.log('Starting practice submission process...');
+    
     if (!actionTaken.trim() || !reflection.trim()) {
+      console.log('Submission blocked: empty fields');
       toast({
         variant: "destructive",
         title: "Error",
@@ -132,6 +173,7 @@ const Practice = () => {
     }
 
     if (hasWrittenThisWeek) {
+      console.log('Submission blocked: already written this week');
       toast({
         variant: "destructive",
         title: "Weekly limit reached",
@@ -145,6 +187,7 @@ const Practice = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
+        console.log('No user found, redirecting to login');
         toast({
           variant: "destructive",
           title: "Authentication Required",
@@ -154,22 +197,34 @@ const Practice = () => {
         return;
       }
 
+      console.log('Preparing submission with:', {
+        userId: user.id,
+        email: user.email,
+        actionLength: actionTaken.trim().length,
+        reflectionLength: reflection.trim().length
+      });
+
       const { error } = await supabase
         .from('practices')
         .insert({
           user_id: user.id,
           action_taken: actionTaken.trim(),
           reflection: reflection.trim(),
+          email: user.email // Adding email from session
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Save error:', error);
+        throw error;
+      }
 
+      console.log('Practice entry submitted successfully');
       toast({
         title: "Growth in Progress!",
         description: "Your growth is on track! A new record unlocks each week—take action, reflect, and get ready to share your journey.",
       });
 
-      localStorage.removeItem(PRACTICE_DRAFT_KEY); // Clear draft after successful submission
+      localStorage.removeItem(PRACTICE_DRAFT_KEY);
       setActionTaken("");
       setReflection("");
       setHasWrittenThisWeek(true);
