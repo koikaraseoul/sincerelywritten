@@ -13,21 +13,18 @@ export type Database = {
         Row: {
           content: string
           created_at: string
-          email: string
           id: string
           user_id: string
         }
         Insert: {
           content: string
           created_at?: string
-          email: string
           id?: string
           user_id: string
         }
         Update: {
           content?: string
           created_at?: string
-          email?: string
           id?: string
           user_id?: string
         }
@@ -37,21 +34,18 @@ export type Database = {
         Row: {
           content: string
           created_at: string
-          email: string
           id: string
           question_id: string
         }
         Insert: {
           content: string
           created_at?: string
-          email: string
           id?: string
           question_id: string
         }
         Update: {
           content?: string
           created_at?: string
-          email?: string
           id?: string
           question_id?: string
         }
