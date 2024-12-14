@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sincerelywritten-v3'; // Increment cache version
+const CACHE_NAME = 'sincerelywritten-v4'; // Increment cache version
 const urlsToCache = [
   '/',
   '/index.html',
@@ -16,42 +16,51 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        // Force the new service worker to take control immediately
+        console.log('Cache populated successfully');
         return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('Cache population failed:', error);
       })
   );
 });
 
 self.addEventListener('fetch', (event) => {
+  // Special handling for icon requests
+  if (event.request.url.match(/\.(png|jpg|jpeg|gif|svg)$/)) {
+    console.log('Fetching image:', event.request.url);
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Cache hit - return response
         if (response) {
+          console.log('Found in cache:', event.request.url);
           return response;
         }
 
-        // Clone the request because it's a one-time use stream
         const fetchRequest = event.request.clone();
-
+        
         return fetch(fetchRequest).then(
           (response) => {
-            // Check if we received a valid response
             if(!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response because it's a one-time use stream
             const responseToCache = response.clone();
 
             caches.open(CACHE_NAME)
               .then((cache) => {
+                console.log('Caching new response for:', event.request.url);
                 cache.put(event.request, responseToCache);
               });
 
             return response;
           }
-        );
+        ).catch(error => {
+          console.error('Fetch failed:', error);
+          throw error;
+        });
       })
   );
 });
@@ -72,7 +81,6 @@ self.addEventListener('activate', (event) => {
     })
     .then(() => {
       console.log('Service Worker activated');
-      // Take control of all clients immediately
       return self.clients.claim();
     })
   );
