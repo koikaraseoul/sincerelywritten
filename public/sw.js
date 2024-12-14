@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sincerelywritten-v4'; // Increment cache version
+const CACHE_NAME = 'sincerelywritten-v5'; // Increment cache version
 const urlsToCache = [
   '/',
   '/index.html',
@@ -12,15 +12,16 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        console.log('Opening cache and adding resources...');
+        return cache.addAll(urlsToCache).then(() => {
+          console.log('Successfully cached all resources');
+        }).catch(error => {
+          console.error('Failed to cache resources:', error);
+        });
       })
       .then(() => {
         console.log('Cache populated successfully');
         return self.skipWaiting();
-      })
-      .catch((error) => {
-        console.error('Cache population failed:', error);
       })
   );
 });
@@ -28,7 +29,19 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   // Special handling for icon requests
   if (event.request.url.match(/\.(png|jpg|jpeg|gif|svg)$/)) {
-    console.log('Fetching image:', event.request.url);
+    console.log('Fetching icon/image:', event.request.url);
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          console.log('Icon fetch successful:', event.request.url);
+          return response;
+        })
+        .catch(error => {
+          console.error('Icon fetch failed:', error);
+          return caches.match(event.request);
+        })
+    );
+    return;
   }
   
   event.respondWith(
