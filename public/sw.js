@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sincerelywritten-v5'; // Increment cache version
+const CACHE_NAME = 'sincerelywritten-v6';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -13,11 +13,20 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opening cache and adding resources...');
-        return cache.addAll(urlsToCache).then(() => {
-          console.log('Successfully cached all resources');
-        }).catch(error => {
-          console.error('Failed to cache resources:', error);
-        });
+        return Promise.all(
+          urlsToCache.map(url =>
+            fetch(url)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(`Failed to fetch ${url}`);
+                }
+                return cache.put(url, response);
+              })
+              .catch(error => {
+                console.error(`Failed to cache ${url}:`, error);
+              })
+          )
+        );
       })
       .then(() => {
         console.log('Cache populated successfully');
@@ -27,65 +36,53 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Special handling for icon requests
   if (event.request.url.match(/\.(png|jpg|jpeg|gif|svg)$/)) {
-    console.log('Fetching icon/image:', event.request.url);
     event.respondWith(
-      fetch(event.request)
+      caches.match(event.request)
         .then(response => {
-          console.log('Icon fetch successful:', event.request.url);
-          return response;
-        })
-        .catch(error => {
-          console.error('Icon fetch failed:', error);
-          return caches.match(event.request);
+          if (response) {
+            console.log('Found icon in cache:', event.request.url);
+            return response;
+          }
+          console.log('Fetching icon:', event.request.url);
+          return fetch(event.request)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return caches.open(CACHE_NAME)
+                .then(cache => {
+                  cache.put(event.request, response.clone());
+                  return response;
+                });
+            })
+            .catch(error => {
+              console.error('Error fetching icon:', error);
+              return new Response('Icon not found', { status: 404 });
+            });
         })
     );
     return;
   }
-  
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
         if (response) {
-          console.log('Found in cache:', event.request.url);
           return response;
         }
-
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest).then(
-          (response) => {
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                console.log('Caching new response for:', event.request.url);
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        ).catch(error => {
-          console.error('Fetch failed:', error);
-          throw error;
-        });
+        return fetch(event.request);
       })
   );
 });
 
 self.addEventListener('activate', (event) => {
   console.log('Activating new service worker...');
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          if (cacheName !== CACHE_NAME) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
