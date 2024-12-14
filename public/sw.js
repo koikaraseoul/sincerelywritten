@@ -1,10 +1,10 @@
-const CACHE_NAME = 'sincerelywritten-v6';
+const CACHE_NAME = 'sincerelywritten-v7';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192x192.png',
-  '/icon-512x512.png'
+  './',
+  './index.html',
+  './manifest.json',
+  './icon-192x192.png',
+  './icon-512x512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
         console.log('Opening cache and adding resources...');
         return Promise.all(
           urlsToCache.map(url =>
-            fetch(url)
+            fetch(url, { cache: 'no-cache' })
               .then(response => {
                 if (!response.ok) {
                   throw new Error(`Failed to fetch ${url}`);
@@ -36,7 +36,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.match(/\.(png|jpg|jpeg|gif|svg)$/)) {
+  if (event.request.url.includes('.png')) {
     event.respondWith(
       caches.match(event.request)
         .then(response => {
