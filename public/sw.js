@@ -1,10 +1,10 @@
-const CACHE_NAME = 'sincerelywritten-v8';
+const CACHE_NAME = 'sincerelywritten-v9';
 const urlsToCache = [
   './',
-  './index.html',
-  './manifest.json',
-  './icon-192x192.png',
-  './icon-512x512.png'
+  'index.html',
+  'manifest.json',
+  'icon-192x192.png',
+  'icon-512x512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -20,7 +20,7 @@ self.addEventListener('install', (event) => {
               mode: 'no-cors'
             })
             .then(response => {
-              if (!response.ok && !response.type === 'opaque') {
+              if (!response.ok && response.type !== 'opaque') {
                 throw new Error(`Failed to fetch ${url}`);
               }
               console.log(`Successfully cached: ${url}`);
@@ -51,7 +51,7 @@ self.addEventListener('fetch', (event) => {
           console.log('Fetching icon:', event.request.url);
           return fetch(event.request, { mode: 'no-cors' })
             .then(response => {
-              if (!response.ok && !response.type === 'opaque') {
+              if (!response.ok && response.type !== 'opaque') {
                 throw new Error('Network response was not ok');
               }
               return caches.open(CACHE_NAME)
