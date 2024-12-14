@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sincerelywritten-v7';
+const CACHE_NAME = 'sincerelywritten-v8';
 const urlsToCache = [
   './',
   './index.html',
@@ -15,16 +15,20 @@ self.addEventListener('install', (event) => {
         console.log('Opening cache and adding resources...');
         return Promise.all(
           urlsToCache.map(url =>
-            fetch(url, { cache: 'no-cache' })
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error(`Failed to fetch ${url}`);
-                }
-                return cache.put(url, response);
-              })
-              .catch(error => {
-                console.error(`Failed to cache ${url}:`, error);
-              })
+            fetch(url, { 
+              cache: 'no-cache',
+              mode: 'no-cors'
+            })
+            .then(response => {
+              if (!response.ok && !response.type === 'opaque') {
+                throw new Error(`Failed to fetch ${url}`);
+              }
+              console.log(`Successfully cached: ${url}`);
+              return cache.put(url, response);
+            })
+            .catch(error => {
+              console.error(`Failed to cache ${url}:`, error);
+            })
           )
         );
       })
@@ -45,9 +49,9 @@ self.addEventListener('fetch', (event) => {
             return response;
           }
           console.log('Fetching icon:', event.request.url);
-          return fetch(event.request)
+          return fetch(event.request, { mode: 'no-cors' })
             .then(response => {
-              if (!response.ok) {
+              if (!response.ok && !response.type === 'opaque') {
                 throw new Error('Network response was not ok');
               }
               return caches.open(CACHE_NAME)
