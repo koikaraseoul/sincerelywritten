@@ -96,8 +96,9 @@ const Practice = () => {
         throw new Error("Not authenticated");
       }
 
-      const start = startOfWeek(new Date());
-      const end = endOfWeek(new Date());
+      // Set weekStartsOn to 1 (Monday)
+      const start = startOfWeek(new Date(), { weekStartsOn: 1 });
+      const end = endOfWeek(new Date(), { weekStartsOn: 1 });
 
       console.log('Checking practice entries between:', start, 'and', end);
 
@@ -142,7 +143,6 @@ const Practice = () => {
     }
   }, [analyses, analysesLoading, toast]);
 
-  // Save draft to localStorage whenever content changes
   useEffect(() => {
     if ((actionTaken || reflection) && !hasWrittenThisWeek) {
       const draft = JSON.stringify({ actionTaken, reflection });
@@ -151,7 +151,6 @@ const Practice = () => {
     }
   }, [actionTaken, reflection, hasWrittenThisWeek]);
 
-  // Clear draft if user has already written this week
   useEffect(() => {
     if (hasWrittenThisWeek) {
       localStorage.removeItem(PRACTICE_DRAFT_KEY);
@@ -210,7 +209,7 @@ const Practice = () => {
           user_id: user.id,
           action_taken: actionTaken.trim(),
           reflection: reflection.trim(),
-          email: user.email // Adding email from session
+          email: user.email
         });
 
       if (error) {
