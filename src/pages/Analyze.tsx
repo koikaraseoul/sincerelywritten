@@ -11,6 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatInTimeZone } from 'date-fns-tz';
+import { useSession } from '@supabase/auth-helpers-react';
 
 interface Analysis {
   id: string;
@@ -22,13 +23,18 @@ const Analyze = () => {
   const navigate = useNavigate();
   const [selectedEntry, setSelectedEntry] = useState<Analysis | null>(null);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const session = useSession();
 
   const { data: analyses, isLoading } = useQuery({
     queryKey: ["analyses"],
     queryFn: async () => {
-      console.log('Fetching analyses...');
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
+      console.log('Fetching analyses...', {
+        hasSession: !!session,
+        sessionUser: session?.user,
+        userEmail: session?.user?.email,
+        timestamp: new Date().toISOString()
+      });
+
       if (!session) {
         console.log('No session found for analyses fetch');
         throw new Error("Not authenticated");
@@ -77,6 +83,7 @@ const Analyze = () => {
         firstAnalysis: data[0] ? {
           id: data[0].id,
           hasEmail: !!data[0].email,
+          email: data[0].email,
           hasUserId: !!data[0].user_id,
           createdAt: data[0].created_at
         } : null
@@ -84,6 +91,7 @@ const Analyze = () => {
 
       return data as Analysis[];
     },
+    enabled: !!session?.user?.email, // Only run query when we have the user's email
   });
 
   const getOrdinalText = (index: number): string => {

@@ -7,7 +7,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -18,18 +17,18 @@ serve(async (req) => {
     console.log('Received request to create analysis:', {
       userId,
       hasEmail: !!email,
-      emailValue: email, // Log the actual email value for debugging
+      emailValue: email,
       contentLength: content?.length,
       timestamp: new Date().toISOString()
     })
 
-    // Validate required fields
     if (!content || !userId || !email) {
       console.error('Missing required fields:', { 
         hasContent: !!content, 
         hasUserId: !!userId, 
         hasEmail: !!email,
-        emailValue: email // Log the actual email value
+        emailValue: email,
+        userId: userId
       });
       
       return new Response(
@@ -39,7 +38,7 @@ serve(async (req) => {
             content: !!content,
             userId: !!userId,
             email: !!email,
-            emailValue: email // Include the actual email value in the error response
+            emailValue: email
           }
         }),
         { 
@@ -86,7 +85,7 @@ serve(async (req) => {
       id: data.id,
       userId: data.user_id,
       hasEmail: !!data.email,
-      email: data.email, // Log the actual email that was saved
+      email: data.email,
       timestamp: data.created_at
     })
 
