@@ -38,7 +38,11 @@ const Sentence = () => {
         navigate("/login");
         return null;
       }
-      console.log('Session fetched successfully for user:', session.user.email);
+      console.log('Session fetched successfully:', {
+        userId: session.user.id,
+        userEmail: session.user.email,
+        timestamp: new Date().toISOString()
+      });
       return session;
     },
   });
@@ -112,7 +116,7 @@ const Sentence = () => {
   useEffect(() => {
     if (hasSubmittedToday) {
       setHasSubmittedLocally(true);
-      localStorage.removeItem(DRAFT_KEY); // Clear draft if already submitted
+      localStorage.removeItem(DRAFT_KEY);
     }
   }, [hasSubmittedToday]);
 
@@ -125,6 +129,20 @@ const Sentence = () => {
         hasSession: !!session?.user.id,
         hasSubmittedToday,
         hasSubmittedLocally
+      });
+      return;
+    }
+
+    // Check for user email
+    if (!session.user.email) {
+      console.error('User email is missing:', {
+        userId: session.user.id,
+        timestamp: new Date().toISOString()
+      });
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Unable to submit entry. Please try logging out and back in.",
       });
       return;
     }
@@ -151,7 +169,7 @@ const Sentence = () => {
           user_id: session.user.id,
           daily_sentence: dailySentence,
           created_at: localTimestamp,
-          email: session.user.email // Adding email from session
+          email: session.user.email
         });
 
       if (sentenceError) {
