@@ -33,7 +33,12 @@ const Analyze = () => {
         throw new Error("Not authenticated");
       }
 
-      console.log('Fetching analyses for user:', user.email);
+      console.log('Fetching analyses for user:', {
+        userId: user.id,
+        userEmail: user.email,
+        timestamp: new Date().toISOString()
+      });
+
       const { data, error } = await supabase
         .from("analyses")
         .select("*")
@@ -45,7 +50,22 @@ const Analyze = () => {
         console.error('Analyses fetch error:', error);
         throw error;
       }
-      console.log('Analyses fetched successfully, count:', data?.length);
+
+      if (!data) {
+        console.log('No analyses found for user');
+        return [];
+      }
+
+      console.log('Analyses fetched successfully:', {
+        count: data.length,
+        firstAnalysis: data[0] ? {
+          id: data[0].id,
+          hasEmail: !!data[0].email,
+          hasUserId: !!data[0].user_id,
+          createdAt: data[0].created_at
+        } : null
+      });
+
       return data as Analysis[];
     },
   });
