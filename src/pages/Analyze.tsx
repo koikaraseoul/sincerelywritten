@@ -28,13 +28,14 @@ const Analyze = () => {
     queryFn: async () => {
       console.log('Fetching analyses...');
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
         console.log('No user found for analyses fetch');
         throw new Error("Not authenticated");
       }
 
       if (!user.email) {
-        console.error('User email is missing', user);
+        console.error('User email is missing', { user });
         throw new Error("User email is required");
       }
 

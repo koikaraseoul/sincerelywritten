@@ -22,12 +22,14 @@ serve(async (req) => {
       timestamp: new Date().toISOString()
     })
 
+    // Validate required fields
     if (!content || !userId || !email) {
       console.error('Missing required fields:', { 
-        content: !!content, 
-        userId: !!userId, 
-        email: !!email 
+        hasContent: !!content, 
+        hasUserId: !!userId, 
+        hasEmail: !!email 
       });
+      
       return new Response(
         JSON.stringify({ 
           error: 'Missing required fields', 
