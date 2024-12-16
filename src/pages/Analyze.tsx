@@ -26,16 +26,26 @@ const Analyze = () => {
   const { data: analyses, isLoading } = useQuery({
     queryKey: ["analyses"],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error("Not authenticated");
+      console.log('Fetching analyses...');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('No user found for analyses fetch');
+        throw new Error("Not authenticated");
+      }
 
+      console.log('Fetching analyses for user:', user.email);
       const { data, error } = await supabase
         .from("analyses")
         .select("*")
-        .eq("user_id", user.user.id)
+        .eq("user_id", user.id)
+        .eq("email", user.email)
         .order("created_at", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Analyses fetch error:', error);
+        throw error;
+      }
+      console.log('Analyses fetched successfully, count:', data?.length);
       return data as Analysis[];
     },
   });
