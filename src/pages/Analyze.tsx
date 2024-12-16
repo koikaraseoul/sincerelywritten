@@ -33,6 +33,11 @@ const Analyze = () => {
         throw new Error("Not authenticated");
       }
 
+      if (!user.email) {
+        console.error('User email is missing', user);
+        throw new Error("User email is required");
+      }
+
       console.log('Fetching analyses with user details:', {
         userId: user.id,
         userEmail: user.email,

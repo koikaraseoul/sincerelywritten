@@ -23,9 +23,20 @@ serve(async (req) => {
     })
 
     if (!content || !userId || !email) {
-      console.error('Missing required fields:', { content: !!content, userId: !!userId, email: !!email })
+      console.error('Missing required fields:', { 
+        content: !!content, 
+        userId: !!userId, 
+        email: !!email 
+      });
       return new Response(
-        JSON.stringify({ error: 'Missing required fields' }),
+        JSON.stringify({ 
+          error: 'Missing required fields', 
+          details: {
+            content: !!content,
+            userId: !!userId,
+            email: !!email
+          }
+        }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400 
