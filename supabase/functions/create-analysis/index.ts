@@ -18,6 +18,7 @@ serve(async (req) => {
     console.log('Received request to create analysis:', {
       userId,
       hasEmail: !!email,
+      emailValue: email, // Log the actual email value for debugging
       contentLength: content?.length,
       timestamp: new Date().toISOString()
     })
@@ -27,7 +28,8 @@ serve(async (req) => {
       console.error('Missing required fields:', { 
         hasContent: !!content, 
         hasUserId: !!userId, 
-        hasEmail: !!email 
+        hasEmail: !!email,
+        emailValue: email // Log the actual email value
       });
       
       return new Response(
@@ -36,7 +38,8 @@ serve(async (req) => {
           details: {
             content: !!content,
             userId: !!userId,
-            email: !!email
+            email: !!email,
+            emailValue: email // Include the actual email value in the error response
           }
         }),
         { 
@@ -50,6 +53,13 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
+
+    console.log('Attempting to insert analysis with:', {
+      userId,
+      email,
+      contentLength: content.length,
+      timestamp: new Date().toISOString()
+    });
 
     const { data, error } = await supabase
       .from('analyses')
@@ -76,6 +86,7 @@ serve(async (req) => {
       id: data.id,
       userId: data.user_id,
       hasEmail: !!data.email,
+      email: data.email, // Log the actual email that was saved
       timestamp: data.created_at
     })
 

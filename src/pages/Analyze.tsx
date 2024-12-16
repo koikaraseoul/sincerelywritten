@@ -27,15 +27,25 @@ const Analyze = () => {
     queryKey: ["analyses"],
     queryFn: async () => {
       console.log('Fetching analyses...');
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
+      if (!session) {
+        console.log('No session found for analyses fetch');
+        throw new Error("Not authenticated");
+      }
+
+      const user = session.user;
       if (!user) {
-        console.log('No user found for analyses fetch');
+        console.log('No user found in session for analyses fetch');
         throw new Error("Not authenticated");
       }
 
       if (!user.email) {
-        console.error('User email is missing', { user });
+        console.error('User email is missing', { 
+          userId: user.id,
+          hasEmail: false,
+          timestamp: new Date().toISOString()
+        });
         throw new Error("User email is required");
       }
 
