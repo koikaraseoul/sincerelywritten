@@ -5,10 +5,8 @@ const SubmittedMessage = () => {
         Your Journals
       </h1>
 
-      <div className="p-6 bg-card rounded-lg text-center">
-        <p className="text-lg text-muted-foreground">
-          You've already shared your thoughts for today. Return tomorrow for a fresh reflection.
-        </p>
+      <div className="p-6 bg-card rounded-lg text-center text-lg text-muted-foreground">
+        You've already shared your thoughts for today. Return tomorrow for a fresh reflection.
       </div>
     </div>
   );
