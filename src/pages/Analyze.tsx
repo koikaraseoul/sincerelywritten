@@ -28,44 +28,27 @@ const Analyze = () => {
   const { data: analyses, isLoading } = useQuery({
     queryKey: ["analyses"],
     queryFn: async () => {
-      console.log('Fetching analyses...', {
-        hasSession: !!session,
-        sessionUser: session?.user,
-        userEmail: session?.user?.email,
-        timestamp: new Date().toISOString()
-      });
-
-      if (!session) {
-        console.log('No session found for analyses fetch');
-        throw new Error("Not authenticated");
-      }
-
-      const user = session.user;
-      if (!user) {
-        console.log('No user found in session for analyses fetch');
-        throw new Error("Not authenticated");
-      }
-
-      if (!user.email) {
-        console.error('User email is missing', { 
-          userId: user.id,
-          hasEmail: false,
+      if (!session?.user?.email) {
+        console.error('No user email found in session:', {
+          hasSession: !!session,
+          hasUser: !!session?.user,
+          hasEmail: !!session?.user?.email,
           timestamp: new Date().toISOString()
         });
         throw new Error("User email is required");
       }
 
       console.log('Fetching analyses with user details:', {
-        userId: user.id,
-        userEmail: user.email,
+        userId: session.user.id,
+        userEmail: session.user.email,
         timestamp: new Date().toISOString()
       });
 
       const { data, error } = await supabase
         .from("analyses")
         .select("*")
-        .eq("user_id", user.id)
-        .eq("email", user.email)
+        .eq("user_id", session.user.id)
+        .eq("email", session.user.email)
         .order("created_at", { ascending: true });
 
       if (error) {
@@ -99,6 +82,12 @@ const Analyze = () => {
     const position = index < ordinals.length ? ordinals[index] : `${index + 1}th`;
     return `The ${position} analysis`;
   };
+
+  // If no session, redirect to login
+  if (!session) {
+    navigate("/login");
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-8">
