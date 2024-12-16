@@ -9,6 +9,7 @@ import WriteInputLayout from "@/components/write/WriteInputLayout";
 import SentenceHeader from "@/components/sentence/SentenceHeader";
 import SubmittedMessage from "@/components/sentence/SubmittedMessage";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
+import { useSessionCheck } from "@/hooks/useSessionCheck";
 
 const DRAFT_KEY = 'sentence_draft';
 
@@ -22,6 +23,9 @@ const Sentence = () => {
   const [hasSubmittedLocally, setHasSubmittedLocally] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
+
+  // Use the session check hook
+  useSessionCheck();
 
   const { data: session } = useQuery({
     queryKey: ["session"],
@@ -133,16 +137,18 @@ const Sentence = () => {
       return;
     }
 
-    // Check for user email
-    if (!session.user.email) {
-      console.error('User email is missing:', {
-        userId: session.user.id,
+    // Verify session and email before submission
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (!currentSession || !currentSession.user.email) {
+      console.error('Invalid session state:', {
+        hasSession: !!currentSession,
+        hasEmail: !!currentSession?.user.email,
         timestamp: new Date().toISOString()
       });
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Unable to submit entry. Please try logging out and back in.",
+        title: "Session Error",
+        description: "Your session has expired. Please refresh the page and try again.",
       });
       return;
     }
@@ -158,7 +164,7 @@ const Sentence = () => {
 
       console.log('Preparing submission with:', {
         timestamp: localTimestamp,
-        userEmail: session.user.email,
+        userEmail: currentSession.user.email,
         contentLength: content.trim().length
       });
 
@@ -166,14 +172,13 @@ const Sentence = () => {
         .from("sentences")
         .insert({
           content: content.trim(),
-          user_id: session.user.id,
+          user_id: currentSession.user.id,
           daily_sentence: dailySentence,
           created_at: localTimestamp,
-          email: session.user.email
+          email: currentSession.user.email
         });
 
       if (sentenceError) {
-        console.error('Submission error:', sentenceError);
         throw sentenceError;
       }
 
