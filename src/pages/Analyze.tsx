@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ChevronDown } from "lucide-react";
@@ -33,7 +33,7 @@ const Analyze = () => {
         throw new Error("Not authenticated");
       }
 
-      console.log('Fetching analyses for user:', {
+      console.log('Fetching analyses with user details:', {
         userId: user.id,
         userEmail: user.email,
         timestamp: new Date().toISOString()
