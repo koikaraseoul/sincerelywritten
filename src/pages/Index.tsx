@@ -49,7 +49,7 @@ const Index = () => {
                 <h2 className="text-2xl font-serif font-semibold">Personalized Journal Analysis</h2>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                Express your deepest thoughts and emotions through guided journaling. Our AI companion helps you explore patterns in your relationships, offering personalized insights that illuminate your path to deeper self-understanding and emotional growth.
+                Write from the heart and uncover meaningful insights on love and relationships. Receive tailored guidance that reflects your unique journey.
               </p>
             </CardContent>
           </Card>
@@ -64,7 +64,7 @@ const Index = () => {
                 <h2 className="text-2xl font-serif font-semibold">Specialized Tarot Reading</h2>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                Embark on a journey of discovery with our intuitive tarot readings. Each session provides a unique mirror to your love life, helping you navigate relationships with renewed perspective and emotional wisdom. Let the cards guide you toward deeper connections and self-awareness.
+                Find clarity and inspiration in love and relationships through our unique tarot readings. Each session fosters self-reflection and deeper emotional connection.
               </p>
             </CardContent>
           </Card>
