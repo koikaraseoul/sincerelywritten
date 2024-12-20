@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Heart, BookHeart, Cards } from "lucide-react";
+import { Heart, BookHeart, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,7 +59,7 @@ const Index = () => {
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900">
-                  <Cards className="w-6 h-6 text-purple-600 dark:text-purple-300" />
+                  <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-300" />
                 </div>
                 <h2 className="text-2xl font-serif font-semibold">Specialized Tarot Reading</h2>
               </div>
