@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Heart, BookOpen, Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -17,11 +16,10 @@ const Index = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4">
-      <div className="w-full max-w-5xl mx-auto space-y-16">
-        {/* Header Section */}
-        <div className="text-center space-y-12 animate-fadeIn">
-          <h1 className="font-serif text-7xl md:text-8xl lg:text-9xl font-bold text-gradient">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
+      <div className="w-full max-w-2xl mx-auto relative">
+        <div className="text-center space-y-8 animate-fadeIn">
+          <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl font-bold text-gradient">
             Love?
           </h1>
           
@@ -30,38 +28,15 @@ const Index = () => {
             className="group relative w-32 h-32 transition-all duration-300 hover:scale-110 focus:outline-none"
             aria-label="Start your love journey"
           >
-            <div className="absolute inset-0 bg-love-700 rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-            <div className="relative flex items-center justify-center w-full h-full bg-love-700 rounded-full">
+            <div className="absolute inset-0 love-gradient rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
+            <div className="relative flex items-center justify-center w-full h-full love-gradient rounded-full">
               <Heart className="w-16 h-16 text-white" />
             </div>
           </button>
-        </div>
 
-        {/* Cards Section */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <Card className="bg-black/40 border-gray-800 p-6 space-y-4 backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-pink-600/20 rounded-lg">
-                <BookOpen className="w-6 h-6 text-pink-500" />
-              </div>
-              <h2 className="text-2xl font-serif">Personalized Journal Analysis</h2>
-            </div>
-            <p className="text-gray-400 leading-relaxed">
-              Write from the heart and uncover meaningful insights on love and relationships. Receive tailored guidance that reflects your unique journey.
-            </p>
-          </Card>
-
-          <Card className="bg-black/40 border-gray-800 p-6 space-y-4 backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-600/20 rounded-lg">
-                <Sparkles className="w-6 h-6 text-purple-500" />
-              </div>
-              <h2 className="text-2xl font-serif">Specialized Tarot Reading</h2>
-            </div>
-            <p className="text-gray-400 leading-relaxed">
-              Find clarity and inspiration in love and relationships through our unique tarot readings. Each session fosters self-reflection and deeper emotional connection.
-            </p>
-          </Card>
+          <p className="text-lg text-muted-foreground max-w-md mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Begin your journey of love and reflection
+          </p>
         </div>
       </div>
     </div>
