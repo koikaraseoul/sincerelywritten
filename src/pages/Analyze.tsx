@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ChevronDown } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +24,13 @@ interface Analysis {
 const Analyze = () => {
   const navigate = useNavigate();
   const [selectedEntry, setSelectedEntry] = useState<Analysis | null>(null);
+  const [journalEntry, setJournalEntry] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const session = useSession();
+  const { toast } = useToast();
 
-  const { data: analyses, isLoading } = useQuery({
+  const { data: analyses, isLoading, refetch } = useQuery({
     queryKey: ["analyses"],
     queryFn: async () => {
       if (!session?.user?.email) {
@@ -74,8 +79,52 @@ const Analyze = () => {
 
       return data as Analysis[];
     },
-    enabled: !!session?.user?.email, // Only run query when we have the user's email
+    enabled: !!session?.user?.email,
   });
+
+  const handleAnalyze = async () => {
+    if (!journalEntry.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a journal entry to analyze.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const response = await supabase.functions.invoke('analyze-with-gpt', {
+        body: {
+          content: journalEntry,
+          userId: session?.user?.id,
+          email: session?.user?.email,
+        },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      toast({
+        title: "Success",
+        description: "Your journal entry has been analyzed.",
+      });
+
+      // Clear the input and refresh the analyses list
+      setJournalEntry("");
+      refetch();
+    } catch (error) {
+      console.error('Analysis error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to analyze your journal entry. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const getOrdinalText = (index: number): string => {
     const ordinals = ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth"];
@@ -126,7 +175,7 @@ const Analyze = () => {
                   </DropdownMenuItem>
                 ))
               ) : (
-                <DropdownMenuItem disabled>Write at least 5 journal entries to unlock your analyses.</DropdownMenuItem>
+                <DropdownMenuItem disabled>No analyses available yet.</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -134,8 +183,24 @@ const Analyze = () => {
 
         <div className="mt-16">
           <h1 className="text-3xl font-serif mb-8 text-center">
-            Analyses for you
+            Analyze Your Thoughts
           </h1>
+
+          <div className="space-y-6">
+            <Textarea
+              placeholder="Write your thoughts here for analysis..."
+              value={journalEntry}
+              onChange={(e) => setJournalEntry(e.target.value)}
+              className="min-h-[200px]"
+            />
+            <Button 
+              onClick={handleAnalyze} 
+              className="w-full"
+              disabled={isAnalyzing}
+            >
+              {isAnalyzing ? "Analyzing..." : "Analyze"}
+            </Button>
+          </div>
 
           <div className="mt-8">
             {selectedEntry ? (
@@ -150,8 +215,8 @@ const Analyze = () => {
             ) : (
               <div className="text-lg text-muted-foreground text-center">
                 {analyses && analyses.length > 0
-                  ? "Dive into your insights by selecting an analysis to explore."
-                  : "Personalized analyses are waiting for you to discover."}
+                  ? "Select an analysis from the dropdown menu to view insights."
+                  : "Write your thoughts above and click analyze to get started."}
               </div>
             )}
           </div>
