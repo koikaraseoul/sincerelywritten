@@ -28,9 +28,9 @@ const Dashboard = () => {
 
   const journalingItems = [
     { icon: Pen, label: "Journal", route: "/sentence" },
-    { icon: ChartBar, label: "Review", route: "/review" },
     { icon: Lightbulb, label: "Analysis", route: "/analyze" },
-    { icon: Footprints, label: "Practice", route: "/practice" }
+    { icon: Footprints, label: "Practice", route: "/practice" },
+    { icon: ChartBar, label: "Review", route: "/review" }
   ];
 
   return (
@@ -65,21 +65,21 @@ const Dashboard = () => {
                 <h3 className="font-semibold text-lg">Reflection Guide</h3>
                 <div className="space-y-2">
                   <p><span className="font-medium">1. Journal:</span> Write down your thoughts and feelings.</p>
-                  <p><span className="font-medium">2. Review:</span> Look back at your past writings by date.</p>
-                  <p><span className="font-medium">3. Analysis:</span> Get insights to help you understand yourself better.</p>
-                  <p><span className="font-medium">4. Practice:</span> Turn insights into actions and learn from them.</p>
+                  <p><span className="font-medium">2. Analysis:</span> Get insights to help you understand yourself better.</p>
+                  <p><span className="font-medium">3. Practice:</span> Turn insights into actions and learn from them.</p>
+                  <p><span className="font-medium">4. Review:</span> Look back at your past writings by date.</p>
                   <p className="pt-2 italic text-muted-foreground">Start journaling today to let your story unfold and embark on a journey of self-discovery.</p>
                 </div>
               </div>
             </PopoverContent>
           </Popover>
         </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="flex flex-wrap gap-4 justify-center">
           {journalingItems.map((item) => (
             <Button
               key={item.route}
               variant="outline"
-              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+              className="h-32 w-48 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
               onClick={() => navigate(item.route)}
             >
               <item.icon className="h-8 w-8" />
