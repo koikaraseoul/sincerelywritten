@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pen, ChartBar, Lightbulb, HelpCircle, AlertCircle, Footprints } from "lucide-react";
+import { Pen, ChartBar, Lightbulb, HelpCircle, Footprints } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,12 +74,12 @@ const Dashboard = () => {
             </PopoverContent>
           </Popover>
         </div>
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-col gap-4 items-center">
           {journalingItems.map((item) => (
             <Button
               key={item.route}
               variant="outline"
-              className="h-32 w-48 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+              className="h-32 w-full max-w-xl flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
               onClick={() => navigate(item.route)}
             >
               <item.icon className="h-8 w-8" />
