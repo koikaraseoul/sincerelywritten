@@ -13,8 +13,6 @@ import Review from "./pages/Review";
 import JournalReview from "./pages/JournalReview";
 import PracticeReview from "./pages/PracticeReview";
 import Analyze from "./pages/Analyze";
-import Question from "./pages/Question";
-import Answer from "./pages/Answer";
 import Practice from "./pages/Practice";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -95,22 +93,6 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute>
                     <Analyze />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/question"
-                element={
-                  <ProtectedRoute>
-                    <Question />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/answer"
-                element={
-                  <ProtectedRoute>
-                    <Answer />
                   </ProtectedRoute>
                 }
               />
