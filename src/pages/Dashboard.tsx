@@ -79,10 +79,10 @@ const Dashboard = () => {
             <Button
               key={item.route}
               variant="outline"
-              className="h-24 w-full flex items-center justify-start px-8 hover:border-love-500 hover:text-love-500 transition-colors"
+              className="h-24 w-full flex flex-col items-center justify-center gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
               onClick={() => navigate(item.route)}
             >
-              <item.icon className="h-6 w-6 mr-4" />
+              <item.icon className="h-6 w-6" />
               <span className="text-lg">{item.label}</span>
             </Button>
           ))}
