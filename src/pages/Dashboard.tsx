@@ -74,16 +74,16 @@ const Dashboard = () => {
             </PopoverContent>
           </Popover>
         </div>
-        <div className="flex flex-col gap-4 items-center">
+        <div className="space-y-4 max-w-xl mx-auto">
           {journalingItems.map((item) => (
             <Button
               key={item.route}
               variant="outline"
-              className="h-32 w-full max-w-xl flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+              className="h-24 w-full flex items-center justify-start px-8 hover:border-love-500 hover:text-love-500 transition-colors"
               onClick={() => navigate(item.route)}
             >
-              <item.icon className="h-8 w-8" />
-              <span>{item.label}</span>
+              <item.icon className="h-6 w-6 mr-4" />
+              <span className="text-lg">{item.label}</span>
             </Button>
           ))}
         </div>
