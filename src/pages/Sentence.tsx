@@ -182,6 +182,24 @@ const Sentence = () => {
         throw sentenceError;
       }
 
+      // After successful submission, trigger analysis check
+      try {
+        const { error: analysisError } = await supabase.functions.invoke('analyze-entries', {
+          body: {
+            userId: currentSession.user.id,
+            email: currentSession.user.email
+          }
+        });
+
+        if (analysisError) {
+          console.error('Error triggering analysis:', analysisError);
+          // Don't throw here, we don't want to affect the main submission flow
+        }
+      } catch (analysisError) {
+        console.error('Failed to trigger analysis:', analysisError);
+        // Don't throw here, we don't want to affect the main submission flow
+      }
+
       console.log('Journal entry submitted successfully');
       setHasSubmittedLocally(true);
       await refetchSubmissionStatus();
