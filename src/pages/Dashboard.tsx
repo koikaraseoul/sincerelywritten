@@ -33,11 +33,6 @@ const Dashboard = () => {
     { icon: Footprints, label: "Practice", route: "/practice" }
   ];
 
-  const tarotItems = [
-    { icon: HelpCircle, label: "Question", route: "/question" },
-    { icon: AlertCircle, label: "Answer", route: "/answer" }
-  ];
-
   return (
     <div className="min-h-screen bg-background p-8">
       {/* User Information */}
@@ -81,24 +76,6 @@ const Dashboard = () => {
         </div>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {journalingItems.map((item) => (
-            <Button
-              key={item.route}
-              variant="outline"
-              className="h-32 flex-col gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
-              onClick={() => navigate(item.route)}
-            >
-              <item.icon className="h-8 w-8" />
-              <span>{item.label}</span>
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tarot Card Reading Section */}
-      <div>
-        <h2 className="text-2xl font-serif mb-4 text-gradient text-center">Tarot Card Reading</h2>
-        <div className="grid grid-cols-2 gap-4">
-          {tarotItems.map((item) => (
             <Button
               key={item.route}
               variant="outline"
