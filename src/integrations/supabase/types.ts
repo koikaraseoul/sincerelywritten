@@ -33,38 +33,6 @@ export type Database = {
         }
         Relationships: []
       }
-      answers: {
-        Row: {
-          content: string
-          created_at: string
-          email: string
-          id: string
-          question_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          email: string
-          id?: string
-          question_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          email?: string
-          id?: string
-          question_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "answers_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: false
-            referencedRelation: "questions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       daily_sentences: {
         Row: {
           active_date: string
@@ -140,33 +108,6 @@ export type Database = {
           role?: string | null
           updated_at?: string | null
           username?: string | null
-        }
-        Relationships: []
-      }
-      questions: {
-        Row: {
-          content: string
-          created_at: string
-          email: string
-          id: string
-          status: string
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          email: string
-          id?: string
-          status?: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          email?: string
-          id?: string
-          status?: string
-          user_id?: string
         }
         Relationships: []
       }
