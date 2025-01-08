@@ -94,11 +94,26 @@ serve(async (req) => {
         if (!openAIResponse.ok) {
           console.error('OpenAI API error:', JSON.stringify(responseData, null, 2));
           
+          // Handle quota exceeded error specifically
           if (responseData.error?.code === 'insufficient_quota') {
+            // Save a placeholder analysis to track that this batch needs processing
+            const { error: saveError } = await supabaseAdmin
+              .from('analyses')
+              .insert({
+                content: 'PENDING_ANALYSIS_QUOTA_EXCEEDED',
+                user_id: userId,
+                email: email
+              });
+
+            if (saveError) {
+              console.error('Error saving pending analysis:', saveError);
+            }
+
             return new Response(
               JSON.stringify({
-                error: 'Analysis service temporarily unavailable due to high demand.',
-                code: 'OPENAI_QUOTA_EXCEEDED'
+                status: 'pending',
+                code: 'OPENAI_QUOTA_EXCEEDED',
+                message: 'Analysis will be processed later due to high demand.'
               }),
               {
                 status: 429,
@@ -131,7 +146,10 @@ serve(async (req) => {
         console.log('Analysis saved successfully');
 
         return new Response(
-          JSON.stringify({ success: true, message: 'Analysis generated and saved' }),
+          JSON.stringify({ 
+            status: 'success',
+            message: 'Analysis generated and saved successfully'
+          }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       } catch (openAIError: any) {
@@ -140,8 +158,9 @@ serve(async (req) => {
         if (openAIError.message?.includes('insufficient_quota')) {
           return new Response(
             JSON.stringify({
-              error: 'Analysis service temporarily unavailable due to high demand.',
-              code: 'OPENAI_QUOTA_EXCEEDED'
+              status: 'pending',
+              code: 'OPENAI_QUOTA_EXCEEDED',
+              message: 'Analysis will be processed later due to high demand.'
             }),
             {
               status: 429,
@@ -155,7 +174,10 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, message: 'No analysis needed yet' }),
+      JSON.stringify({ 
+        status: 'success',
+        message: 'No analysis needed yet' 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
@@ -163,8 +185,9 @@ serve(async (req) => {
     console.error('Unexpected error:', error);
     return new Response(
       JSON.stringify({
-        error: 'An unexpected error occurred. Please try again later.',
-        code: 'UNEXPECTED_ERROR'
+        status: 'error',
+        code: 'UNEXPECTED_ERROR',
+        message: 'An unexpected error occurred. Please try again later.'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
