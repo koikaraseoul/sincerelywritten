@@ -67,74 +67,91 @@ serve(async (req) => {
 
       console.log('Sending request to OpenAI API');
 
-      // Call OpenAI API
-      const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            {
-              role: 'system',
-              content: 'You are an insightful journal analyst. Analyze these 5 journal entries to identify patterns, emotional themes, and personal growth. Provide constructive observations and suggestions. Be empathetic and focus on helping the writer understand their journey.'
-            },
-            {
-              role: 'user',
-              content: `Please analyze these 5 journal entries:\n\n${entriesForAnalysis}`
-            }
-          ],
-        }),
-      });
+      try {
+        const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are an insightful journal analyst. Analyze these 5 journal entries to identify patterns, emotional themes, and personal growth. Provide constructive observations and suggestions. Be empathetic and focus on helping the writer understand their journey.'
+              },
+              {
+                role: 'user',
+                content: `Please analyze these 5 journal entries:\n\n${entriesForAnalysis}`
+              }
+            ],
+          }),
+        });
 
-      if (!openAIResponse.ok) {
-        const errorData = await openAIResponse.json();
-        console.error('OpenAI API error:', JSON.stringify(errorData, null, 2));
+        const responseData = await openAIResponse.json();
+
+        if (!openAIResponse.ok) {
+          console.error('OpenAI API error:', JSON.stringify(responseData, null, 2));
+          
+          if (responseData.error?.code === 'insufficient_quota') {
+            return new Response(
+              JSON.stringify({
+                error: 'Analysis service temporarily unavailable due to high demand.',
+                code: 'OPENAI_QUOTA_EXCEEDED'
+              }),
+              {
+                status: 429,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+              }
+            );
+          }
+
+          throw new Error(`OpenAI API error: ${responseData.error?.message || 'Unknown error'}`);
+        }
+
+        const analysis = responseData.choices[0].message.content;
+
+        console.log('Analysis generated successfully');
+
+        // Save the analysis
+        const { error: saveError } = await supabaseAdmin
+          .from('analyses')
+          .insert({
+            content: analysis,
+            user_id: userId,
+            email: email
+          });
+
+        if (saveError) {
+          console.error('Error saving analysis:', saveError);
+          throw new Error('Failed to save analysis');
+        }
+
+        console.log('Analysis saved successfully');
+
+        return new Response(
+          JSON.stringify({ success: true, message: 'Analysis generated and saved' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (openAIError: any) {
+        console.error('OpenAI API or save error:', openAIError);
         
-        // Check for specific error types
-        if (errorData.error?.code === 'insufficient_quota') {
+        if (openAIError.message?.includes('insufficient_quota')) {
           return new Response(
-            JSON.stringify({ 
-              error: 'OpenAI API quota exceeded. Please check your billing details or try again later.',
+            JSON.stringify({
+              error: 'Analysis service temporarily unavailable due to high demand.',
               code: 'OPENAI_QUOTA_EXCEEDED'
             }),
-            { 
+            {
               status: 429,
               headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             }
           );
         }
         
-        throw new Error('Failed to generate analysis: ' + errorData.error?.message);
+        throw openAIError;
       }
-
-      const aiData = await openAIResponse.json();
-      const analysis = aiData.choices[0].message.content;
-
-      console.log('Analysis generated successfully');
-
-      // Save the analysis
-      const { error: saveError } = await supabaseAdmin
-        .from('analyses')
-        .insert({
-          content: analysis,
-          user_id: userId,
-          email: email
-        });
-
-      if (saveError) {
-        console.error('Error saving analysis:', saveError);
-        throw new Error('Failed to save analysis');
-      }
-
-      console.log('Analysis saved successfully');
-
-      return new Response(
-        JSON.stringify({ success: true, message: 'Analysis generated and saved' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
     }
 
     return new Response(
@@ -145,13 +162,13 @@ serve(async (req) => {
   } catch (error) {
     console.error('Unexpected error:', error);
     return new Response(
-      JSON.stringify({ 
-        error: error.message,
+      JSON.stringify({
+        error: 'An unexpected error occurred. Please try again later.',
         code: 'UNEXPECTED_ERROR'
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status: 500
       }
     );
   }

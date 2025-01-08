@@ -16,20 +16,23 @@ export const SentenceAnalysis = ({ userId, userEmail }: SentenceAnalysisProps) =
       });
 
       if (error) {
+        console.error('Supabase function error:', error);
         throw error;
       }
 
       if (data.error) {
+        console.log('Analysis error response:', { code: data.code, error: data.error });
+        
         if (data.code === 'OPENAI_QUOTA_EXCEEDED') {
           toast({
             variant: "destructive",
-            title: "Analysis Unavailable",
-            description: "The AI analysis service is temporarily unavailable. Please try again later.",
+            title: "Analysis Temporarily Unavailable",
+            description: "Our AI analysis service is experiencing high demand. Your entries are saved and will be analyzed later.",
           });
         } else {
           toast({
             variant: "destructive",
-            title: "Error",
+            title: "Analysis Error",
             description: data.error,
           });
         }
