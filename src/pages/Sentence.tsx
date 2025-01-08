@@ -10,6 +10,7 @@ import SentenceHeader from "@/components/sentence/SentenceHeader";
 import SubmittedMessage from "@/components/sentence/SubmittedMessage";
 import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 import { useSessionCheck } from "@/hooks/useSessionCheck";
+import { SentenceAnalysis } from "@/components/sentence/SentenceAnalysis";
 
 const DRAFT_KEY = 'sentence_draft';
 
@@ -124,6 +125,11 @@ const Sentence = () => {
     }
   }, [hasSubmittedToday]);
 
+  const { triggerAnalysis } = SentenceAnalysis({
+    userId: session?.user.id || '',
+    userEmail: session?.user.email || ''
+  });
+
   const handleSubmit = async () => {
     console.log('Starting journal submission process...');
     
@@ -183,23 +189,8 @@ const Sentence = () => {
       }
 
       // After successful submission, trigger analysis check
-      try {
-        const { error: analysisError } = await supabase.functions.invoke('analyze-entries', {
-          body: {
-            userId: currentSession.user.id,
-            email: currentSession.user.email
-          }
-        });
-
-        if (analysisError) {
-          console.error('Error triggering analysis:', analysisError);
-          // Don't throw here, we don't want to affect the main submission flow
-        }
-      } catch (analysisError) {
-        console.error('Failed to trigger analysis:', analysisError);
-        // Don't throw here, we don't want to affect the main submission flow
-      }
-
+      await triggerAnalysis();
+      
       console.log('Journal entry submitted successfully');
       setHasSubmittedLocally(true);
       await refetchSubmissionStatus();

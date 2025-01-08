@@ -90,9 +90,24 @@ serve(async (req) => {
       });
 
       if (!openAIResponse.ok) {
-        const errorData = await openAIResponse.text();
-        console.error('OpenAI API error:', errorData);
-        throw new Error('Failed to generate analysis');
+        const errorData = await openAIResponse.json();
+        console.error('OpenAI API error:', JSON.stringify(errorData, null, 2));
+        
+        // Check for specific error types
+        if (errorData.error?.code === 'insufficient_quota') {
+          return new Response(
+            JSON.stringify({ 
+              error: 'OpenAI API quota exceeded. Please check your billing details or try again later.',
+              code: 'OPENAI_QUOTA_EXCEEDED'
+            }),
+            { 
+              status: 429,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            }
+          );
+        }
+        
+        throw new Error('Failed to generate analysis: ' + errorData.error?.message);
       }
 
       const aiData = await openAIResponse.json();
@@ -130,7 +145,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Unexpected error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        code: 'UNEXPECTED_ERROR'
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
