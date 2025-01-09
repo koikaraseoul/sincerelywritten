@@ -76,15 +76,20 @@ serve(async (req) => {
                 content: `You are an insightful journal analyst. Create a concise analysis with exactly two sections:
 
                 1. Key Patterns:
-                - Identify the main recurring theme in these entries
-                - Note any significant emotional patterns
+                - Identify the main recurring theme in these entries, presented as a clear statement without any special characters
+                - Note any significant emotional patterns, presented as a clear statement without any special characters
                 
                 2. Growth Path:
-                - Provide ONE practical suggestion for personal growth
-                - List THREE specific practices to implement this suggestion
+                - Provide ONE practical suggestion for personal growth, presented as a clear statement
+                - List THREE specific practices to implement this suggestion, each as a clear bullet point
                 
-                Keep your response brief and actionable. Use bullet points for clarity.
-                Focus on patterns across entries rather than individual entries.`
+                Important formatting rules:
+                - Do not use any special characters (*, #, etc.)
+                - Use simple numbers and bullet points (-)
+                - Keep headings clean with just numbers
+                - Present each point as a clear, complete statement
+                - Keep your response brief and actionable
+                - Focus on patterns across entries rather than individual entries`
               },
               {
                 role: 'user',
