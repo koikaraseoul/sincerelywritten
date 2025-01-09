@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -18,7 +17,6 @@ serve(async (req) => {
 
     console.log('Analyzing entries for user:', { userId, email });
 
-    // Initialize Supabase client with service role key
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -30,7 +28,6 @@ serve(async (req) => {
       }
     );
 
-    // Get total count of user's sentences
     const { count: totalEntries, error: countError } = await supabaseAdmin
       .from('sentences')
       .select('*', { count: 'exact', head: true })
@@ -43,11 +40,9 @@ serve(async (req) => {
 
     console.log('Total entries found:', totalEntries);
 
-    // Check if we've reached a multiple of 5
     if (totalEntries && totalEntries % 5 === 0) {
       console.log('Multiple of 5 entries reached, fetching last 5 entries');
 
-      // Fetch the last 5 entries
       const { data: lastEntries, error: entriesError } = await supabaseAdmin
         .from('sentences')
         .select('content, daily_sentence, created_at')
@@ -60,7 +55,6 @@ serve(async (req) => {
         throw new Error('Failed to fetch entries');
       }
 
-      // Prepare entries for analysis
       const entriesForAnalysis = lastEntries
         .map(entry => `Entry: ${entry.content}\nPrompt: ${entry.daily_sentence}\nDate: ${entry.created_at}`)
         .join('\n\n');
@@ -79,24 +73,42 @@ serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content: 'You are an insightful journal analyst. Analyze these 5 journal entries to identify patterns, emotional themes, and personal growth. Provide constructive observations and suggestions. Be empathetic and focus on helping the writer understand their journey.'
+                content: `You are an insightful journal analyst specializing in personal growth and emotional intelligence. 
+                Analyze the provided journal entries and create a structured report with the following sections:
+
+                1. Key Patterns and Growth Areas:
+                - Identify 2-3 recurring themes or patterns
+                - Highlight specific examples of personal growth
+                - Note areas where the writer shows self-awareness
+
+                2. Emotional Intelligence Insights:
+                - Analyze how the writer processes emotions
+                - Identify instances of emotional self-awareness
+                - Note patterns in handling relationships or challenges
+
+                3. Actionable Recommendations:
+                - Provide 2-3 specific, practical suggestions for growth
+                - Suggest journaling prompts for deeper exploration
+                - Recommend specific practices based on observed patterns
+
+                Format the response with clear headings and bullet points for readability.
+                Keep the tone encouraging and constructive.
+                Focus on patterns across entries rather than individual entries.
+                Limit each section to 2-3 key points for clarity and impact.`
               },
               {
                 role: 'user',
-                content: `Please analyze these 5 journal entries:\n\n${entriesForAnalysis}`
+                content: `Please analyze these journal entries:\n\n${entriesForAnalysis}`
               }
             ],
           }),
         });
 
-        const responseData = await openAIResponse.json();
-
         if (!openAIResponse.ok) {
-          console.error('OpenAI API error:', JSON.stringify(responseData, null, 2));
+          const errorData = await openAIResponse.json();
+          console.error('OpenAI API error:', JSON.stringify(errorData, null, 2));
           
-          // Handle quota exceeded error specifically
-          if (responseData.error?.code === 'insufficient_quota') {
-            // Save a placeholder analysis to track that this batch needs processing
+          if (errorData.error?.code === 'insufficient_quota') {
             const { error: saveError } = await supabaseAdmin
               .from('analyses')
               .insert({
@@ -122,14 +134,14 @@ serve(async (req) => {
             );
           }
 
-          throw new Error(`OpenAI API error: ${responseData.error?.message || 'Unknown error'}`);
+          throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
         }
 
+        const responseData = await openAIResponse.json();
         const analysis = responseData.choices[0].message.content;
 
         console.log('Analysis generated successfully');
 
-        // Save the analysis
         const { error: saveError } = await supabaseAdmin
           .from('analyses')
           .insert({
