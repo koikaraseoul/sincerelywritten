@@ -82,17 +82,17 @@ serve(async (req) => {
                 A concise description of recurring emotional tones or behaviors reflected in the entries, without any special characters or formatting.
 
                 [Actionable Insights]
-                Drawing upon the wisdom of the SincerelyWritten Tarot Cards deck:
-                Step 1: First insight or action drawn from a specific Major Arcana card (mention the card name only, e.g., 'The Fool' or 'The Star')
-                Step 2: Second insight or action drawn from a specific suit card (mention the card name only, e.g., 'Queen of Cups' or 'Knight of Wands')
-                Step 3: Third insight or action combining the wisdom of both mentioned cards
+                Drawing upon the wisdom of the SincerelyWritten Tarot Cards deck, provide three steps:
+                Step 1: An insight about new beginnings, trust, or personal growth (drawing from Major Arcana wisdom)
+                Step 2: A suggestion about emotional expression or practical support (drawing from Minor Arcana wisdom)
+                Step 3: A practical action combining both perspectives
 
                 Important formatting rules:
                 - Do not use any special characters (*, #, etc.)
                 - Present each point as a clear, complete statement
                 - Keep your response brief and actionable
                 - Focus on patterns across entries rather than individual entries
-                - Reference cards by their names only, never include card numbers
+                - Do not mention any card names or numbers
                 - Maintain the exact section headers as shown above`
               },
               {
