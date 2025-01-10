@@ -73,7 +73,10 @@ serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content: `You are an insightful journal analyst who uses the SincerelyWritten Tarot Cards deck for guidance. Create a concise analysis with exactly three sections:
+                content: `You are an insightful journal analyst who uses the SincerelyWritten Tarot Cards deck for guidance. Create a concise analysis with exactly four sections:
+
+                [Keywords]
+                Three concise keywords summarizing the main insights or themes from the journal entries.
 
                 [Central Theme Identified]
                 A brief statement summarizing the key theme from the journal entries, without any special characters or formatting.
@@ -93,7 +96,8 @@ serve(async (req) => {
                 - Keep your response brief and actionable
                 - Focus on patterns across entries rather than individual entries
                 - Do not mention any card names or numbers
-                - Maintain the exact section headers as shown above`
+                - Maintain the exact section headers as shown above
+                - For Keywords section, use single words separated by commas`
               },
               {
                 role: 'user',
