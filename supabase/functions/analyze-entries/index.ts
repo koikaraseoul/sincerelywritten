@@ -83,16 +83,16 @@ serve(async (req) => {
 
                 [Actionable Insights]
                 Drawing upon the wisdom of the SincerelyWritten Tarot Cards deck:
-                Step 1: First insight or action drawn from a specific Major Arcana card (mention the card)
-                Step 2: Second insight or action drawn from a specific suit card (mention the card)
-                Step 3: Third insight or action combining the wisdom of both cards
+                Step 1: First insight or action drawn from a specific Major Arcana card (mention the card name only, e.g., 'The Fool' or 'The Star')
+                Step 2: Second insight or action drawn from a specific suit card (mention the card name only, e.g., 'Queen of Cups' or 'Knight of Wands')
+                Step 3: Third insight or action combining the wisdom of both mentioned cards
 
                 Important formatting rules:
                 - Do not use any special characters (*, #, etc.)
                 - Present each point as a clear, complete statement
                 - Keep your response brief and actionable
                 - Focus on patterns across entries rather than individual entries
-                - Reference specific cards from the SincerelyWritten Tarot deck
+                - Reference cards by their names only, never include card numbers
                 - Maintain the exact section headers as shown above`
               },
               {
