@@ -78,10 +78,10 @@ serve(async (req) => {
                 [Keywords]
                 Three concise keywords summarizing the main insights or themes from the journal entries.
 
-                [Central Theme Identified]
+                [Central Theme]
                 A brief statement summarizing the key theme from the journal entries, without any special characters or formatting.
 
-                [Recognized Pattern in Emotional Responses]
+                [Pattern in Emotional Responses]
                 A concise description of recurring emotional tones or behaviors reflected in the entries, without any special characters or formatting.
 
                 [Actionable Insights]
