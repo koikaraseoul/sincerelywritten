@@ -8,7 +8,6 @@ import { startOfDay, endOfDay } from 'date-fns';
 import WriteInputLayout from "@/components/write/WriteInputLayout";
 import SentenceHeader from "@/components/sentence/SentenceHeader";
 import SubmittedMessage from "@/components/sentence/SubmittedMessage";
-import DailySentenceDisplay from "@/components/DailySentenceDisplay";
 import { useSessionCheck } from "@/hooks/useSessionCheck";
 import { SentenceAnalysis } from "@/components/sentence/SentenceAnalysis";
 
@@ -253,19 +252,13 @@ const Sentence = () => {
             Your Journals
           </h1>
 
-          {dailySentence && (
-            <DailySentenceDisplay 
-              dailySentence={dailySentence} 
-              showSentence={!hasSubmittedToday && !hasSubmittedLocally}
-            />
-          )}
-
           <div className="mt-8">
             <WriteInputLayout
               question={reflectionPrompt}
               answer={content}
               onAnswerChange={setContent}
               isSubmitting={isSubmitting || hasSubmittedLocally}
+              dailySentence={dailySentence}
             />
           </div>
         </div>
