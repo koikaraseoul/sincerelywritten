@@ -16,6 +16,8 @@ const WriteInputLayout = ({
   isSubmitting,
   dailySentence,
 }: WriteInputLayoutProps) => {
+  console.log('WriteInputLayout rendered with dailySentence:', dailySentence);
+  
   return (
     <div className="space-y-4">
       <div className="space-y-2">
