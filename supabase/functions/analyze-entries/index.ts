@@ -94,12 +94,13 @@ Step 2 (Emotional Expression): Suggest a practical yet heartfelt way to express 
 Step 3 (Integrated Action): Propose a practical action that combines both perspectives from Steps 1 and 2. This step should encourage balance and harmony, inspiring the user to act with both courage and clarity.
 
 Important Formatting Rules:
-- Avoid using special characters (*, #, etc.).
-- Present each point as a clear and complete statement.
-- Focus on patterns across entries rather than individual entries.
-- Do not reference specific Tarot card names or numbers.
-- Use simple yet evocative language to maintain emotional depth.
-- Keep the exact section headers as shown above.
+- Do not use any special characters like asterisks, hashtags, or other markdown symbols
+- Present each point as a clear and complete statement
+- Focus on patterns across entries rather than individual entries
+- Do not reference specific Tarot card names or numbers
+- Use simple yet evocative language to maintain emotional depth
+- Keep the exact section headers as shown above
+- Do not use any formatting symbols or markdown in your response
 
 Your analysis should feel like a thoughtful conversation, balancing insight with warmth and leaving the reader with a sense of clarity, purpose, and connection.`
               },
