@@ -86,11 +86,14 @@ Identify and articulate recurring emotional tones, behavioral patterns, or menta
 
 [Actionable Insights]
 Provide three actionable steps derived from the wisdom of the SincerelyWritten Tarot Cards deck. Each step should inspire transformation and emotional growth:
-- **Step 1 (New Beginnings):** Offer a profound insight related to starting anew, trust, or personal growth. Draw upon universal archetypes to make this step deeply moving and empowering.
-- **Step 2 (Emotional Expression):** Suggest a practical yet heartfelt way to express emotions or provide support to oneself or others. Ensure the advice feels attainable and emotionally resonant.
-- **Step 3 (Integrated Action):** Propose a practical action that combines both perspectives from Steps 1 and 2. This step should encourage balance and harmony, inspiring the user to act with both courage and clarity.
 
-**Important Formatting Rules:**
+Step 1 (New Beginnings): Offer a profound insight related to starting anew, trust, or personal growth. Draw upon universal archetypes to make this step deeply moving and empowering.
+
+Step 2 (Emotional Expression): Suggest a practical yet heartfelt way to express emotions or provide support to oneself or others. Ensure the advice feels attainable and emotionally resonant.
+
+Step 3 (Integrated Action): Propose a practical action that combines both perspectives from Steps 1 and 2. This step should encourage balance and harmony, inspiring the user to act with both courage and clarity.
+
+Important Formatting Rules:
 - Avoid using special characters (*, #, etc.).
 - Present each point as a clear and complete statement.
 - Focus on patterns across entries rather than individual entries.
