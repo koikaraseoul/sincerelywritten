@@ -61,20 +61,13 @@ const Analyze = () => {
         return [];
       }
 
-      console.log('Analyses fetched successfully:', {
-        count: data.length,
-        firstAnalysis: data[0] ? {
-          id: data[0].id,
-          hasEmail: !!data[0].email,
-          email: data[0].email,
-          hasUserId: !!data[0].user_id,
-          createdAt: data[0].created_at
-        } : null
-      });
-
-      return data as Analysis[];
+      // Transform the content to use line breaks instead of colons
+      return data.map(analysis => ({
+        ...analysis,
+        content: analysis.content.replace(/([^:]+):\s*/g, '$1\n\n')
+      }));
     },
-    enabled: !!session?.user?.email, // Only run query when we have the user's email
+    enabled: !!session?.user?.email,
   });
 
   const getOrdinalText = (index: number): string => {
