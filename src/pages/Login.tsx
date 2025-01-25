@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
+import { Pen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
@@ -38,7 +38,7 @@ const Login = () => {
       <div className="flex-1 flex items-center justify-center">
         <div className="w-full max-w-md p-8 space-y-8">
           <div className="text-center">
-            <Heart className="w-12 h-12 text-love-500 mx-auto" />
+            <Pen className="w-12 h-12 text-love-500 mx-auto" />
             <p className="mt-4 font-open-sans text-xl text-gradient tracking-wider leading-relaxed animate-fadeIn max-w-sm mx-auto font-medium">
               Journal to understand love, celebrate achievements, and find your path
             </p>
