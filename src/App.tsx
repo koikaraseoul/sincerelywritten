@@ -9,7 +9,6 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Sentence from "./pages/Sentence";
-import Review from "./pages/Review";
 import JournalReview from "./pages/JournalReview";
 import Analyze from "./pages/Analyze";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,14 +58,6 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute>
                     <Sentence />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/review"
-                element={
-                  <ProtectedRoute>
-                    <Review />
                   </ProtectedRoute>
                 }
               />
