@@ -61,7 +61,7 @@ const Index = () => {
           </button>
 
           <p className="text-lg text-muted-foreground max-w-md mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            Journal to understand love, celebrate achievements, and find your path
+            Begin your journey of love and reflection
           </p>
         </div>
       </div>
