@@ -2,9 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { formatInTimeZone } from 'date-fns-tz';
 
 const Index = () => {
   const navigate = useNavigate();
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
   useEffect(() => {
     // Check if user is already logged in
@@ -15,12 +19,31 @@ const Index = () => {
     });
   }, [navigate]);
 
+  const { data: dailySentence } = useQuery({
+    queryKey: ["dailySentence", currentDate],
+    queryFn: async () => {
+      console.log('Fetching daily sentence for date:', currentDate);
+      const { data, error } = await supabase
+        .from("daily_sentences")
+        .select("content")
+        .eq("active_date", currentDate)
+        .single();
+
+      if (error) {
+        console.error('Daily sentence fetch error:', error);
+        throw error;
+      }
+      console.log('Daily sentence fetched successfully:', data?.content);
+      return data?.content;
+    },
+  });
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
       <div className="w-full max-w-2xl mx-auto relative">
         <div className="text-center space-y-8 animate-fadeIn">
-          <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl font-bold text-gradient">
-            Love?
+          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-gradient px-4">
+            {dailySentence || "Loading..."}
           </h1>
           
           <button
