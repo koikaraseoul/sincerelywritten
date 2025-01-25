@@ -28,12 +28,10 @@ const Dashboard = () => {
 
   const journalingItems = [
     { icon: Pen, label: "Journal", route: "/sentence" },
-    { icon: Lightbulb, label: "Analysis", route: "/analyze" },
-    { icon: ChartBar, label: "Review", route: "/journal-review" }
   ];
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen bg-background p-8 pb-24 relative">
       {/* User Information */}
       <Card className="mb-8 p-6">
         <div className="flex items-center gap-4">
@@ -85,6 +83,26 @@ const Dashboard = () => {
             </Button>
           ))}
         </div>
+      </div>
+
+      {/* Fixed Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border px-4 flex justify-between items-center">
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2"
+          onClick={() => navigate('/journal-review')}
+        >
+          <ChartBar className="h-5 w-5" />
+          <span>Review</span>
+        </Button>
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2"
+          onClick={() => navigate('/analyze')}
+        >
+          <Lightbulb className="h-5 w-5" />
+          <span>Analysis</span>
+        </Button>
       </div>
     </div>
   );
