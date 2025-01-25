@@ -117,7 +117,7 @@ const JournalReview = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate("/review")}
+            onClick={() => navigate("/dashboard")}
             className="absolute left-0"
           >
             <ArrowLeft className="h-6 w-6" />
