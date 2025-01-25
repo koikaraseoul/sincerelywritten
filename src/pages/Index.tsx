@@ -48,13 +48,16 @@ const Index = () => {
           
           <button
             onClick={() => navigate("/login")}
-            className="group relative w-32 h-32 transition-all duration-300 hover:scale-110 focus:outline-none"
-            aria-label="Start your love journey"
+            className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-[#ea384c] hover:bg-[#d42d3f] transition-colors duration-300"
+            aria-label="Join now"
           >
-            <div className="absolute inset-0 love-gradient rounded-full blur-lg opacity-50 group-hover:opacity-75 transition-opacity" />
-            <div className="relative flex items-center justify-center w-full h-full love-gradient rounded-full">
-              <Heart className="w-16 h-16 text-white" />
-            </div>
+            <span className="relative text-white font-medium group-hover:opacity-0 transition-opacity duration-200">
+              Join now
+            </span>
+            <Heart 
+              className="absolute text-white w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200 stroke-[2]" 
+              strokeWidth={2}
+            />
           </button>
 
           <p className="text-lg text-muted-foreground max-w-md mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
