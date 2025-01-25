@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pen, ChartBar, Lightbulb, HelpCircle, Footprints } from "lucide-react";
+import { Pen, ChartBar, Lightbulb, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +29,6 @@ const Dashboard = () => {
   const journalingItems = [
     { icon: Pen, label: "Journal", route: "/sentence" },
     { icon: Lightbulb, label: "Analysis", route: "/analyze" },
-    { icon: Footprints, label: "Practice", route: "/practice" },
     { icon: ChartBar, label: "Review", route: "/review" }
   ];
 
@@ -66,8 +65,7 @@ const Dashboard = () => {
                 <div className="space-y-2">
                   <p><span className="font-medium">1. Journal:</span> Write down your thoughts and feelings.</p>
                   <p><span className="font-medium">2. Analysis:</span> Get insights to help you understand yourself better.</p>
-                  <p><span className="font-medium">3. Practice:</span> Turn insights into actions and learn from them.</p>
-                  <p><span className="font-medium">4. Review:</span> Look back at your past writings by date.</p>
+                  <p><span className="font-medium">3. Review:</span> Look back at your past writings by date.</p>
                   <p className="pt-2 italic text-muted-foreground">Start journaling today to let your story unfold and embark on a journey of self-discovery.</p>
                 </div>
               </div>
