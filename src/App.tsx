@@ -11,7 +11,6 @@ import Dashboard from "./pages/Dashboard";
 import Sentence from "./pages/Sentence";
 import Review from "./pages/Review";
 import JournalReview from "./pages/JournalReview";
-import PracticeReview from "./pages/PracticeReview";
 import Analyze from "./pages/Analyze";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -76,14 +75,6 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute>
                     <JournalReview />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/practice-review"
-                element={
-                  <ProtectedRoute>
-                    <PracticeReview />
                   </ProtectedRoute>
                 }
               />
