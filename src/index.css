@@ -56,3 +56,19 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+@keyframes writing {
+  0% {
+    transform: translate(-20px, 0px) rotate(-45deg);
+  }
+  50% {
+    transform: translate(0px, 0px) rotate(-45deg);
+  }
+  100% {
+    transform: translate(20px, 0px) rotate(-45deg);
+  }
+}
+
+.animate-writing {
+  animation: writing 1s ease-in-out infinite alternate;
+}

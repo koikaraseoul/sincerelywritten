@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { NotebookPen } from "lucide-react";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -54,8 +54,8 @@ const Index = () => {
             <span className="relative text-white font-medium group-hover:opacity-0 transition-opacity duration-200">
               Join now
             </span>
-            <Heart 
-              className="absolute text-white w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200 stroke-[2]" 
+            <NotebookPen 
+              className="absolute text-white w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200 group-hover:animate-writing" 
               strokeWidth={2}
             />
           </button>
