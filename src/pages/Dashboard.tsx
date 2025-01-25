@@ -29,7 +29,7 @@ const Dashboard = () => {
   const journalingItems = [
     { icon: Pen, label: "Journal", route: "/sentence" },
     { icon: Lightbulb, label: "Analysis", route: "/analyze" },
-    { icon: ChartBar, label: "Review", route: "/review" }
+    { icon: ChartBar, label: "Review", route: "/journal-review" }
   ];
 
   return (
