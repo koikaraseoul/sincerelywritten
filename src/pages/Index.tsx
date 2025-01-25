@@ -42,7 +42,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
       <div className="w-full max-w-2xl mx-auto relative">
         <div className="text-center space-y-8 animate-fadeIn">
-          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-gradient px-4">
+          <h1 className="font-open-sans text-3xl md:text-4xl lg:text-5xl font-bold text-gradient px-4">
             {dailySentence || "Loading..."}
           </h1>
           
