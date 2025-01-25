@@ -55,7 +55,7 @@ const Index = () => {
               Join now
             </span>
             <NotebookPen 
-              className="absolute text-white w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity duration-200 group-hover:animate-writing" 
+              className="absolute text-white w-6 h-6 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:animate-writing" 
               strokeWidth={2}
             />
           </button>
