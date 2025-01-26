@@ -1,19 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pen, ChartBar, Lightbulb, HelpCircle } from "lucide-react";
+import { ChartBar, Lightbulb, Pen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useQuery } from "@tanstack/react-query";
+import { formatInTimeZone } from 'date-fns-tz';
+import { Textarea } from "@/components/ui/textarea";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
   useEffect(() => {
     // Check if user is logged in
@@ -26,9 +26,24 @@ const Dashboard = () => {
     });
   }, [navigate]);
 
-  const journalingItems = [
-    { icon: Pen, label: "Journal", route: "/sentence" },
-  ];
+  const { data: dailySentence } = useQuery({
+    queryKey: ["dailySentence", currentDate],
+    queryFn: async () => {
+      console.log('Fetching daily sentence for date:', currentDate);
+      const { data, error } = await supabase
+        .from("daily_sentences")
+        .select("content")
+        .eq("active_date", currentDate)
+        .single();
+
+      if (error) {
+        console.error('Daily sentence fetch error:', error);
+        throw error;
+      }
+      console.log('Daily sentence fetched successfully:', data?.content);
+      return data?.content;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-background p-8 pb-24 relative">
@@ -47,41 +62,32 @@ const Dashboard = () => {
         </div>
       </Card>
 
-      {/* Reflection Section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <h2 className="text-2xl font-serif text-gradient">Reflection</h2>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <HelpCircle className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg">Reflection Guide</h3>
-                <div className="space-y-2">
-                  <p><span className="font-medium">1. Journal:</span> Write down your thoughts and feelings.</p>
-                  <p><span className="font-medium">2. Analysis:</span> Get insights to help you understand yourself better.</p>
-                  <p><span className="font-medium">3. Review:</span> Look back at your past writings by date.</p>
-                  <p className="pt-2 italic text-muted-foreground">Start journaling today to let your story unfold and embark on a journey of self-discovery.</p>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div className="space-y-4 max-w-xl mx-auto">
-          {journalingItems.map((item) => (
-            <Button
-              key={item.route}
-              variant="outline"
-              className="h-24 w-full flex flex-col items-center justify-center gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
-              onClick={() => navigate(item.route)}
-            >
-              <item.icon className="h-6 w-6" />
-              <span className="text-lg">{item.label}</span>
-            </Button>
-          ))}
+      {/* Main Content Area */}
+      <div className="space-y-8 max-w-xl mx-auto">
+        <div className="space-y-6">
+          <p className="text-base text-foreground leading-relaxed">
+            What experiences or emotions does the sentence evoke, and why? Consider how it relates to your life, values, or past, and let your thoughts flow to discover new insights.
+          </p>
+          
+          {dailySentence && (
+            <p className="text-xl italic text-love-400">
+              {dailySentence}
+            </p>
+          )}
+          
+          <Textarea
+            placeholder="Type here anything."
+            className="min-h-[150px] text-muted-foreground"
+          />
+          
+          <Button
+            variant="outline"
+            className="h-24 w-full flex flex-col items-center justify-center gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
+            onClick={() => navigate('/sentence')}
+          >
+            <Pen className="h-6 w-6" />
+            <span className="text-lg">Journal</span>
+          </Button>
         </div>
       </div>
 
