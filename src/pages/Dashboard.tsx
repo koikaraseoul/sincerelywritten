@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const [entryText, setEntryText] = useState('');
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
@@ -44,6 +45,32 @@ const Dashboard = () => {
       return data?.content;
     },
   });
+
+  const handleSave = async () => {
+    if (!user || !entryText.trim()) return;
+
+    try {
+      console.log('Saving practice entry...');
+      const { error } = await supabase
+        .from('practices')
+        .insert({
+          user_id: user.id,
+          action_taken: entryText,
+          reflection: dailySentence || '',
+          email: user.email
+        });
+
+      if (error) {
+        console.error('Error saving practice:', error);
+        throw error;
+      }
+
+      console.log('Practice saved successfully');
+      setEntryText(''); // Clear the textarea after successful save
+    } catch (error) {
+      console.error('Failed to save practice:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background p-8 pb-24 relative">
@@ -78,10 +105,14 @@ const Dashboard = () => {
           <Textarea
             placeholder="Type here anything."
             className="min-h-[150px] text-muted-foreground"
+            value={entryText}
+            onChange={(e) => setEntryText(e.target.value)}
           />
 
           <Button 
             className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
+            onClick={handleSave}
+            disabled={!entryText.trim()}
           >
             <Mail className="mr-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             Save
