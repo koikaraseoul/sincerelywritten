@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChartBar, Lightbulb, Pen } from "lucide-react";
+import { ChartBar, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,15 +79,6 @@ const Dashboard = () => {
             placeholder="Type here anything."
             className="min-h-[150px] text-muted-foreground"
           />
-          
-          <Button
-            variant="outline"
-            className="h-24 w-full flex flex-col items-center justify-center gap-2 hover:border-love-500 hover:text-love-500 transition-colors"
-            onClick={() => navigate('/sentence')}
-          >
-            <Pen className="h-6 w-6" />
-            <span className="text-lg">Journal</span>
-          </Button>
         </div>
       </div>
 
