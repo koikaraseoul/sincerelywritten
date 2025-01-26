@@ -40,15 +40,15 @@ serve(async (req) => {
 
     console.log('Total entries found:', totalEntries);
 
-    if (totalEntries && totalEntries % 5 === 0) {
-      console.log('Multiple of 5 entries reached, fetching last 5 entries');
+    if (totalEntries && totalEntries % 3 === 0) {
+      console.log('Multiple of 3 entries reached, fetching last 3 entries');
 
       const { data: lastEntries, error: entriesError } = await supabaseAdmin
         .from('sentences')
         .select('content, daily_sentence, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(3);
 
       if (entriesError) {
         console.error('Error fetching entries:', entriesError);
