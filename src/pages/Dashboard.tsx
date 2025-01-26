@@ -8,11 +8,17 @@ import type { User } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
 import { formatInTimeZone } from 'date-fns-tz';
 import { Textarea } from "@/components/ui/textarea";
+import { startOfDay, endOfDay } from 'date-fns';
+
+const DRAFT_KEY = 'journal_draft';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
-  const [entryText, setEntryText] = useState('');
+  const [entryText, setEntryText] = useState(() => {
+    return localStorage.getItem(DRAFT_KEY) || '';
+  });
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
@@ -26,6 +32,14 @@ const Dashboard = () => {
       }
     });
   }, [navigate]);
+
+  // Save draft to localStorage whenever it changes
+  useEffect(() => {
+    if (entryText && !hasSubmitted) {
+      localStorage.setItem(DRAFT_KEY, entryText);
+      console.log('Saved draft to localStorage');
+    }
+  }, [entryText, hasSubmitted]);
 
   const { data: dailySentence } = useQuery({
     queryKey: ["dailySentence", currentDate],
@@ -46,8 +60,45 @@ const Dashboard = () => {
     },
   });
 
+  // Check if user has already submitted today
+  const { data: existingEntry } = useQuery({
+    queryKey: ["todayEntry", user?.id, currentDate],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const now = new Date();
+      const start = startOfDay(now);
+      const end = endOfDay(now);
+      
+      console.log('Checking for existing entry between:', start, 'and', end);
+      
+      const { data, error } = await supabase
+        .from("sentences")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("created_at", start.toISOString())
+        .lte("created_at", end.toISOString())
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking existing entry:', error);
+        throw error;
+      }
+
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  useEffect(() => {
+    if (existingEntry) {
+      setHasSubmitted(true);
+      localStorage.removeItem(DRAFT_KEY);
+    }
+  }, [existingEntry]);
+
   const handleSave = async () => {
-    if (!user || !entryText.trim() || !dailySentence) return;
+    if (!user || !entryText.trim() || !dailySentence || hasSubmitted) return;
 
     try {
       console.log('Saving sentence entry...');
@@ -66,7 +117,8 @@ const Dashboard = () => {
       }
 
       console.log('Sentence saved successfully');
-      setEntryText(''); // Clear the textarea after successful save
+      setHasSubmitted(true);
+      localStorage.removeItem(DRAFT_KEY);
     } catch (error) {
       console.error('Failed to save sentence:', error);
     }
@@ -91,33 +143,46 @@ const Dashboard = () => {
 
       {/* Main Content Area */}
       <div className="space-y-8 max-w-xl mx-auto">
-        <div className="space-y-6">
-          <p className="text-base text-foreground leading-relaxed">
-            What experiences or emotions does the sentence evoke, and why? Consider how it relates to your life, values, or past, and let your thoughts flow to discover new insights.
-          </p>
-          
-          {dailySentence && (
-            <p className="text-xl italic text-love-400">
-              {dailySentence}
+        {hasSubmitted ? (
+          <div className="space-y-6 text-center">
+            {dailySentence && (
+              <p className="text-xl italic text-love-400">
+                {dailySentence}
+              </p>
+            )}
+            <p className="text-lg text-muted-foreground">
+              Your journal is saved; your journey continues tomorrow
             </p>
-          )}
-          
-          <Textarea
-            placeholder="Type here anything."
-            className="min-h-[150px] text-muted-foreground"
-            value={entryText}
-            onChange={(e) => setEntryText(e.target.value)}
-          />
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <p className="text-base text-foreground leading-relaxed">
+              What experiences or emotions does the sentence evoke, and why? Consider how it relates to your life, values, or past, and let your thoughts flow to discover new insights.
+            </p>
+            
+            {dailySentence && (
+              <p className="text-xl italic text-love-400">
+                {dailySentence}
+              </p>
+            )}
+            
+            <Textarea
+              placeholder="Type here anything."
+              className="min-h-[150px] text-muted-foreground"
+              value={entryText}
+              onChange={(e) => setEntryText(e.target.value)}
+            />
 
-          <Button 
-            className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
-            onClick={handleSave}
-            disabled={!entryText.trim()}
-          >
-            <Mail className="mr-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            Save
-          </Button>
-        </div>
+            <Button 
+              className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
+              onClick={handleSave}
+              disabled={!entryText.trim()}
+            >
+              <Mail className="mr-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              Save
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Fixed Bottom Bar */}
