@@ -29,9 +29,34 @@ const Dashboard = () => {
         navigate('/login');
       } else {
         setUser(user);
+        console.log('User data:', user);
       }
     });
   }, [navigate]);
+
+  // Fetch user profile data
+  const { data: profile } = useQuery({
+    queryKey: ["userProfile", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      console.log('Fetching user profile for ID:', user.id);
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error('Profile fetch error:', error);
+        throw error;
+      }
+      
+      console.log('Profile data fetched:', data);
+      return data;
+    },
+    enabled: !!user?.id,
+  });
 
   // Save draft to localStorage whenever it changes
   useEffect(() => {
@@ -60,7 +85,6 @@ const Dashboard = () => {
     },
   });
 
-  // Check if user has already submitted today
   const { data: existingEntry } = useQuery({
     queryKey: ["todayEntry", user?.id, currentDate],
     queryFn: async () => {
@@ -124,6 +148,8 @@ const Dashboard = () => {
     }
   };
 
+  const displayName = profile?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+
   return (
     <div className="min-h-screen bg-background p-8 pb-24 relative">
       {/* User Information */}
@@ -131,11 +157,11 @@ const Dashboard = () => {
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-love-500 flex items-center justify-center">
             <span className="text-xl text-white">
-              {user?.email?.[0].toUpperCase()}
+              {displayName[0].toUpperCase()}
             </span>
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-serif">{user?.email}</h2>
+            <h2 className="text-xl font-serif">{displayName}</h2>
             <p className="text-muted-foreground">Write sincerely to discover yourself</p>
           </div>
         </div>
