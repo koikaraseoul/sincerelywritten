@@ -39,7 +39,7 @@ const Login = () => {
         <div className="w-full max-w-md p-8 space-y-8">
           <div className="text-center">
             <NotebookPen className="w-12 h-12 text-love-500 mx-auto" />
-            <p className="mt-4 font-open-sans text-xl text-gradient tracking-wider leading-relaxed animate-fadeIn max-w-sm mx-auto font-medium">
+            <p className="mt-4 font-lora text-xl text-gradient tracking-wider leading-relaxed animate-fadeIn max-w-sm mx-auto font-medium">
               Journal to understand love, celebrate achievements, and find your path
             </p>
           </div>

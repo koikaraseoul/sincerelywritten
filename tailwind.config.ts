@@ -69,6 +69,7 @@ export default {
         sans: ["Inter", "sans-serif"],
         serif: ["Playfair Display", "serif"],
         'open-sans': ["Open Sans", "sans-serif"],
+        'lora': ["Lora", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
