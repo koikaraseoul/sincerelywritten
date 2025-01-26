@@ -47,28 +47,28 @@ const Dashboard = () => {
   });
 
   const handleSave = async () => {
-    if (!user || !entryText.trim()) return;
+    if (!user || !entryText.trim() || !dailySentence) return;
 
     try {
-      console.log('Saving practice entry...');
+      console.log('Saving sentence entry...');
       const { error } = await supabase
-        .from('practices')
+        .from('sentences')
         .insert({
           user_id: user.id,
-          action_taken: entryText,
-          reflection: dailySentence || '',
+          content: entryText,
+          daily_sentence: dailySentence,
           email: user.email
         });
 
       if (error) {
-        console.error('Error saving practice:', error);
+        console.error('Error saving sentence:', error);
         throw error;
       }
 
-      console.log('Practice saved successfully');
+      console.log('Sentence saved successfully');
       setEntryText(''); // Clear the textarea after successful save
     } catch (error) {
-      console.error('Failed to save practice:', error);
+      console.error('Failed to save sentence:', error);
     }
   };
 
