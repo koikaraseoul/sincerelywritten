@@ -85,13 +85,13 @@ Summarize the unifying thread that ties the journal entries together in one clea
 Identify and articulate recurring emotional tones, behavioral patterns, or mental tendencies reflected in the entries. Frame your observations in a way that gently uncovers deeper truths and evokes curiosity for self-exploration, avoiding judgment or overgeneralization.
 
 [Actionable Insights]
-Provide three actionable steps derived from the wisdom of the SincerelyWritten Tarot Cards deck. Each step should inspire transformation and emotional growth:
+Provide one transformative method derived from the wisdom of the SincerelyWritten Tarot Cards deck. This method should inspire emotional growth by weaving together three essential elements:
 
-Step 1 (New Beginnings): Offer a profound insight related to starting anew, trust, or personal growth. Draw upon universal archetypes to make this step deeply moving and empowering.
+1. A fresh perspective that opens the door to new beginnings
+2. A heartfelt way to express and process emotions
+3. A practical action that integrates both inner wisdom and outer change
 
-Step 2 (Emotional Expression): Suggest a practical yet heartfelt way to express emotions or provide support to oneself or others. Ensure the advice feels attainable and emotionally resonant.
-
-Step 3 (Integrated Action): Propose a practical action that combines both perspectives from Steps 1 and 2. This step should encourage balance and harmony, inspiring the user to act with both courage and clarity.
+Present this method as a cohesive, flowing narrative that feels both profound and achievable. Focus on creating a sense of balance and harmony while encouraging the reader to take meaningful steps forward in their journey.
 
 Important Formatting Rules:
 - Do not use any special characters like asterisks, hashtags, or other markdown symbols
