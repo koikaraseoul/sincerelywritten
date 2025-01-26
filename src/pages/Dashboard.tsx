@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChartBar, Lightbulb } from "lucide-react";
+import { ChartBar, Lightbulb, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,6 +79,13 @@ const Dashboard = () => {
             placeholder="Type here anything."
             className="min-h-[150px] text-muted-foreground"
           />
+
+          <Button 
+            className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
+          >
+            <Mail className="mr-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            Save
+          </Button>
         </div>
       </div>
 
