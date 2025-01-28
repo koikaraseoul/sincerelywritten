@@ -28,25 +28,56 @@ serve(async (req) => {
       }
     );
 
+    // Set the start date to January 25th
+    const startDate = '2024-01-25';
+    
+    // Count entries since January 25th
     const { count: totalEntries, error: countError } = await supabaseAdmin
       .from('sentences')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .gte('created_at', startDate);
 
     if (countError) {
       console.error('Error counting entries:', countError);
       throw new Error('Failed to count entries');
     }
 
-    console.log('Total entries found:', totalEntries);
+    console.log('Total entries since January 25th:', totalEntries);
 
-    if (totalEntries && totalEntries % 3 === 0) {
-      console.log('Multiple of 3 entries reached, fetching last 3 entries');
+    // Get the latest analysis date for this user
+    const { data: latestAnalysis } = await supabaseAdmin
+      .from('analyses')
+      .select('created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    const lastAnalysisDate = latestAnalysis?.[0]?.created_at;
+    console.log('Last analysis date:', lastAnalysisDate);
+
+    // Count entries since last analysis
+    const { count: entriesSinceLastAnalysis, error: recentCountError } = await supabaseAdmin
+      .from('sentences')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .gte('created_at', lastAnalysisDate || startDate);
+
+    if (recentCountError) {
+      console.error('Error counting recent entries:', recentCountError);
+      throw new Error('Failed to count recent entries');
+    }
+
+    console.log('Entries since last analysis:', entriesSinceLastAnalysis);
+
+    if (entriesSinceLastAnalysis && entriesSinceLastAnalysis >= 3) {
+      console.log('3 or more entries since last analysis, fetching last 3 entries');
 
       const { data: lastEntries, error: entriesError } = await supabaseAdmin
         .from('sentences')
         .select('content, daily_sentence, created_at')
         .eq('user_id', userId)
+        .gte('created_at', lastAnalysisDate || startDate)
         .order('created_at', { ascending: false })
         .limit(3);
 
@@ -91,18 +122,7 @@ Provide one transformative method derived from the wisdom of the SincerelyWritte
 2. A heartfelt way to express and process emotions
 3. A practical action that integrates both inner wisdom and outer change
 
-Present this method as a cohesive, flowing narrative that feels both profound and achievable. Focus on creating a sense of balance and harmony while encouraging the reader to take meaningful steps forward in their journey.
-
-Important Formatting Rules:
-- Do not use any special characters like asterisks, hashtags, or other markdown symbols
-- Present each point as a clear and complete statement
-- Focus on patterns across entries rather than individual entries
-- Do not reference specific Tarot card names or numbers
-- Use simple yet evocative language to maintain emotional depth
-- Keep the exact section headers as shown above
-- Do not use any formatting symbols or markdown in your response
-
-Your analysis should feel like a thoughtful conversation, balancing insight with warmth and leaving the reader with a sense of clarity, purpose, and connection.`
+Present this method as a cohesive, flowing narrative that feels both profound and achievable. Focus on creating a sense of balance and harmony while encouraging the reader to take meaningful steps forward in their journey.`
               },
               { role: 'user', content: `Please analyze these journal entries:\n\n${entriesForAnalysis}` }
             ],
