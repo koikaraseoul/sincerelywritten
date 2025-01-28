@@ -134,31 +134,18 @@ Provide one transformative method derived from the wisdom of the SincerelyWritte
           console.error('OpenAI API error:', errorData);
           
           if (errorData.error?.code === 'insufficient_quota') {
-            const { error: saveError } = await supabaseAdmin
-              .from('analyses')
-              .insert({
-                content: 'PENDING_ANALYSIS_QUOTA_EXCEEDED',
-                user_id: userId,
-                email: email
-              });
-
-            if (saveError) {
-              console.error('Error saving pending analysis:', saveError);
-            }
-
             return new Response(
               JSON.stringify({
-                status: 'pending',
+                status: 'error',
                 code: 'OPENAI_QUOTA_EXCEEDED',
-                message: 'Analysis will be processed later due to high demand.'
+                error: 'Analysis temporarily unavailable due to high demand.'
               }),
               {
-                status: 429,
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                status: 429
               }
             );
           }
-
           throw new Error('Failed to generate analysis');
         }
 
