@@ -7,8 +7,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Helper function to get the latest analysis date
 async function getLatestAnalysisDate(supabaseAdmin: any, userId: string) {
+  console.log('Fetching latest analysis date for user:', userId);
+  
   const { data, error } = await supabaseAdmin
     .from('analyses')
     .select('created_at')
@@ -21,11 +22,14 @@ async function getLatestAnalysisDate(supabaseAdmin: any, userId: string) {
     throw new Error('Failed to fetch latest analysis');
   }
 
-  return data?.[0]?.created_at;
+  const latestDate = data?.[0]?.created_at;
+  console.log('Latest analysis date:', latestDate || 'No previous analysis found');
+  return latestDate;
 }
 
-// Helper function to count new entries
-async function countNewEntries(supabaseAdmin: any, userId: string, lastAnalysisDate: string | null) {
+async function getNewEntriesCount(supabaseAdmin: any, userId: string, lastAnalysisDate: string | null) {
+  console.log('Counting new entries since:', lastAnalysisDate || 'beginning');
+  
   const query = supabaseAdmin
     .from('sentences')
     .select('*', { count: 'exact', head: true })
@@ -42,21 +46,24 @@ async function countNewEntries(supabaseAdmin: any, userId: string, lastAnalysisD
     throw new Error('Failed to count entries');
   }
 
-  return count;
+  console.log('New entries count:', count);
+  return count || 0;
 }
 
-// Helper function to fetch entries for analysis
-async function fetchEntriesForAnalysis(supabaseAdmin: any, userId: string, lastAnalysisDate: string | null) {
+async function getEntriesForAnalysis(supabaseAdmin: any, userId: string, lastAnalysisDate: string | null) {
+  console.log('Fetching entries for analysis since:', lastAnalysisDate || 'beginning');
+  
   const query = supabaseAdmin
     .from('sentences')
     .select('content, daily_sentence, created_at')
     .eq('user_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(3);
+    .order('created_at', { ascending: true });
 
   if (lastAnalysisDate) {
     query.gt('created_at', lastAnalysisDate);
   }
+
+  query.limit(3);
 
   const { data, error } = await query;
 
@@ -65,63 +72,72 @@ async function fetchEntriesForAnalysis(supabaseAdmin: any, userId: string, lastA
     throw new Error('Failed to fetch entries');
   }
 
-  return data;
+  console.log('Fetched entries count:', data?.length || 0);
+  return data || [];
 }
 
-// Helper function to generate analysis using OpenAI
 async function generateAnalysis(entries: any[]) {
+  console.log('Generating analysis for entries:', entries.length);
+
   const formattedEntries = entries.map(entry => ({
     prompt: entry.daily_sentence,
     response: entry.content,
     date: new Date(entry.created_at).toLocaleDateString()
   }));
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: `You are an insightful journal analyst. Analyze the user's journal entries to identify patterns, emotional themes, and personal growth. Focus on:
-          1. Emotional patterns and recurring themes
-          2. Personal growth and self-awareness
-          3. Response quality and depth of reflection
-          4. Suggestions for deeper introspection
-          
-          Provide a structured, clear analysis that helps the user understand their journaling journey.`
-        },
-        {
-          role: 'user',
-          content: `Please analyze these journal entries, where each entry contains the prompt given and the user's response:
-          ${JSON.stringify(formattedEntries, null, 2)}`
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000
-    })
-  });
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: `You are an insightful journal analyst. Analyze these 3 journal entries to identify:
+            1. Emotional patterns and recurring themes
+            2. Personal growth and self-awareness
+            3. Response quality and depth of reflection
+            4. Suggestions for deeper introspection
+            
+            Provide a clear, structured analysis that helps the user understand their journaling journey.`
+          },
+          {
+            role: 'user',
+            content: `Please analyze these journal entries, where each entry contains the prompt given and the user's response:
+            ${JSON.stringify(formattedEntries, null, 2)}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      })
+    });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    console.error('OpenAI API error:', errorData);
-    
-    if (errorData.error?.code === 'insufficient_quota') {
-      return { error: 'OPENAI_QUOTA_EXCEEDED', message: 'Analysis temporarily unavailable due to high demand.' };
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      
+      if (errorData.error?.code === 'insufficient_quota') {
+        return { error: 'OPENAI_QUOTA_EXCEEDED' };
+      }
+      throw new Error('Failed to generate analysis');
     }
-    throw new Error('Failed to generate analysis');
-  }
 
-  const data = await response.json();
-  return { analysis: data.choices[0].message.content };
+    const data = await response.json();
+    console.log('Analysis generated successfully');
+    return { analysis: data.choices[0].message.content };
+  } catch (error) {
+    console.error('Error generating analysis:', error);
+    throw error;
+  }
 }
 
-// Helper function to save analysis
 async function saveAnalysis(supabaseAdmin: any, analysis: string, userId: string, email: string) {
+  console.log('Saving analysis for user:', userId);
+  
   const { error } = await supabaseAdmin
     .from('analyses')
     .insert({
@@ -134,6 +150,8 @@ async function saveAnalysis(supabaseAdmin: any, analysis: string, userId: string
     console.error('Error saving analysis:', error);
     throw new Error('Failed to save analysis');
   }
+
+  console.log('Analysis saved successfully');
 }
 
 serve(async (req) => {
@@ -143,31 +161,21 @@ serve(async (req) => {
 
   try {
     const { userId, email } = await req.json();
-    console.log('Analyzing entries for user:', { userId, email });
+    console.log('Processing analysis request for user:', { userId, email });
 
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
+      { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
     const lastAnalysisDate = await getLatestAnalysisDate(supabaseAdmin, userId);
-    console.log('Last analysis date:', lastAnalysisDate);
+    const newEntriesCount = await getNewEntriesCount(supabaseAdmin, userId, lastAnalysisDate);
 
-    const entriesCount = await countNewEntries(supabaseAdmin, userId, lastAnalysisDate);
-    console.log('Entries since last analysis:', entriesCount);
-
-    if (!lastAnalysisDate || entriesCount >= 3) {
-      console.log('Generating analysis for new entries');
+    if (newEntriesCount >= 3) {
+      console.log('Sufficient entries found for analysis');
+      const entries = await getEntriesForAnalysis(supabaseAdmin, userId, lastAnalysisDate);
       
-      const entries = await fetchEntriesForAnalysis(supabaseAdmin, userId, lastAnalysisDate);
-      console.log('Entries fetched for analysis:', entries.length);
-
       const { analysis, error } = await generateAnalysis(entries);
       
       if (error) {
@@ -185,7 +193,6 @@ serve(async (req) => {
       }
 
       await saveAnalysis(supabaseAdmin, analysis, userId, email);
-      console.log('Analysis saved successfully');
 
       return new Response(
         JSON.stringify({ 
@@ -196,6 +203,7 @@ serve(async (req) => {
       );
     }
 
+    console.log('Not enough new entries for analysis');
     return new Response(
       JSON.stringify({ 
         status: 'success',
@@ -209,7 +217,6 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         status: 'error',
-        code: 'UNEXPECTED_ERROR',
         message: 'An unexpected error occurred. Please try again later.'
       }),
       {
