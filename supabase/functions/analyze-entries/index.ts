@@ -102,7 +102,7 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4',
+            model: 'gpt-4o-mini',  // Changed from gpt-4 to gpt-4o-mini for cost efficiency
             messages: [
               {
                 role: 'system',
