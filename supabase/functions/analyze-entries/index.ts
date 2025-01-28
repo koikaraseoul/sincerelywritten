@@ -28,23 +28,6 @@ serve(async (req) => {
       }
     );
 
-    // Set the start date to January 25th
-    const startDate = '2024-01-25';
-    
-    // Count entries since January 25th
-    const { count: totalEntries, error: countError } = await supabaseAdmin
-      .from('sentences')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .gte('created_at', startDate);
-
-    if (countError) {
-      console.error('Error counting entries:', countError);
-      throw new Error('Failed to count entries');
-    }
-
-    console.log('Total entries since January 25th:', totalEntries);
-
     // Get the latest analysis date for this user
     const { data: latestAnalysis } = await supabaseAdmin
       .from('analyses')
@@ -57,27 +40,28 @@ serve(async (req) => {
     console.log('Last analysis date:', lastAnalysisDate);
 
     // Count entries since last analysis
-    const { count: entriesSinceLastAnalysis, error: recentCountError } = await supabaseAdmin
+    const { count: entriesSinceLastAnalysis, error: countError } = await supabaseAdmin
       .from('sentences')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .gte('created_at', lastAnalysisDate || startDate);
+      .gte('created_at', lastAnalysisDate);
 
-    if (recentCountError) {
-      console.error('Error counting recent entries:', recentCountError);
-      throw new Error('Failed to count recent entries');
+    if (countError) {
+      console.error('Error counting entries:', countError);
+      throw new Error('Failed to count entries');
     }
 
     console.log('Entries since last analysis:', entriesSinceLastAnalysis);
 
-    if (entriesSinceLastAnalysis && entriesSinceLastAnalysis >= 3) {
-      console.log('3 or more entries since last analysis, fetching last 3 entries');
+    // If no previous analysis exists or we have 3 or more new entries, generate analysis
+    if (!lastAnalysisDate || (entriesSinceLastAnalysis && entriesSinceLastAnalysis >= 3)) {
+      console.log('Generating analysis for new entries');
 
       const { data: lastEntries, error: entriesError } = await supabaseAdmin
         .from('sentences')
         .select('content, daily_sentence, created_at')
         .eq('user_id', userId)
-        .gte('created_at', lastAnalysisDate || startDate)
+        .gte('created_at', lastAnalysisDate)
         .order('created_at', { ascending: false })
         .limit(3);
 
@@ -100,7 +84,7 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4-turbo-preview',
             messages: [
               {
                 role: 'system',
