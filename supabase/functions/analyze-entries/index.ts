@@ -39,12 +39,18 @@ serve(async (req) => {
     const lastAnalysisDate = latestAnalysis?.[0]?.created_at;
     console.log('Last analysis date:', lastAnalysisDate);
 
-    // Count entries since last analysis
-    const { count: entriesSinceLastAnalysis, error: countError } = await supabaseAdmin
+    // If there's no last analysis date, we'll count all entries
+    // If there is a last analysis date, we'll only count entries after that date
+    const query = supabaseAdmin
       .from('sentences')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .gte('created_at', lastAnalysisDate);
+      .eq('user_id', userId);
+
+    if (lastAnalysisDate) {
+      query.gt('created_at', lastAnalysisDate);
+    }
+
+    const { count: entriesSinceLastAnalysis, error: countError } = await query;
 
     if (countError) {
       console.error('Error counting entries:', countError);
@@ -57,13 +63,20 @@ serve(async (req) => {
     if (!lastAnalysisDate || (entriesSinceLastAnalysis && entriesSinceLastAnalysis >= 3)) {
       console.log('Generating analysis for new entries');
 
-      const { data: lastEntries, error: entriesError } = await supabaseAdmin
+      // Fetch the last 3 entries, either all entries if no previous analysis
+      // or only entries after the last analysis
+      const entriesQuery = supabaseAdmin
         .from('sentences')
         .select('content, daily_sentence, created_at')
         .eq('user_id', userId)
-        .gte('created_at', lastAnalysisDate)
         .order('created_at', { ascending: false })
         .limit(3);
+
+      if (lastAnalysisDate) {
+        entriesQuery.gt('created_at', lastAnalysisDate);
+      }
+
+      const { data: lastEntries, error: entriesError } = await entriesQuery;
 
       if (entriesError) {
         console.error('Error fetching entries:', entriesError);
@@ -77,14 +90,14 @@ serve(async (req) => {
       console.log('Sending request to OpenAI API...');
       
       try {
-        const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4-turbo-preview',
+            model: 'gpt-4o-mini',
             messages: [
               {
                 role: 'system',
@@ -113,8 +126,8 @@ Present this method as a cohesive, flowing narrative that feels both profound an
           }),
         });
 
-        if (!openAIResponse.ok) {
-          const errorData = await openAIResponse.json();
+        if (!response.ok) {
+          const errorData = await response.json();
           console.error('OpenAI API error:', JSON.stringify(errorData, null, 2));
           
           if (errorData.error?.code === 'insufficient_quota') {
@@ -146,8 +159,8 @@ Present this method as a cohesive, flowing narrative that feels both profound an
           throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
         }
 
-        const responseData = await openAIResponse.json();
-        const analysis = responseData.choices[0].message.content;
+        const data = await response.json();
+        const analysis = data.choices[0].message.content;
 
         console.log('Analysis generated successfully');
 
