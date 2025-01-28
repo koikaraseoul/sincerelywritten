@@ -50,7 +50,7 @@ serve(async (req) => {
       .eq('user_id', userId);
 
     if (lastAnalysisDate) {
-      query.gt('created_at', lastAnalysisDate); // Changed from gte to gt
+      query.gt('created_at', lastAnalysisDate);
     }
 
     const { count: entriesSinceLastAnalysis, error: countError } = await query;
@@ -62,11 +62,11 @@ serve(async (req) => {
 
     console.log('Entries since last analysis:', entriesSinceLastAnalysis);
 
-    // Generate analysis if no previous analysis exists or if there are 3 or more new entries
+    // Generate analysis if there's no previous analysis or if there are 3 or more new entries
     if (!lastAnalysisDate || (entriesSinceLastAnalysis && entriesSinceLastAnalysis >= 3)) {
       console.log('Generating analysis for new entries');
 
-      // Fetch the last 3 entries
+      // Fetch the entries for analysis
       const entriesQuery = supabaseAdmin
         .from('sentences')
         .select('content, daily_sentence, created_at')
@@ -75,7 +75,7 @@ serve(async (req) => {
         .limit(3);
 
       if (lastAnalysisDate) {
-        entriesQuery.gt('created_at', lastAnalysisDate); // Changed from gte to gt
+        entriesQuery.gt('created_at', lastAnalysisDate);
       }
 
       const { data: lastEntries, error: entriesError } = await entriesQuery;
@@ -88,9 +88,11 @@ serve(async (req) => {
       console.log('Last entries for analysis:', lastEntries);
 
       // Format entries for better analysis
-      const entriesForAnalysis = lastEntries
-        .map(entry => `Entry: ${entry.content}\nPrompt: ${entry.daily_sentence}\nDate: ${entry.created_at}`)
-        .join('\n\n');
+      const formattedEntries = lastEntries.map(entry => ({
+        prompt: entry.daily_sentence,
+        response: entry.content,
+        date: new Date(entry.created_at).toLocaleDateString()
+      }));
 
       try {
         const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -100,32 +102,26 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-4',
             messages: [
               {
                 role: 'system',
-                content: `You are an insightful journal analyst who uses the SincerelyWritten Tarot Cards deck for guidance. Your goal is to deliver a profound and moving analysis that leaves the reader deeply engaged and eager to reflect further. Create a structured analysis with exactly four sections:
-
-[Keywords]
-Provide three impactful, precise keywords that encapsulate the core insights or recurring themes in the journal entries. Each keyword should resonate emotionally and intellectually, offering a sharp lens into the user's thoughts or experiences. Separate keywords with commas.
-
-[Central Theme]
-Summarize the unifying thread that ties the journal entries together in one clear, powerful sentence. Focus on crafting a theme that feels deeply relatable and universally significant, yet personalized to the user's reflections.
-
-[Pattern in Emotional Responses]
-Identify and articulate recurring emotional tones, behavioral patterns, or mental tendencies reflected in the entries. Frame your observations in a way that gently uncovers deeper truths and evokes curiosity for self-exploration, avoiding judgment or overgeneralization.
-
-[Actionable Insights]
-Provide one transformative method derived from the wisdom of the SincerelyWritten Tarot Cards deck. This method should inspire emotional growth by weaving together three essential elements:
-1. A fresh perspective that opens the door to new beginnings
-2. A heartfelt way to express and process emotions
-3. A practical action that integrates both inner wisdom and outer change`
+                content: `You are an insightful journal analyst. Analyze the user's journal entries to identify patterns, emotional themes, and personal growth. Focus on:
+                1. Emotional patterns and recurring themes
+                2. Personal growth and self-awareness
+                3. Response quality and depth of reflection
+                4. Suggestions for deeper introspection
+                
+                Provide a structured, clear analysis that helps the user understand their journaling journey.`
               },
               {
                 role: 'user',
-                content: `Please analyze these journal entries:\n\n${entriesForAnalysis}`
+                content: `Please analyze these journal entries, where each entry contains the prompt given and the user's response:
+                ${JSON.stringify(formattedEntries, null, 2)}`
               }
-            ]
+            ],
+            temperature: 0.7,
+            max_tokens: 1000
           })
         });
 
