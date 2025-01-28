@@ -14,7 +14,6 @@ serve(async (req) => {
 
   try {
     const { userId, email } = await req.json();
-
     console.log('Analyzing entries for user:', { userId, email });
 
     const supabaseAdmin = createClient(
