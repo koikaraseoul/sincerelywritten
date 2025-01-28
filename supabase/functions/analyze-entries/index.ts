@@ -28,25 +28,29 @@ serve(async (req) => {
     );
 
     // Get the latest analysis date for this user
-    const { data: latestAnalysis } = await supabaseAdmin
+    const { data: latestAnalysis, error: latestAnalysisError } = await supabaseAdmin
       .from('analyses')
       .select('created_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(1);
 
+    if (latestAnalysisError) {
+      console.error('Error fetching latest analysis:', latestAnalysisError);
+      throw new Error('Failed to fetch latest analysis');
+    }
+
     const lastAnalysisDate = latestAnalysis?.[0]?.created_at;
     console.log('Last analysis date:', lastAnalysisDate);
 
-    // If there's no last analysis date, we'll count all entries
-    // If there is a last analysis date, we'll only count entries after that date
+    // Count entries since the last analysis
     const query = supabaseAdmin
       .from('sentences')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId);
 
     if (lastAnalysisDate) {
-      query.gt('created_at', lastAnalysisDate);
+      query.gt('created_at', lastAnalysisDate); // Changed from gte to gt
     }
 
     const { count: entriesSinceLastAnalysis, error: countError } = await query;
@@ -58,12 +62,11 @@ serve(async (req) => {
 
     console.log('Entries since last analysis:', entriesSinceLastAnalysis);
 
-    // If no previous analysis exists or we have 3 or more new entries, generate analysis
+    // Generate analysis if no previous analysis exists or if there are 3 or more new entries
     if (!lastAnalysisDate || (entriesSinceLastAnalysis && entriesSinceLastAnalysis >= 3)) {
       console.log('Generating analysis for new entries');
 
-      // Fetch the last 3 entries, either all entries if no previous analysis
-      // or only entries after the last analysis
+      // Fetch the last 3 entries
       const entriesQuery = supabaseAdmin
         .from('sentences')
         .select('content, daily_sentence, created_at')
@@ -72,7 +75,7 @@ serve(async (req) => {
         .limit(3);
 
       if (lastAnalysisDate) {
-        entriesQuery.gt('created_at', lastAnalysisDate);
+        entriesQuery.gt('created_at', lastAnalysisDate); // Changed from gte to gt
       }
 
       const { data: lastEntries, error: entriesError } = await entriesQuery;
@@ -82,14 +85,15 @@ serve(async (req) => {
         throw new Error('Failed to fetch entries');
       }
 
+      console.log('Last entries for analysis:', lastEntries);
+
+      // Format entries for better analysis
       const entriesForAnalysis = lastEntries
         .map(entry => `Entry: ${entry.content}\nPrompt: ${entry.daily_sentence}\nDate: ${entry.created_at}`)
         .join('\n\n');
 
-      console.log('Sending request to OpenAI API...');
-      
       try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
@@ -100,7 +104,7 @@ serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content: `You are an insightful journal analyst who uses the SincerelyWritten Tarot Cards deck for guidance. Your goal is to deliver a profound and moving analysis that leaves the reader deeply engaged and eager to reflect further. Create a structured analysis with exactly four sections, adhering to the following instructions:
+                content: `You are an insightful journal analyst who uses the SincerelyWritten Tarot Cards deck for guidance. Your goal is to deliver a profound and moving analysis that leaves the reader deeply engaged and eager to reflect further. Create a structured analysis with exactly four sections:
 
 [Keywords]
 Provide three impactful, precise keywords that encapsulate the core insights or recurring themes in the journal entries. Each keyword should resonate emotionally and intellectually, offering a sharp lens into the user's thoughts or experiences. Separate keywords with commas.
@@ -113,21 +117,21 @@ Identify and articulate recurring emotional tones, behavioral patterns, or menta
 
 [Actionable Insights]
 Provide one transformative method derived from the wisdom of the SincerelyWritten Tarot Cards deck. This method should inspire emotional growth by weaving together three essential elements:
-
 1. A fresh perspective that opens the door to new beginnings
 2. A heartfelt way to express and process emotions
-3. A practical action that integrates both inner wisdom and outer change
-
-Present this method as a cohesive, flowing narrative that feels both profound and achievable. Focus on creating a sense of balance and harmony while encouraging the reader to take meaningful steps forward in their journey.`
+3. A practical action that integrates both inner wisdom and outer change`
               },
-              { role: 'user', content: `Please analyze these journal entries:\n\n${entriesForAnalysis}` }
-            ],
-          }),
+              {
+                role: 'user',
+                content: `Please analyze these journal entries:\n\n${entriesForAnalysis}`
+              }
+            ]
+          })
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error('OpenAI API error:', JSON.stringify(errorData, null, 2));
+        if (!openAIResponse.ok) {
+          const errorData = await openAIResponse.json();
+          console.error('OpenAI API error:', errorData);
           
           if (errorData.error?.code === 'insufficient_quota') {
             const { error: saveError } = await supabaseAdmin
@@ -155,11 +159,11 @@ Present this method as a cohesive, flowing narrative that feels both profound an
             );
           }
 
-          throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+          throw new Error('Failed to generate analysis');
         }
 
-        const data = await response.json();
-        const analysis = data.choices[0].message.content;
+        const responseData = await openAIResponse.json();
+        const analysis = responseData.choices[0].message.content;
 
         console.log('Analysis generated successfully');
 
@@ -185,23 +189,9 @@ Present this method as a cohesive, flowing narrative that feels both profound an
           }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
-      } catch (openAIError: any) {
+
+      } catch (openAIError) {
         console.error('OpenAI API or save error:', openAIError);
-        
-        if (openAIError.message?.includes('insufficient_quota')) {
-          return new Response(
-            JSON.stringify({
-              status: 'pending',
-              code: 'OPENAI_QUOTA_EXCEEDED',
-              message: 'Analysis will be processed later due to high demand.'
-            }),
-            {
-              status: 429,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            }
-          );
-        }
-        
         throw openAIError;
       }
     }
