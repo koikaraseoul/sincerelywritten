@@ -172,7 +172,7 @@ const Dashboard = () => {
         {hasSubmitted ? (
           <div className="space-y-6 text-center">
             {dailySentence && (
-              <p className="text-xl italic text-love-400">
+              <p className="text-xl italic text-love-400 text-center mx-auto max-w-prose">
                 {dailySentence}
               </p>
             )}
@@ -187,7 +187,7 @@ const Dashboard = () => {
             </p>
             
             {dailySentence && (
-              <p className="text-xl italic text-love-400">
+              <p className="text-xl italic text-love-400 text-center mx-auto max-w-prose">
                 {dailySentence}
               </p>
             )}
