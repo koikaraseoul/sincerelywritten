@@ -201,11 +201,11 @@ const Dashboard = () => {
               />
               
               <Button 
-                className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
+                className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 relative"
                 onClick={handleSave}
                 disabled={!entryText.trim()}
               >
-                <span className="group-hover:opacity-0 transition-opacity duration-300">
+                <span className="opacity-100 transition-opacity duration-300 group-hover:opacity-0">
                   Save
                 </span>
                 <Mail className="absolute inset-0 m-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
