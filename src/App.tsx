@@ -10,7 +10,6 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Sentence from "./pages/Sentence";
 import JournalReview from "./pages/JournalReview";
-import Analyze from "./pages/Analyze";
 import { supabase } from "@/integrations/supabase/client";
 
 // Create a client
@@ -66,14 +65,6 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute>
                     <JournalReview />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/analyze"
-                element={
-                  <ProtectedRoute>
-                    <Analyze />
                   </ProtectedRoute>
                 }
               />
