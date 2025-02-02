@@ -9,7 +9,6 @@ import WriteInputLayout from "@/components/write/WriteInputLayout";
 import SentenceHeader from "@/components/sentence/SentenceHeader";
 import SubmittedMessage from "@/components/sentence/SubmittedMessage";
 import { useSessionCheck } from "@/hooks/useSessionCheck";
-import { SentenceAnalysis } from "@/components/sentence/SentenceAnalysis";
 
 const DRAFT_KEY = 'sentence_draft';
 
@@ -124,11 +123,6 @@ const Sentence = () => {
     }
   }, [hasSubmittedToday]);
 
-  const { triggerAnalysis } = SentenceAnalysis({
-    userId: session?.user.id || '',
-    userEmail: session?.user.email || ''
-  });
-
   const handleSubmit = async () => {
     console.log('Starting journal submission process...');
     
@@ -187,9 +181,6 @@ const Sentence = () => {
         throw sentenceError;
       }
 
-      // After successful submission, trigger analysis check
-      await triggerAnalysis();
-      
       console.log('Journal entry submitted successfully');
       setHasSubmittedLocally(true);
       await refetchSubmissionStatus();
