@@ -192,7 +192,7 @@ const Dashboard = () => {
               </p>
             )}
             
-            <div className="relative">
+            <div className="space-y-4">
               <Textarea
                 placeholder="Type here anything."
                 className="min-h-[150px] text-muted-foreground"
@@ -201,7 +201,7 @@ const Dashboard = () => {
               />
               
               <Button 
-                className="absolute right-0 top-1/2 -translate-y-1/2 transform bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
+                className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
                 onClick={handleSave}
                 disabled={!entryText.trim()}
               >
