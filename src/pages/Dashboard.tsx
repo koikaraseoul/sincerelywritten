@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChartBar, Mail, Help } from "lucide-react";
+import { ChartBar, Mail, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -230,7 +230,7 @@ const Dashboard = () => {
           variant="ghost"
           className="flex items-center gap-2"
         >
-          <Help className="h-5 w-5" />
+          <HelpCircle className="h-5 w-5" />
           <span>Help</span>
         </Button>
       </div>
