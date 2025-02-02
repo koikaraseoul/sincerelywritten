@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChartBar, Lightbulb, Mail } from "lucide-react";
+import { ChartBar, Lightbulb, Mail, Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -192,21 +192,25 @@ const Dashboard = () => {
               </p>
             )}
             
-            <Textarea
-              placeholder="Type here anything."
-              className="min-h-[150px] text-muted-foreground"
-              value={entryText}
-              onChange={(e) => setEntryText(e.target.value)}
-            />
-
-            <Button 
-              className="w-full bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
-              onClick={handleSave}
-              disabled={!entryText.trim()}
-            >
-              <Mail className="mr-2 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              Save
-            </Button>
+            <div className="relative">
+              <Textarea
+                placeholder="Type here anything."
+                className="min-h-[150px] text-muted-foreground"
+                value={entryText}
+                onChange={(e) => setEntryText(e.target.value)}
+              />
+              
+              <Button 
+                className="absolute right-0 top-1/2 -translate-y-1/2 transform bg-[#000000e6] hover:bg-[#333333] text-white rounded-md transition-all duration-300 group"
+                onClick={handleSave}
+                disabled={!entryText.trim()}
+              >
+                <span className="group-hover:opacity-0 transition-opacity duration-300">
+                  Save
+                </span>
+                <Mail className="absolute inset-0 m-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </Button>
+            </div>
           </div>
         )}
       </div>
