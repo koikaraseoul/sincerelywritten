@@ -231,7 +231,7 @@ const Dashboard = () => {
           className="flex items-center gap-2"
         >
           <HelpCircle className="h-5 w-5" />
-          <span>Help</span>
+          <span>Question</span>
         </Button>
       </div>
     </div>
