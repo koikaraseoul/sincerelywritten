@@ -11,7 +11,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Sentence from "./pages/Sentence";
 import JournalReview from "./pages/JournalReview";
-import Questions from "./pages/Questions";
+import Question from "./pages/Question";
 import { supabase } from "@/integrations/supabase/client";
 
 // Create a client
@@ -74,7 +74,7 @@ const AppContent = () => {
                 path="/questions"
                 element={
                   <ProtectedRoute>
-                    <Questions />
+                    <Question />
                   </ProtectedRoute>
                 }
               />
