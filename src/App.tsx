@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -10,6 +11,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Sentence from "./pages/Sentence";
 import JournalReview from "./pages/JournalReview";
+import Questions from "./pages/Questions";
 import { supabase } from "@/integrations/supabase/client";
 
 // Create a client
@@ -65,6 +67,14 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute>
                     <JournalReview />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/questions"
+                element={
+                  <ProtectedRoute>
+                    <Questions />
                   </ProtectedRoute>
                 }
               />

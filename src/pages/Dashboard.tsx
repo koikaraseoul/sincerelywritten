@@ -23,7 +23,6 @@ const Dashboard = () => {
   const currentDate = formatInTimeZone(new Date(), timezone, 'yyyy-MM-dd');
 
   useEffect(() => {
-    // Check if user is logged in
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         navigate('/login');
@@ -34,7 +33,6 @@ const Dashboard = () => {
     });
   }, [navigate]);
 
-  // Fetch user profile data
   const { data: profile } = useQuery({
     queryKey: ["userProfile", user?.id],
     queryFn: async () => {
@@ -58,7 +56,6 @@ const Dashboard = () => {
     enabled: !!user?.id,
   });
 
-  // Save draft to localStorage whenever it changes
   useEffect(() => {
     if (entryText && !hasSubmitted) {
       localStorage.setItem(DRAFT_KEY, entryText);
@@ -152,7 +149,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background p-8 pb-24 relative">
-      {/* User Information */}
       <Card className="mb-8 p-6">
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-love-500 flex items-center justify-center">
@@ -167,7 +163,6 @@ const Dashboard = () => {
         </div>
       </Card>
 
-      {/* Main Content Area */}
       <div className="space-y-8 max-w-xl mx-auto">
         {hasSubmitted ? (
           <div className="space-y-6 text-center">
@@ -215,7 +210,6 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Fixed Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border px-4 flex justify-between items-center">
         <Button
           variant="ghost"
@@ -229,6 +223,7 @@ const Dashboard = () => {
         <Button
           variant="ghost"
           className="flex items-center gap-2"
+          onClick={() => navigate('/questions')}
         >
           <HelpCircle className="h-5 w-5" />
           <span>Question</span>
