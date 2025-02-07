@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 
-const Question = () => {
+const Questions = () => {
   const navigate = useNavigate();
   const [question, setQuestion] = useState("");
 
@@ -54,4 +54,4 @@ const Question = () => {
   );
 };
 
-export default Question;
+export default Questions;
