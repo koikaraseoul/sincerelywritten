@@ -37,15 +37,11 @@ const Questions = () => {
         {/* Main Content */}
         <div className="mt-16 space-y-4">
           <h1 className="text-4xl font-serif mb-4 text-center">
-            Journal Reviews
+            Your Questions
           </h1>
           
           <p className="text-center text-gray-400 mb-8">
             {format(currentDate, 'MMMM d, yyyy')}
-          </p>
-
-          <p className="text-[#ff69b4] text-xl text-center italic mb-8">
-            A stable foundation is essential to fulfilling your destiny.
           </p>
 
           <Card className="bg-[#111111] border-[#222222] p-6 rounded-xl">
@@ -55,10 +51,6 @@ const Questions = () => {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
             />
-            
-            <div className="text-sm text-gray-500 mt-4">
-              Written on: {format(currentDate, 'MMMM d, yyyy HH:mm:ss')}
-            </div>
           </Card>
 
           <Button 
